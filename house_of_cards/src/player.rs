@@ -15,7 +15,7 @@ impl Player {
         }
     }
 
-    pub fn handle_movement(&mut self, delta: f32) {
+    pub fn handle_movement(&mut self, delta: f32) -> bool {
         // WASD keys to move (no arrow keys)
         // diagonal movement is allowed
         let mut movement = mq::Vec2::ZERO;
@@ -41,6 +41,9 @@ impl Player {
         // update player direction
         if movement != mq::Vec2::ZERO {
             self.direction = movement.y.atan2(movement.x);
+            true
+        } else {
+            false
         }
     }
 
@@ -49,10 +52,7 @@ impl Player {
         // player direction: triangle
 
         let player_size = consts::PLAYER_SIZE * scale / consts::TILES_PER_SCALE as f32;
-        let player_position = mq::Vec2::new(
-            mq::screen_width() / 2.0,
-            mq::screen_height() / 2.0,
-        );
+        let player_position = mq::Vec2::new(mq::screen_width() / 2.0, mq::screen_height() / 2.0);
         mq::draw_circle(
             player_position.x,
             player_position.y,
@@ -70,18 +70,18 @@ impl Player {
         );
 
         let side_point_1 = mq::Vec2::new(
-            player_position.x + triangle_side_length * (self.direction + std::f32::consts::PI / 2.0).cos() / 2.0,
-            player_position.y + triangle_side_length * (self.direction + std::f32::consts::PI / 2.0).sin() / 2.0,
+            player_position.x
+                + triangle_side_length * (self.direction + std::f32::consts::PI / 2.0).cos() / 2.0,
+            player_position.y
+                + triangle_side_length * (self.direction + std::f32::consts::PI / 2.0).sin() / 2.0,
         );
         let side_point_2 = mq::Vec2::new(
-            player_position.x + triangle_side_length * (self.direction - std::f32::consts::PI / 2.0).cos() / 2.0,
-            player_position.y + triangle_side_length * (self.direction - std::f32::consts::PI / 2.0).sin() / 2.0,
+            player_position.x
+                + triangle_side_length * (self.direction - std::f32::consts::PI / 2.0).cos() / 2.0,
+            player_position.y
+                + triangle_side_length * (self.direction - std::f32::consts::PI / 2.0).sin() / 2.0,
         );
 
-        mq::draw_triangle(top_point, side_point_1, side_point_2,
-            colors::NORD4,
-        );
-
-
+        mq::draw_triangle(top_point, side_point_1, side_point_2, colors::NORD4);
     }
 }

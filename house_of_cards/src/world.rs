@@ -69,9 +69,15 @@ struct WorldBoundsInfo {
     pub tiles_count_y: f32,
     pub tile_size: f32,
 }
+
+struct LocationBuildInfo {
+    location: (i32, i32),
+    neighbors: u32,
+    dist: f32,
+}
 pub struct World {
     tiles: HashMap<(i32, i32), Tile>,
-    locations_to_build: Vec<(i32, i32)>,
+    locations_to_build: Vec<LocationBuildInfo>,
 }
 impl World {
     pub fn new() -> Self {
@@ -138,14 +144,16 @@ impl World {
 
         for x in start_x_floor..end_x_ceil {
             for y in start_y_floor..end_y_ceil {
-                let tile = self.tiles.get(&(x, y)).unwrap_or(&Tile::Black);
-                let color = tile.get_color();
+                let tile = self.tiles.get(&(x, y));
+                if let Some(tile) = tile {
+                    let color = tile.get_color();
 
-                let x = (x as f32 - start_x) * tile_size;
-                let y = (y as f32 - start_y) * tile_size;
+                    let x = (x as f32 - start_x) * tile_size;
+                    let y = (y as f32 - start_y) * tile_size;
 
-                mq::draw_rectangle(x, y, tile_size, tile_size, color);
-                // mq::draw_rectangle_lines(x, y, tile_size, tile_size, 2.0, Tile::Black.get_color());
+                    mq::draw_rectangle(x, y, tile_size, tile_size, color);
+                    // mq::draw_rectangle_lines(x, y, tile_size, tile_size, 2.0, Tile::Black.get_color());
+                }
             }
         }
     }
@@ -169,15 +177,29 @@ impl World {
             tile_size: _,
         } = self.get_world_bounds_info(player, scale);
 
+        self.locations_to_build.clear();
+
         for x in start_x_floor..end_x_ceil {
             for y in start_y_floor..end_y_ceil {
                 let has_tile = self.tiles.contains_key(&(x, y));
                 if !has_tile {
                     // self.place_tile((x, y));
-                    self.locations_to_build.push((x, y));
+                    let neighbors = self.get_tile_neighbors((x, y), 1);
+                    self.locations_to_build.push(LocationBuildInfo {
+                        location: (x, y),
+                        neighbors: neighbors.len() as u32,
+                        dist: player.pos.distance(mq::Vec2::new(x as f32, y as f32)),
+                    });
                 }
             }
         }
+
+        // sort by number of neighbors (low to high) and if tie then by distance (high to low)
+        self.locations_to_build.sort_by(|a, b| {
+            a.neighbors
+                .cmp(&b.neighbors)
+                .then_with(|| b.dist.partial_cmp(&a.dist).unwrap())
+        });
     }
 
     fn get_tile_neighbors(&self, location: (i32, i32), range: i32) -> Vec<Tile> {
@@ -200,30 +222,20 @@ impl World {
     }
 
     pub fn build_locations(&mut self) {
-        // sort by number of neighbors
-
-        let tile_neighbor_counts = self
-            .locations_to_build
-            .par_iter()
-            .map(|location| (location, self.get_tile_neighbors(*location, 1).len()))
-            .collect::<HashMap<_, _>>();
-
-        if !tile_neighbor_counts.is_empty() {
-            let max_location_and_key = tile_neighbor_counts
-                .par_iter()
-                .max_by_key(|(_, count)| *count)
-                .map(|(location, _)| location)
-                .unwrap();
-
-            self.place_tile(**max_location_and_key);
+        if self.locations_to_build.is_empty() {
+            return;
         }
+
+        let LocationBuildInfo {
+            location,
+            neighbors: _,
+            dist: _,
+        } = self.locations_to_build.pop().unwrap();
+
+        self.place_tile(location);
     }
 
     fn place_tile(&mut self, location: (i32, i32)) {
-        if self.tiles.contains_key(&location) {
-            self.locations_to_build.retain(|l| l != &location);
-        }
-
         let neighbors = self.get_tile_neighbors(location, 1);
 
         let all_titles = [
@@ -245,8 +257,13 @@ impl World {
         if !all_titles.is_empty() {
             let index = mq::rand::gen_range(0, all_titles.len());
             self.tiles.insert(location, *all_titles[index]);
-
-            self.locations_to_build.retain(|l| l != &location);
+        } else {
+            self.build_locations();
+            self.locations_to_build.push(LocationBuildInfo {
+                location,
+                neighbors: neighbors.len() as u32,
+                dist: 0.0,
+            });
         }
     }
 }

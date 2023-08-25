@@ -1,3 +1,4 @@
+use consts::WINDOW_START_SIZE;
 use macroquad::prelude as mq;
 
 mod colors;
@@ -26,7 +27,12 @@ async fn main() {
     mq::rand::srand(instant::now() as u64);
 
     let mut player = player::Player::new();
+
     let mut world = world::World::new();
+    world.update_locations_to_build(&player, WINDOW_START_SIZE as f32);
+
+    let mut old_width = mq::screen_width();
+    let mut old_height = mq::screen_height();
 
     loop {
         mq::clear_background(consts::BACKGROUND_COLOR);
@@ -35,15 +41,22 @@ async fn main() {
 
         let scale = mq::screen_width().min(mq::screen_height());
 
-        player.handle_movement(delta);
+        let resized = old_height != mq::screen_height() || old_width != mq::screen_width();
+        if resized {
+            old_width = mq::screen_width();
+            old_height = mq::screen_height();
+        }
 
-        world.update_locations_to_build(&player, scale);
+        let moved = player.handle_movement(delta);
+
+        if moved || resized {
+            world.update_locations_to_build(&player, scale);
+        }
         world.build_locations();
 
         world.draw(&player, scale);
 
         player.draw(scale);
-
 
         {
             let fps = 1.0 / delta;
