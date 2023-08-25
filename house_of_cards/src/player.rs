@@ -4,7 +4,7 @@ use crate::{colors, consts};
 
 pub struct Player {
     pub pos: mq::Vec2,  // in tiles
-    pub direction: f32, // in degrees
+    pub direction: f32, // in radians
 }
 
 impl Player {
@@ -33,18 +33,34 @@ impl Player {
         }
         movement = movement.normalize_or_zero();
 
-        // update player position
+        // arrow keys to aim
+        // diagonal aiming is allowed
+        let mut aim_vec = mq::Vec2::ZERO;
+        if mq::is_key_down(mq::KeyCode::Up) {
+            aim_vec.y -= 1.0;
+        }
+        if mq::is_key_down(mq::KeyCode::Down) {
+            aim_vec.y += 1.0;
+        }
+        if mq::is_key_down(mq::KeyCode::Left) {
+            aim_vec.x -= 1.0;
+        }
+        if mq::is_key_down(mq::KeyCode::Right) {
+            aim_vec.x += 1.0;
+        }
+        aim_vec = aim_vec.normalize_or_zero();
 
+        // update player position
         let speed = consts::PLAYER_SPEED * delta;
         self.pos += movement * speed;
 
         // update player direction
-        if movement != mq::Vec2::ZERO {
-            self.direction = movement.y.atan2(movement.x);
-            true
+        if aim_vec != mq::Vec2::ZERO {
+            self.direction = aim_vec.y.atan2(aim_vec.x);
         } else {
-            false
         }
+
+        movement != mq::Vec2::ZERO
     }
 
     pub fn draw(&self, scale: f32) {
