@@ -1,6 +1,5 @@
 use macroquad::prelude as mq;
 
-
 // nord0 #2E3440
 // nord1 #3B4252
 // nord2 #434C5E
@@ -36,20 +35,6 @@ pub const NORD14: mq::Color = mq::Color::new(0.639, 0.745, 0.549, 1.0);
 pub const NORD15: mq::Color = mq::Color::new(0.706, 0.557, 0.678, 1.0);
 
 pub const NORD_COLORS: [mq::Color; 16] = [
-	NORD0,
-	NORD1,
-	NORD2,
-	NORD3,
-	NORD4,
-	NORD5,
-	NORD6,
-	NORD7,
-	NORD8,
-	NORD9,
-	NORD10,
-	NORD11,
-	NORD12,
-	NORD13,
-	NORD14,
-	NORD15,
+    NORD0, NORD1, NORD2, NORD3, NORD4, NORD5, NORD6, NORD7, NORD8, NORD9, NORD10, NORD11, NORD12,
+    NORD13, NORD14, NORD15,
 ];
