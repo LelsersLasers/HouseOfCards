@@ -1,12 +1,9 @@
 use macroquad::prelude as mq;
 
 mod colors;
+mod consts;
 mod player;
 mod world;
-
-const WINDOW_START_SIZE: u32 = 800;
-const BACKGROUND_COLOR: mq::Color = colors::NORD1;
-const TILES_PER_SCALE: u32 = 10;
 
 /*
     Scale is the size of the window, in pixels.
@@ -17,8 +14,8 @@ const TILES_PER_SCALE: u32 = 10;
 fn window_conf() -> mq::Conf {
     mq::Conf {
         window_title: "House of Cards".to_owned(),
-        window_width: WINDOW_START_SIZE as i32,
-        window_height: WINDOW_START_SIZE as i32,
+        window_width: consts::WINDOW_START_SIZE as i32,
+        window_height: consts::WINDOW_START_SIZE as i32,
         window_resizable: true,
         ..Default::default()
     }
@@ -28,20 +25,25 @@ fn window_conf() -> mq::Conf {
 async fn main() {
     mq::rand::srand(instant::now() as u64);
 
-    let player = player::Player::new();
+    let mut player = player::Player::new();
     let mut world = world::World::new();
 
     loop {
-        mq::clear_background(BACKGROUND_COLOR);
+        mq::clear_background(consts::BACKGROUND_COLOR);
 
         let delta = mq::get_frame_time();
 
         let scale = mq::screen_width().min(mq::screen_height());
 
+        player.handle_movement(delta);
+
         world.update_locations_to_build(&player, scale);
         world.build_locations();
 
         world.draw(&player, scale);
+
+        player.draw(scale);
+
 
         {
             let fps = 1.0 / delta;

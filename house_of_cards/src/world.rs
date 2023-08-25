@@ -2,7 +2,7 @@ use macroquad::prelude as mq;
 use rayon::prelude::*;
 use std::collections::HashMap;
 
-use crate::{colors, player::Player, TILES_PER_SCALE};
+use crate::{colors, consts, player};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Tile {
@@ -86,8 +86,8 @@ impl World {
         }
     }
 
-    fn get_world_bounds_info(&self, player: &Player, scale: f32) -> WorldBoundsInfo {
-        let tile_size = scale / TILES_PER_SCALE as f32;
+    fn get_world_bounds_info(&self, player: &player::Player, scale: f32) -> WorldBoundsInfo {
+        let tile_size = scale / consts::TILES_PER_SCALE as f32;
 
         let tiles_count_x = mq::screen_width() / tile_size;
         let tiles_count_y = mq::screen_height() / tile_size;
@@ -119,7 +119,7 @@ impl World {
         }
     }
 
-    pub fn draw(&self, player: &Player, scale: f32) {
+    pub fn draw(&self, player: &player::Player, scale: f32) {
         let WorldBoundsInfo {
             start_x,
             start_x_floor,
@@ -150,7 +150,7 @@ impl World {
         }
     }
 
-    pub fn update_locations_to_build(&mut self, player: &Player, scale: f32) {
+    pub fn update_locations_to_build(&mut self, player: &player::Player, scale: f32) {
         // fill in all tiles that are within the player's view
 
         let WorldBoundsInfo {
