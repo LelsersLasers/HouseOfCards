@@ -33,7 +33,10 @@ async fn main() {
     let mut world = world::World::new();
     world.update_locations_to_build(&player, WINDOW_START_SIZE as f32);
 
-    let mut deck = deck::Deck::new();
+    let cards_texture = mq::load_texture("./resources/nord-cards-transparent.png")
+        .await
+        .unwrap();
+    let mut deck = deck::Deck::new(cards_texture);
 
     let mut old_width = mq::screen_width();
     let mut old_height = mq::screen_height();

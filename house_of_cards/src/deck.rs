@@ -4,13 +4,14 @@ use rayon::prelude::*;
 
 use crate::{colors, consts};
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 enum Suit {
     Spades,
     Hearts,
     Clubs,
     Diamonds,
     Joker,
+    Back,
 }
 
 #[derive(Clone, Copy)]
@@ -24,18 +25,51 @@ impl Card {
         Self { suit, value }
     }
 
+    fn get_texture_source(&self) -> mq::Rect {
+        let (idx_x, idx_y) = match self {
+            Self {
+                suit: Suit::Joker | Suit::Back,
+                value,
+            } => (0, (self.suit == Suit::Joker) as usize * 2 + *value as usize),
+            Self { suit, value } => {
+                let suit_idx = match suit {
+                    Suit::Hearts => 0,
+                    Suit::Spades => 1,
+                    Suit::Diamonds => 2,
+                    Suit::Clubs => 3,
+                    _ => unreachable!(),
+                };
+                if self.is_ace() {
+                    (13, suit_idx)
+                } else {
+                    (*value as usize - 1, suit_idx)
+                }
+            }
+        };
+
+        let start = mq::Vec2::splat(24.0);
+        let card_width = 132.0;
+        let card_height = 180.0;
+        let card_spacing = 8.0;
+
+        let x = start.x + idx_x as f32 * (card_width + card_spacing);
+        let y = start.y + idx_y as f32 * (card_height + card_spacing);
+
+        mq::Rect::new(x, y, card_width, card_height)
+    }
+
     fn is_red(&self) -> bool {
         match self.suit {
             Suit::Hearts | Suit::Diamonds => true,
             Suit::Spades | Suit::Clubs => false,
-            Suit::Joker => self.value == 0,
+            Suit::Joker | Suit::Back => self.value == 0,
         }
     }
     fn is_black(&self) -> bool {
         match self.suit {
             Suit::Hearts | Suit::Diamonds => false,
             Suit::Spades | Suit::Clubs => true,
-            Suit::Joker => self.value == 1,
+            Suit::Joker | Suit::Back => self.value == 1,
         }
     }
 
@@ -60,7 +94,7 @@ impl DiscardCardDrawInfo {
         let offset = mq::Vec2::new(
             mq::rand::gen_range(-consts::DISCARD_OFFSET, consts::DISCARD_OFFSET),
             mq::rand::gen_range(-consts::DISCARD_OFFSET, consts::DISCARD_OFFSET),
-        ) + mq::Vec2::splat(0.5);
+        );
         Self {
             card,
             rotation,
@@ -72,10 +106,11 @@ impl DiscardCardDrawInfo {
 pub struct Deck {
     cards: Vec<Card>,
     discard: Vec<DiscardCardDrawInfo>,
+    cards_texture: mq::Texture2D,
 }
 
 impl Deck {
-    pub fn new() -> Self {
+    pub fn new(cards_texture: mq::Texture2D) -> Self {
         let mut cards = Vec::with_capacity(54);
         for suit in [Suit::Spades, Suit::Hearts, Suit::Clubs, Suit::Diamonds].iter() {
             for value in 1..=13 {
@@ -87,7 +122,11 @@ impl Deck {
 
         let discard = Vec::with_capacity(54);
 
-        let mut deck = Self { cards, discard };
+        let mut deck = Self {
+            cards,
+            discard,
+            cards_texture,
+        };
         deck.shuffle();
         deck
     }
@@ -136,8 +175,7 @@ impl Deck {
             deck_spacing_outside,
         );
 
-        let cards_corner =
-            cards_outline_corner + mq::Vec2::new(deck_spacing_inside, deck_spacing_inside);
+        let cards_corner = cards_outline_corner + mq::Vec2::splat(deck_spacing_inside);
 
         mq::draw_rectangle(
             cards_outline_corner.x,
@@ -156,63 +194,18 @@ impl Deck {
         );
 
         if !self.cards.is_empty() {
-            mq::draw_rectangle(
+            let card_back = Card::new(Suit::Back, 1);
+            let texture_source = card_back.get_texture_source();
+            mq::draw_texture_ex(
+                self.cards_texture,
                 cards_corner.x,
                 cards_corner.y,
-                deck_width,
-                deck_height,
-                colors::NORD6,
-            );
-
-            // red diagonal lines
-            let line_spacing = deck_width / (consts::DECK_DESIGN_COUNT as f32 / 2.0 + 0.5);
-            let line_thickness = deck_thickness / 2.0;
-            let line_slope = -deck_height / deck_width;
-
-            let mut x = cards_corner.x + line_spacing;
-
-            // while x <= cards_corner.x + deck_width {
-            for _ in 0..consts::DECK_DESIGN_COUNT {
-                let mut start = mq::Vec2::new(x, cards_corner.y);
-                let delta_x = cards_corner.x - x;
-                let mut end = mq::Vec2::new(cards_corner.x, cards_corner.y + delta_x * line_slope);
-
-                if start.x > cards_corner.x + deck_width {
-                    let dx = start.x - (cards_corner.x + deck_width);
-                    let dy = dx * line_slope;
-                    start.x = cards_corner.x + deck_width;
-                    start.y -= dy;
-                }
-
-                if end.y > cards_corner.y + deck_height {
-                    let dy = end.y - (cards_corner.y + deck_height);
-                    let dx = dy / line_slope;
-                    end.y = cards_corner.y + deck_height;
-                    end.x -= dx;
-                }
-
-                start += mq::Vec2::new(-line_thickness, line_slope * -line_thickness) / 2.0;
-                end += mq::Vec2::new(line_thickness, line_slope * line_thickness) / 2.0;
-
-                mq::draw_line(
-                    start.x,
-                    start.y,
-                    end.x,
-                    end.y,
-                    line_thickness,
-                    colors::NORD11,
-                );
-
-                x += line_spacing;
-            }
-
-            mq::draw_rectangle_lines(
-                cards_corner.x,
-                cards_corner.y,
-                deck_width,
-                deck_height,
-                deck_thickness,
-                colors::NORD4,
+                mq::WHITE,
+                mq::DrawTextureParams {
+                    dest_size: Some(mq::Vec2::new(deck_width, deck_height)),
+                    source: Some(texture_source),
+                    ..Default::default()
+                },
             );
         }
 
@@ -220,9 +213,7 @@ impl Deck {
             cards_outline_corner.x - (deck_spacing_outside + deck_outline_width),
             deck_spacing_outside,
         );
-
-        let discard_center = discard_outline_corner
-            + mq::Vec2::new(deck_outline_width / 2.0, deck_outline_height / 2.0);
+        let discard_corner = discard_outline_corner + mq::Vec2::splat(deck_spacing_inside);
 
         mq::draw_rectangle(
             discard_outline_corner.x,
@@ -243,23 +234,21 @@ impl Deck {
         let start_index = self.discard.len().saturating_sub(consts::DISCARD_TO_DRAW);
         for i in start_index..self.discard.len() {
             let card = &self.discard[i];
-            mq::draw_rectangle_ex(
-                discard_center.x,
-                discard_center.y,
-                deck_width,
-                deck_height,
-                mq::DrawRectangleParams {
-                    color: colors::NORD6,
+            let texture_source = card.card.get_texture_source();
+            let x = discard_corner.x + card.offset.x * deck_width;
+            let y = discard_corner.y + card.offset.y * deck_height;
+            mq::draw_texture_ex(
+                self.cards_texture,
+                x,
+                y,
+                mq::WHITE,
+                mq::DrawTextureParams {
+                    dest_size: Some(mq::Vec2::new(deck_width, deck_height)),
+                    source: Some(texture_source),
                     rotation: card.rotation,
-                    offset: card.offset,
+                    ..Default::default()
                 },
             );
-
-            /* TODO: draw card face
-                - Number
-                - Suit
-                - Color
-            */
         }
     }
 }
