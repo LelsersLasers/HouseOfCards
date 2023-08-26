@@ -1,7 +1,7 @@
 use macroquad::prelude as mq;
 use macroquad::rand::ChooseRandom;
 
-use crate::{colors, consts};
+use crate::{colors, consts, weapon};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Suit {
@@ -138,6 +138,14 @@ impl Deck {
         card
     }
 
+    pub fn is_full(&self) -> bool {
+        self.discard.is_empty()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.cards.is_empty()
+    }
+
     pub fn combine(&mut self) {
         let mut discard_cards = self
             .discard
@@ -154,7 +162,7 @@ impl Deck {
         self.cards.shuffle();
     }
 
-    pub fn draw(&self, scale: f32) {
+    pub fn draw(&self, weapon: &weapon::Weapon, scale: f32) {
         // Draw stack of cards in top right corner
         // Draw discard pile on the left of the stack
 
@@ -181,7 +189,13 @@ impl Deck {
             cards_outline_corner.y,
             deck_outline_width,
             deck_outline_height,
-            colors::NORD3_ALPHA,
+            if weapon.can_shoot() || self.is_empty() {
+                colors::NORD3_ALPHA
+            } else if weapon.is_reloading() {
+                colors::NORD11_ALPHA
+            } else {
+                colors::NORD14_ALPHA
+            },
         );
         mq::draw_rectangle_lines(
             cards_outline_corner.x,

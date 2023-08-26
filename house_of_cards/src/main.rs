@@ -83,12 +83,12 @@ async fn main() {
             }
         }
 
-        // let mut bullets_to_remove = Vec::new();
         bullets.iter_mut().for_each(|bullet| bullet.update(delta));
         bullets.retain(bullet::Bullet::should_remove);
 
-        if mq::is_key_pressed(mq::KeyCode::R) {
+        if mq::is_key_pressed(mq::KeyCode::R) && !deck.is_full() {
             deck.combine();
+            player.weapon.reload();
         }
 
         world.draw(&player, scale);
@@ -96,7 +96,7 @@ async fn main() {
         for bullet in bullets.iter() {
             bullet.draw(&player, scale);
         }
-        deck.draw(scale);
+        deck.draw(&player.weapon, scale);
         mouse_info.draw(scale);
 
         {
