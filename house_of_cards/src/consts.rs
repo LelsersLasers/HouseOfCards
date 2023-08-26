@@ -1,9 +1,12 @@
 use macroquad::prelude as mq;
 
+use crate::colors;
+
 pub const WINDOW_START_SIZE: u32 = 800;
 
 pub const BACKGROUND_COLOR: mq::Color = crate::colors::NORD1;
 pub const MOUSE_COLOR: mq::Color = crate::colors::NORD6;
+pub const BACKGROUND_COLORS: [mq::Color; 6] = colors::SURFACE_COLORS;
 
 pub const TILES_PER_SCALE: u32 = 12;
 

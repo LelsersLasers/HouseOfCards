@@ -6,23 +6,32 @@ use crate::{colors, consts, player};
 
 #[derive(Clone, Copy, Eq, PartialEq)]
 pub enum Tile {
-    Red,
-    Orange,
-    Yellow,
-    Green,
-    Blue,
-    Purple,
+    // Red,
+    // Orange,
+    // Yellow,
+    // Green,
+    // Blue,
+    // Purple,
+    // Zero,
+    // One,
+    // Two,
+    Background(usize),
     Black,
 }
 impl Tile {
     pub fn get_color(&self) -> mq::Color {
         match self {
-            Tile::Red => colors::NORD11,
-            Tile::Orange => colors::NORD12,
-            Tile::Yellow => colors::NORD13,
-            Tile::Green => colors::NORD14,
-            Tile::Blue => colors::NORD10,
-            Tile::Purple => colors::NORD15,
+            // Tile::Red => colors::NORD11,
+            // Tile::Orange => colors::NORD12,
+            // Tile::Yellow => colors::NORD13,
+            // Tile::Green => colors::NORD14,
+            // Tile::Blue => colors::NORD10,
+            // Tile::Purple => colors::NORD15,
+            // Tile::Black => colors::NORD0,
+            // Tile::Zero => colors::DRACULA0,
+            // Tile::One => colors::DRACULA1,
+            // Tile::Two => colors::DRACULA2,
+            Tile::Background(index) => consts::BACKGROUND_COLORS[*index],
             Tile::Black => colors::NORD0,
         }
     }
@@ -35,22 +44,36 @@ impl Tile {
         // blue can only go next to green or purple or blue
         // purple can only go next to blue or red or purple
 
-        self == other
-            || matches!(
-                (self, other),
-                (Tile::Red, Tile::Orange)
-                    | (Tile::Red, Tile::Purple)
-                    | (Tile::Orange, Tile::Red)
-                    | (Tile::Orange, Tile::Yellow)
-                    | (Tile::Yellow, Tile::Orange)
-                    | (Tile::Yellow, Tile::Green)
-                    | (Tile::Green, Tile::Yellow)
-                    | (Tile::Green, Tile::Blue)
-                    | (Tile::Blue, Tile::Green)
-                    | (Tile::Blue, Tile::Purple)
-                    | (Tile::Purple, Tile::Blue)
-                    | (Tile::Purple, Tile::Red)
-            )
+        // self == other
+        //     // || matches!(
+        //     //     (self, other),
+        //     //     (Tile::Red, Tile::Orange)
+        //     //         | (Tile::Red, Tile::Purple)
+        //     //         | (Tile::Orange, Tile::Red)
+        //     //         | (Tile::Orange, Tile::Yellow)
+        //     //         | (Tile::Yellow, Tile::Orange)
+        //     //         | (Tile::Yellow, Tile::Green)
+        //     //         | (Tile::Green, Tile::Yellow)
+        //     //         | (Tile::Green, Tile::Blue)
+        //     //         | (Tile::Blue, Tile::Green)
+        //     //         | (Tile::Blue, Tile::Purple)
+        //     //         | (Tile::Purple, Tile::Blue)
+        //     //         | (Tile::Purple, Tile::Red)
+        //     // )
+        //     || matches!(
+        //         (self, other),
+        //         (Tile::Zero, Tile::One)
+        //             | (Tile::One, Tile::Zero)
+        //             | (Tile::One, Tile::Two)
+        //             | (Tile::Two, Tile::One)
+        //     )
+
+        match (self, other) {
+            (Tile::Background(self_index), Tile::Background(other_index)) => {
+                (*self_index as i32 - *other_index as i32).abs() <= 1
+            }
+            _ => false,
+        }
     }
 }
 
@@ -82,7 +105,8 @@ pub struct World {
 impl World {
     pub fn new() -> Self {
         let mut tiles = HashMap::new();
-        tiles.insert((0, 0), Tile::Red);
+        // tiles.insert((0, 0), Tile::Red);
+        tiles.insert((1, 0), Tile::Background(0));
 
         let locations_to_build = vec![];
 
@@ -238,25 +262,31 @@ impl World {
     fn place_tile(&mut self, location: (i32, i32)) {
         let neighbors = self.get_tile_neighbors(location, 1);
 
-        let all_titles = [
-            Tile::Red,
-            Tile::Orange,
-            Tile::Yellow,
-            Tile::Green,
-            Tile::Blue,
-            Tile::Purple,
-        ]
-        .par_iter()
-        .filter(|tile| {
-            neighbors
-                .iter()
-                .all(|neighbor| tile.can_place_next_to(neighbor))
-        })
-        .collect::<Vec<_>>();
+        // let all_tiles = [
+        //     // Tile::Red,
+        //     // Tile::Orange,
+        //     // Tile::Yellow,
+        //     // Tile::Green,
+        //     // Tile::Blue,
+        //     // Tile::Purple,
+        //     Tile::Zero,
+        //     Tile::One,
+        //     Tile::Two,
+        // ]
+        let all_tiles = consts::BACKGROUND_COLORS
+            .par_iter()
+            .enumerate()
+            .map(|(index, _)| Tile::Background(index))
+            .filter(|tile| {
+                neighbors
+                    .iter()
+                    .all(|neighbor| tile.can_place_next_to(neighbor))
+            })
+            .collect::<Vec<_>>();
 
-        if !all_titles.is_empty() {
-            let index = mq::rand::gen_range(0, all_titles.len());
-            self.tiles.insert(location, *all_titles[index]);
+        if !all_tiles.is_empty() {
+            let index = mq::rand::gen_range(0, all_tiles.len());
+            self.tiles.insert(location, all_tiles[index]);
         } else {
             // self.build_locations();
             // self.locations_to_build.push(LocationBuildInfo {
@@ -264,7 +294,10 @@ impl World {
             //     neighbors: neighbors.len() as u32,
             //     dist: 0.0,
             // });
-            self.tiles.insert(location, Tile::Green);
+            self.tiles.insert(
+                location,
+                Tile::Background(consts::BACKGROUND_COLORS.len() / 2),
+            );
         }
     }
 }
