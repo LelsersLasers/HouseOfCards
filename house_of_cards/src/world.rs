@@ -228,6 +228,7 @@ impl World {
 
     fn get_tile_neighbors(&self, location: (i32, i32), range: i32) -> Vec<Tile> {
         let mut neighbors = Vec::new();
+
         for x in -range..=range {
             for y in -range..=range {
                 if x == 0 && y == 0 {
@@ -243,6 +244,16 @@ impl World {
         }
 
         neighbors
+        
+        // use par_iter
+        // (-range..=range)
+        //     .into_par_iter()
+        //     .flat_map(|x| (-range..=range).into_par_iter().map(move |y| (x, y)))
+        //     .filter(|(x, y)| *x != 0 || *y != 0)
+        //     .map(|(x, y)| (location.0 + x, location.1 + y))
+        //     .filter_map(|new_location| self.tiles.get(&new_location))
+        //     .copied()
+        //     .collect()
     }
 
     pub fn build_locations(&mut self) {
