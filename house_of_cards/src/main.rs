@@ -1,5 +1,4 @@
 use macroquad::prelude as mq;
-use rayon::prelude::*;
 
 mod bullet;
 mod colors;
@@ -85,9 +84,7 @@ async fn main() {
         }
 
         // let mut bullets_to_remove = Vec::new();
-        bullets
-            .par_iter_mut()
-            .for_each(|bullet| bullet.update(delta));
+        bullets.iter_mut().for_each(|bullet| bullet.update(delta));
         bullets.retain(bullet::Bullet::should_remove);
 
         if mq::is_key_pressed(mq::KeyCode::R) {

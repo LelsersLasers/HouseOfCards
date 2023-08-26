@@ -1,5 +1,4 @@
 use macroquad::prelude as mq;
-use rayon::prelude::*;
 use std::collections::HashMap;
 
 use crate::{colors, consts, player};
@@ -285,7 +284,7 @@ impl World {
         //     Tile::Two,
         // ]
         let all_tiles = consts::BACKGROUND_COLORS
-            .par_iter()
+            .iter()
             .enumerate()
             .map(|(index, _)| Tile::Background(index))
             .filter(|tile| {

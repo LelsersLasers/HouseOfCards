@@ -1,6 +1,5 @@
 use macroquad::prelude as mq;
 use macroquad::rand::ChooseRandom;
-use rayon::prelude::*;
 
 use crate::{colors, consts};
 
@@ -142,7 +141,7 @@ impl Deck {
     pub fn combine(&mut self) {
         let mut discard_cards = self
             .discard
-            .par_iter()
+            .iter()
             .map(|discard_card| discard_card.card)
             .collect::<Vec<_>>();
         discard_cards.reverse();

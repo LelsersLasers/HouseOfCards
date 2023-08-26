@@ -37,7 +37,6 @@ impl Player {
             let angle = mouse_pos_relative_to_center
                 .y
                 .atan2(mouse_pos_relative_to_center.x);
-            println!("angle: {}", angle);
             mq::Vec2::new(angle.cos(), angle.sin())
         } else {
             let mut movement = mq::Vec2::ZERO;
