@@ -1,4 +1,4 @@
-use macroquad::prelude as mq;
+use macroquad::prelude::{self as mq};
 
 use crate::consts;
 
@@ -21,7 +21,7 @@ impl MouseInfo {
 
     pub fn update(&mut self, delta: f32) {
         let current_pos = mq::mouse_position().into();
-        if current_pos != self.last_pos {
+        if current_pos != self.last_pos || mq::is_mouse_button_down(mq::MouseButton::Left) {
             self.time_since_idle = 0.0;
             self.active = true;
         } else {

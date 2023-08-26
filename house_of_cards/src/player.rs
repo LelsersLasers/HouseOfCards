@@ -1,21 +1,32 @@
 use macroquad::prelude as mq;
 
-use crate::{colors, consts, mouse};
+use crate::{colors, consts, mouse, weapon};
+
+pub struct HandleInputResult {
+    pub moved: bool,
+    pub shot: bool,
+}
 
 pub struct Player {
     pub pos: mq::Vec2,  // in tiles
     pub direction: f32, // in radians
+    pub weapon: weapon::Weapon,
 }
 
 impl Player {
-    pub fn new() -> Self {
+    pub fn new(weapon: weapon::Weapon) -> Self {
         Self {
             pos: mq::Vec2::ZERO,
             direction: 0.0,
+            weapon,
         }
     }
 
-    pub fn handle_input(&mut self, mouse_info: &mut mouse::MouseInfo, delta: f32) -> bool {
+    pub fn handle_input(
+        &mut self,
+        mouse_info: &mut mouse::MouseInfo,
+        delta: f32,
+    ) -> HandleInputResult {
         // WASD keys to move (no arrow keys)
         // diagonal movement is allowed
         let mut movement = mq::Vec2::ZERO;
@@ -68,7 +79,17 @@ impl Player {
             self.direction = movement.y.atan2(movement.x);
         }
 
-        movement != mq::Vec2::ZERO
+        // update weapon
+        self.weapon.update(delta);
+        let mut shot = false;
+        if mq::is_key_down(mq::KeyCode::Space) || mq::is_mouse_button_down(mq::MouseButton::Left) {
+            shot = self.weapon.try_shoot();
+        }
+
+        HandleInputResult {
+            moved: movement != mq::Vec2::ZERO,
+            shot,
+        }
     }
 
     pub fn draw(&self, scale: f32) {

@@ -6,6 +6,7 @@ mod consts;
 mod deck;
 mod mouse;
 mod player;
+mod weapon;
 mod world;
 
 /*
@@ -28,7 +29,7 @@ fn window_conf() -> mq::Conf {
 async fn main() {
     mq::rand::srand(instant::now() as u64);
 
-    let mut player = player::Player::new();
+    let mut player = player::Player::new(consts::AR);
 
     let mut world = world::World::new();
     world.update_locations_to_build(&player, WINDOW_START_SIZE as f32);
@@ -59,17 +60,18 @@ async fn main() {
 
         mouse_info.update(delta);
 
-        let moved = player.handle_input(&mut mouse_info, delta);
+        let handle_input_result = player.handle_input(&mut mouse_info, delta);
 
-        if moved || resized {
+        if handle_input_result.moved || resized {
             world.update_locations_to_build(&player, scale);
         }
         world.build_locations();
 
-        if mq::is_key_pressed(mq::KeyCode::Space) {
-            deck.draw_card();
+        if handle_input_result.shot {
+            let _card = deck.draw_card();
         }
-        if mq::is_key_pressed(mq::KeyCode::C) {
+
+        if mq::is_key_pressed(mq::KeyCode::R) {
             deck.combine();
         }
 

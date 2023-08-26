@@ -1,6 +1,6 @@
 use macroquad::prelude as mq;
 
-use crate::colors;
+use crate::{colors, weapon};
 
 pub const WINDOW_START_SIZE: u32 = 800;
 
@@ -30,3 +30,5 @@ pub const DISCARD_TO_DRAW: usize = 5;
 
 pub const FPS_SPACING: f32 = 0.01; // scale
 pub const FPS_FONT_SIZE: f32 = 0.04; // scale
+
+pub const AR: weapon::Weapon = weapon::Weapon::new(4.0, 0.60, 1.0);
