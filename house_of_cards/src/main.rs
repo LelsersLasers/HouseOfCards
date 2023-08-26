@@ -3,6 +3,7 @@ use macroquad::prelude as mq;
 
 mod colors;
 mod consts;
+mod mouse;
 mod player;
 mod world;
 
@@ -34,6 +35,9 @@ async fn main() {
     let mut old_width = mq::screen_width();
     let mut old_height = mq::screen_height();
 
+    let mut mouse_info = mouse::MouseInfo::new();
+
+
     loop {
         mq::clear_background(consts::BACKGROUND_COLOR);
 
@@ -47,7 +51,9 @@ async fn main() {
             old_height = mq::screen_height();
         }
 
-        let moved = player.handle_movement(delta);
+        mouse_info.update(delta);
+
+        let moved = player.handle_input(&mouse_info, delta);
 
         if moved || resized {
             world.update_locations_to_build(&player, scale);

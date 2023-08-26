@@ -1,6 +1,6 @@
 use macroquad::prelude as mq;
 
-use crate::{colors, consts};
+use crate::{colors, consts, mouse};
 
 pub struct Player {
     pub pos: mq::Vec2,  // in tiles
@@ -15,7 +15,7 @@ impl Player {
         }
     }
 
-    pub fn handle_movement(&mut self, delta: f32) -> bool {
+    pub fn handle_input(&mut self, mouse_info: &mouse::MouseInfo, delta: f32) -> bool {
         // WASD keys to move (no arrow keys)
         // diagonal movement is allowed
         let mut movement = mq::Vec2::ZERO;
@@ -57,7 +57,8 @@ impl Player {
         // update player direction
         if aim_vec != mq::Vec2::ZERO {
             self.direction = aim_vec.y.atan2(aim_vec.x);
-        } else {
+        } else if movement != mq::Vec2::ZERO {
+            self.direction = movement.y.atan2(movement.x);
         }
 
         movement != mq::Vec2::ZERO

@@ -258,12 +258,13 @@ impl World {
             let index = mq::rand::gen_range(0, all_titles.len());
             self.tiles.insert(location, *all_titles[index]);
         } else {
-            self.build_locations();
-            self.locations_to_build.push(LocationBuildInfo {
-                location,
-                neighbors: neighbors.len() as u32,
-                dist: 0.0,
-            });
+            // self.build_locations();
+            // self.locations_to_build.push(LocationBuildInfo {
+            //     location,
+            //     neighbors: neighbors.len() as u32,
+            //     dist: 0.0,
+            // });
+            self.tiles.insert(location, Tile::Green);
         }
     }
 }
