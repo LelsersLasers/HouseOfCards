@@ -15,7 +15,7 @@ impl Player {
         }
     }
 
-    pub fn handle_input(&mut self, mouse_info: &mouse::MouseInfo, delta: f32) -> bool {
+    pub fn handle_input(&mut self, mouse_info: &mut mouse::MouseInfo, delta: f32) -> bool {
         // WASD keys to move (no arrow keys)
         // diagonal movement is allowed
         let mut movement = mq::Vec2::ZERO;
@@ -57,6 +57,13 @@ impl Player {
         // update player direction
         if aim_vec != mq::Vec2::ZERO {
             self.direction = aim_vec.y.atan2(aim_vec.x);
+            mouse_info.set_active(false);
+        } else if let Some(mouse_pos) = mouse_info.mouse_pos() {
+            let mouse_pos_relative_to_center = mouse_pos - mq::Vec2::new(
+                mq::screen_width() / 2.0,
+                mq::screen_height() / 2.0,
+            );
+            self.direction = mouse_pos_relative_to_center.y.atan2(mouse_pos_relative_to_center.x);
         } else if movement != mq::Vec2::ZERO {
             self.direction = movement.y.atan2(movement.x);
         }

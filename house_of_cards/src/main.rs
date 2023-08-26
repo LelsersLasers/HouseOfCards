@@ -36,6 +36,7 @@ async fn main() {
     let mut old_height = mq::screen_height();
 
     let mut mouse_info = mouse::MouseInfo::new();
+    mq::show_mouse(false);
 
 
     loop {
@@ -53,16 +54,18 @@ async fn main() {
 
         mouse_info.update(delta);
 
-        let moved = player.handle_input(&mouse_info, delta);
+        let moved = player.handle_input(&mut mouse_info, delta);
 
         if moved || resized {
             world.update_locations_to_build(&player, scale);
         }
         world.build_locations();
 
-        world.draw(&player, scale);
 
+        world.draw(&player, scale);
         player.draw(scale);
+        mouse_info.draw(scale);
+
 
         {
             let fps = 1.0 / delta;

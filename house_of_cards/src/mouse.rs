@@ -5,7 +5,8 @@ use crate::consts;
 pub struct MouseInfo {
 	last_pos: mq::Vec2,
 	time_since_idle: f32,
-	active: bool
+	active: bool,
+    show: bool,
 }
 
 impl MouseInfo {
@@ -13,7 +14,8 @@ impl MouseInfo {
 		Self {
 			last_pos: mq::mouse_position().into(),
 			time_since_idle: 0.0,
-			active: false
+			active: false,
+            show: false,
 		}
 	}
 
@@ -30,6 +32,33 @@ impl MouseInfo {
 		}
 		self.last_pos = current_pos;
 	}
+
+    pub fn draw(&self, scale: f32) {
+        // crosshair
+        if self.show || self.active {
+            let crosshair_size = scale * 0.02;
+            let crosshair_thickness = scale * 0.002;
+
+            let crosshair_x = self.last_pos.x;
+            let crosshair_y = self.last_pos.y;
+
+            mq::draw_rectangle(
+                crosshair_x - crosshair_size / 2.0,
+                crosshair_y - crosshair_thickness / 2.0,
+                crosshair_size,
+                crosshair_thickness,
+                consts::MOUSE_COLOR,
+            );
+
+            mq::draw_rectangle(
+                crosshair_x - crosshair_thickness / 2.0,
+                crosshair_y - crosshair_size / 2.0,
+                crosshair_thickness,
+                crosshair_size,
+                consts::MOUSE_COLOR,
+            );
+        }
+    }
 
 	pub fn is_active(&self) -> bool {
 		self.active
