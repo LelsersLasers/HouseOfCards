@@ -1,18 +1,25 @@
 pub struct Weapon {
     fire_rate: f32, // shots per second
-    range: f32,     // scale
-    movement_speed_modifier: f32,
+    pub range: f32, // tiles
+    pub movement_speed_modifier: f32,
     time_since_last_shot: f32,
+    pub bullet_speed: f32, // tiles per second
 }
 
 impl Weapon {
     // NOTE: `const fn`!!!
-    pub const fn new(fire_rate: f32, range: f32, movement_speed_modifier: f32) -> Self {
+    pub const fn new(
+        fire_rate: f32,
+        range: f32,
+        movement_speed_modifier: f32,
+        bullet_speed: f32,
+    ) -> Self {
         Self {
             fire_rate,
             range,
             movement_speed_modifier,
             time_since_last_shot: 0.0,
+            bullet_speed,
         }
     }
 

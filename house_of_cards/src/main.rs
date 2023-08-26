@@ -1,6 +1,7 @@
-use consts::WINDOW_START_SIZE;
 use macroquad::prelude as mq;
+use rayon::prelude::*;
 
+mod bullet;
 mod colors;
 mod consts;
 mod deck;
@@ -32,7 +33,9 @@ async fn main() {
     let mut player = player::Player::new(consts::AR);
 
     let mut world = world::World::new();
-    world.update_locations_to_build(&player, WINDOW_START_SIZE as f32);
+    world.update_locations_to_build(&player, consts::WINDOW_START_SIZE as f32);
+
+    let mut bullets: Vec<bullet::Bullet> = Vec::new();
 
     let cards_texture = mq::load_texture("./resources/nord-cards-transparent.png")
         .await
@@ -68,8 +71,24 @@ async fn main() {
         world.build_locations();
 
         if handle_input_result.shot {
-            let _card = deck.draw_card();
+            let card = deck.draw_card();
+            if let Some(card) = card {
+                let bullet = bullet::Bullet::new(
+                    player.pos,
+                    player.direction,
+                    player.weapon.bullet_speed,
+                    player.weapon.range,
+                    card,
+                );
+                bullets.push(bullet);
+            }
         }
+
+        // let mut bullets_to_remove = Vec::new();
+        bullets
+            .par_iter_mut()
+            .for_each(|bullet| bullet.update(delta));
+        bullets.retain(bullet::Bullet::should_remove);
 
         if mq::is_key_pressed(mq::KeyCode::R) {
             deck.combine();
@@ -77,6 +96,9 @@ async fn main() {
 
         world.draw(&player, scale);
         player.draw(scale);
+        for bullet in bullets.iter() {
+            bullet.draw(&player, scale);
+        }
         deck.draw(scale);
         mouse_info.draw(scale);
 

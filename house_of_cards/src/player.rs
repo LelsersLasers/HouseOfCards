@@ -62,7 +62,7 @@ impl Player {
         aim_vec = aim_vec.normalize_or_zero();
 
         // update player position
-        let speed = consts::PLAYER_SPEED * delta;
+        let speed = consts::PLAYER_SPEED * delta * self.weapon.movement_speed_modifier;
         self.pos += movement * speed;
 
         // update player direction

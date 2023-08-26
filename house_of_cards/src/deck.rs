@@ -58,20 +58,20 @@ impl Card {
         mq::Rect::new(x, y, card_width, card_height)
     }
 
-    fn is_red(&self) -> bool {
+    pub fn is_red(&self) -> bool {
         match self.suit {
             Suit::Hearts | Suit::Diamonds => true,
             Suit::Spades | Suit::Clubs => false,
             Suit::Joker | Suit::Back => self.value == 0,
         }
     }
-    fn is_black(&self) -> bool {
-        match self.suit {
-            Suit::Hearts | Suit::Diamonds => false,
-            Suit::Spades | Suit::Clubs => true,
-            Suit::Joker | Suit::Back => self.value == 1,
-        }
-    }
+    // pub fn is_black(&self) -> bool {
+    //     match self.suit {
+    //         Suit::Hearts | Suit::Diamonds => false,
+    //         Suit::Spades | Suit::Clubs => true,
+    //         Suit::Joker | Suit::Back => self.value == 1,
+    //     }
+    // }
 
     fn is_face(&self) -> bool {
         self.value > 10
