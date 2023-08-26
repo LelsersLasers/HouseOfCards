@@ -1,9 +1,7 @@
-use macroquad::rand::ChooseRandom;
 use macroquad::prelude as mq;
+use macroquad::rand::ChooseRandom;
 
-use crate::{consts, colors};
-
-
+use crate::{colors, consts};
 
 #[derive(Clone, Copy)]
 enum Suit {
@@ -11,21 +9,18 @@ enum Suit {
     Hearts,
     Clubs,
     Diamonds,
-    Joker
+    Joker,
 }
 
 #[derive(Clone, Copy)]
 pub struct Card {
     suit: Suit,
-    value: u8
+    value: u8,
 }
 
 impl Card {
     fn new(suit: Suit, value: u8) -> Self {
-        Self {
-            suit,
-            value
-        }
+        Self { suit, value }
     }
 
     fn is_red(&self) -> bool {
@@ -75,7 +70,7 @@ impl DiscardCardDrawInfo {
 
 pub struct Deck {
     cards: Vec<Card>,
-    discard: Vec<DiscardCardDrawInfo>
+    discard: Vec<DiscardCardDrawInfo>,
 }
 
 impl Deck {
@@ -91,12 +86,7 @@ impl Deck {
 
         let discard = Vec::with_capacity(54);
 
-
-
-        Self {
-            cards,
-            discard,
-        }
+        Self { cards, discard }
     }
 
     pub fn draw_card(&mut self) -> Option<Card> {
@@ -108,7 +98,11 @@ impl Deck {
     }
 
     pub fn combine(&mut self) {
-        let mut discard_cards = self.discard.iter().map(|discard_card| discard_card.card).collect::<Vec<_>>();
+        let mut discard_cards = self
+            .discard
+            .iter()
+            .map(|discard_card| discard_card.card)
+            .collect::<Vec<_>>();
         discard_cards.reverse();
         self.cards.append(&mut discard_cards);
 
@@ -123,44 +117,100 @@ impl Deck {
         // Draw stack of cards in top right corner
         // Draw discard pile on the left of the stack
 
+        let deck_spacing_outside = consts::DECK_SPACING_OUTSIDE * scale;
+        let deck_spacing_inside = consts::DECK_SPACING_INSIDE * scale;
+
         let deck_width = consts::DECK_WIDTH * scale;
         let deck_height = consts::DECK_HEIGHT * scale;
-        let deck_spacing = consts::DECK_SPACING * scale;
+
+        let deck_outline_width = deck_width + 2.0 * deck_spacing_inside;
+        let deck_outline_height = deck_height + 2.0 * deck_spacing_inside;
+
         let deck_thickness = consts::DECK_THICKNESS * scale;
 
-        let top_left = mq::Vec2::new(
-            mq::screen_width() - (deck_width + deck_spacing),
-            deck_spacing,
+        let cards_outline_corner = mq::Vec2::new(
+            mq::screen_width() - (deck_spacing_outside + deck_outline_width),
+            deck_spacing_outside,
         );
 
-        let discard_top_left = mq::Vec2::new(
-            top_left.x - (deck_width + deck_spacing),
-            top_left.y,
-        );
-        let discard_top_left_center = discard_top_left + mq::Vec2::new(deck_width / 2.0, deck_height / 2.0);
+        let cards_corner =
+            cards_outline_corner + mq::Vec2::new(deck_spacing_inside, deck_spacing_inside);
 
-        if self.cards.is_empty() {
-            mq::draw_rectangle(top_left.x, top_left.y, deck_width, deck_height, colors::NORD3);
-            mq::draw_rectangle_lines(top_left.x, top_left.y, deck_width, deck_height, deck_thickness, colors::NORD1);
-        } else {
-            mq::draw_rectangle(top_left.x, top_left.y, deck_width, deck_height, colors::NORD6);
-            mq::draw_rectangle_lines(top_left.x, top_left.y, deck_width, deck_height, deck_thickness, colors::NORD4);
+        mq::draw_rectangle(
+            cards_outline_corner.x,
+            cards_outline_corner.y,
+            deck_outline_width,
+            deck_outline_height,
+            colors::NORD3_ALPHA,
+        );
+        mq::draw_rectangle_lines(
+            cards_outline_corner.x,
+            cards_outline_corner.y,
+            deck_outline_width,
+            deck_outline_height,
+            deck_thickness,
+            colors::NORD1,
+        );
+
+        if !self.cards.is_empty() {
+            mq::draw_rectangle(
+                cards_corner.x,
+                cards_corner.y,
+                deck_width,
+                deck_height,
+                colors::NORD6,
+            );
+            mq::draw_rectangle_lines(
+                cards_corner.x,
+                cards_corner.y,
+                deck_width,
+                deck_height,
+                deck_thickness,
+                colors::NORD4,
+            );
+            // TODO: red line pattern
         }
 
-        mq::draw_rectangle(discard_top_left.x, discard_top_left.y, deck_width, deck_height, colors::NORD3);
-        mq::draw_rectangle_lines(discard_top_left.x, discard_top_left.y, deck_width, deck_height, deck_thickness, colors::NORD1);
+        let discard_outline_corner = mq::Vec2::new(
+            cards_outline_corner.x - (deck_spacing_outside + deck_outline_width),
+            deck_spacing_outside,
+        );
 
-        for card in &self.discard {
+        let discord_corner =
+            discard_outline_corner + mq::Vec2::new(deck_spacing_inside, deck_spacing_inside);
+        let discard_center = discard_outline_corner
+            + mq::Vec2::new(deck_outline_width / 2.0, deck_outline_height / 2.0);
+
+        mq::draw_rectangle(
+            discard_outline_corner.x,
+            discard_outline_corner.y,
+            deck_outline_width,
+            deck_outline_height,
+            colors::NORD3_ALPHA,
+        );
+        mq::draw_rectangle_lines(
+            discard_outline_corner.x,
+            discard_outline_corner.y,
+            deck_outline_width,
+            deck_outline_height,
+            deck_thickness,
+            colors::NORD1,
+        );
+
+        let start_index = self.discard.len().saturating_sub(consts::DISCARD_TO_DRAW);
+        for i in start_index..self.discard.len() {
+            let card = &self.discard[i];
             mq::draw_rectangle_ex(
-                discard_top_left_center.x, discard_top_left_center.y, deck_width, deck_height,
+                discard_center.x,
+                discard_center.y,
+                deck_width,
+                deck_height,
                 mq::DrawRectangleParams {
                     color: colors::NORD6,
                     rotation: card.rotation,
                     offset: card.offset,
-                    // ..Default::default()
-                }
+                },
             );
         }
-        
     }
 }

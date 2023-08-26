@@ -41,7 +41,6 @@ async fn main() {
     let mut mouse_info = mouse::MouseInfo::new();
     mq::show_mouse(false);
 
-
     loop {
         mq::clear_background(consts::BACKGROUND_COLOR);
 
@@ -71,12 +70,10 @@ async fn main() {
             deck.combine();
         }
 
-
         world.draw(&player, scale);
         player.draw(scale);
         deck.draw(scale);
         mouse_info.draw(scale);
-
 
         {
             let fps = 1.0 / delta;
