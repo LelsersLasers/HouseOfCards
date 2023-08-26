@@ -3,6 +3,7 @@ use macroquad::prelude as mq;
 
 mod colors;
 mod consts;
+mod deck;
 mod mouse;
 mod player;
 mod world;

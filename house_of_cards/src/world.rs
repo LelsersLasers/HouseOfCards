@@ -4,7 +4,7 @@ use std::collections::HashMap;
 
 use crate::{colors, consts, player};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Clone, Copy, Eq, PartialEq)]
 pub enum Tile {
     Red,
     Orange,
