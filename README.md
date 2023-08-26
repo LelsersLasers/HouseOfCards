@@ -35,3 +35,8 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 	- Settings
 		- ?
 	- Game
+
+## Credits
+
+- Pixel Art Cards: https://www.reddit.com/r/PixelArt/comments/i1t1gn/pixel_art_playing_card_designs_created_in_aseprite/
+    - Converted to Nord palette using: https://ign.schrodinger-hat.it/
