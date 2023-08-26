@@ -33,6 +33,8 @@ async fn main() {
     let mut world = world::World::new();
     world.update_locations_to_build(&player, WINDOW_START_SIZE as f32);
 
+    let mut deck = deck::Deck::new();
+
     let mut old_width = mq::screen_width();
     let mut old_height = mq::screen_height();
 
@@ -62,18 +64,26 @@ async fn main() {
         }
         world.build_locations();
 
+        if mq::is_key_pressed(mq::KeyCode::Space) {
+            deck.draw_card();
+        }
+        if mq::is_key_pressed(mq::KeyCode::C) {
+            deck.combine();
+        }
+
 
         world.draw(&player, scale);
         player.draw(scale);
+        deck.draw(scale);
         mouse_info.draw(scale);
 
 
         {
             let fps = 1.0 / delta;
             let text = format!("FPS: {:.0}", fps);
-            let x = scale * 0.02;
-            let y = scale * (0.02 + 0.075 / 2.0);
-            let font_size = scale * 0.075;
+            let x = scale * consts::FPS_SPACING;
+            let y = scale * (consts::FPS_SPACING + consts::FPS_FONT_SIZE / 2.0);
+            let font_size = scale * consts::FPS_FONT_SIZE;
             let color = colors::NORD6;
 
             mq::draw_text(&text, x, y, font_size, color);

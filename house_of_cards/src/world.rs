@@ -179,8 +179,8 @@ impl World {
 
         self.locations_to_build.clear();
 
-        for x in start_x_floor..end_x_ceil {
-            for y in start_y_floor..end_y_ceil {
+        for x in (start_x_floor - 1)..(end_x_ceil + 1) {
+            for y in (start_y_floor - 1)..(end_y_ceil + 1) {
                 let has_tile = self.tiles.contains_key(&(x, y));
                 if !has_tile {
                     // self.place_tile((x, y));

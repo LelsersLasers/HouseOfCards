@@ -75,7 +75,7 @@ impl Player {
         // player: circle
         // player direction: triangle
 
-        let player_size = consts::PLAYER_SIZE * scale / consts::TILES_PER_SCALE as f32;
+        let player_size = consts::PLAYER_SIZE * scale;
         let player_position = mq::Vec2::new(mq::screen_width() / 2.0, mq::screen_height() / 2.0);
         mq::draw_circle(
             player_position.x,

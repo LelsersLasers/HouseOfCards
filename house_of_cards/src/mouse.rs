@@ -36,8 +36,8 @@ impl MouseInfo {
     pub fn draw(&self, scale: f32) {
         // crosshair
         if self.show || self.active {
-            let crosshair_size = scale * 0.02;
-            let crosshair_thickness = scale * 0.002;
+            let crosshair_size = scale * consts::CROSSHAIR_SIZE;
+            let crosshair_thickness = scale * consts::CROSSHAIR_THICKNESS;
 
             let crosshair_x = self.last_pos.x;
             let crosshair_y = self.last_pos.y;
