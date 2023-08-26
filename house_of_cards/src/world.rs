@@ -244,7 +244,7 @@ impl World {
         }
 
         neighbors
-        
+
         // use par_iter
         // (-range..=range)
         //     .into_par_iter()

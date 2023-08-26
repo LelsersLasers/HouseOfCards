@@ -1,5 +1,6 @@
 use macroquad::prelude as mq;
 use macroquad::rand::ChooseRandom;
+use rayon::prelude::*;
 
 use crate::{colors, consts};
 
@@ -86,7 +87,9 @@ impl Deck {
 
         let discard = Vec::with_capacity(54);
 
-        Self { cards, discard }
+        let mut deck = Self { cards, discard };
+        deck.shuffle();
+        deck
     }
 
     pub fn draw_card(&mut self) -> Option<Card> {
@@ -100,7 +103,7 @@ impl Deck {
     pub fn combine(&mut self) {
         let mut discard_cards = self
             .discard
-            .iter()
+            .par_iter()
             .map(|discard_card| discard_card.card)
             .collect::<Vec<_>>();
         discard_cards.reverse();
@@ -160,6 +163,49 @@ impl Deck {
                 deck_height,
                 colors::NORD6,
             );
+
+            // red diagonal lines
+            let line_spacing = deck_width / (consts::DECK_DESIGN_COUNT as f32 / 2.0 + 0.5);
+            let line_thickness = deck_thickness / 2.0;
+            let line_slope = -deck_height / deck_width;
+
+            let mut x = cards_corner.x + line_spacing;
+
+            // while x <= cards_corner.x + deck_width {
+            for _ in 0..consts::DECK_DESIGN_COUNT {
+                let mut start = mq::Vec2::new(x, cards_corner.y);
+                let delta_x = cards_corner.x - x;
+                let mut end = mq::Vec2::new(cards_corner.x, cards_corner.y + delta_x * line_slope);
+
+                if start.x > cards_corner.x + deck_width {
+                    let dx = start.x - (cards_corner.x + deck_width);
+                    let dy = dx * line_slope;
+                    start.x = cards_corner.x + deck_width;
+                    start.y -= dy;
+                }
+
+                if end.y > cards_corner.y + deck_height {
+                    let dy = end.y - (cards_corner.y + deck_height);
+                    let dx = dy / line_slope;
+                    end.y = cards_corner.y + deck_height;
+                    end.x -= dx;
+                }
+
+                start += mq::Vec2::new(-line_thickness, line_slope * -line_thickness) / 2.0;
+                end += mq::Vec2::new(line_thickness, line_slope * line_thickness) / 2.0;
+
+                mq::draw_line(
+                    start.x,
+                    start.y,
+                    end.x,
+                    end.y,
+                    line_thickness,
+                    colors::NORD11,
+                );
+
+                x += line_spacing;
+            }
+
             mq::draw_rectangle_lines(
                 cards_corner.x,
                 cards_corner.y,
@@ -168,7 +214,6 @@ impl Deck {
                 deck_thickness,
                 colors::NORD4,
             );
-            // TODO: red line pattern
         }
 
         let discard_outline_corner = mq::Vec2::new(
@@ -176,8 +221,6 @@ impl Deck {
             deck_spacing_outside,
         );
 
-        let discord_corner =
-            discard_outline_corner + mq::Vec2::new(deck_spacing_inside, deck_spacing_inside);
         let discard_center = discard_outline_corner
             + mq::Vec2::new(deck_outline_width / 2.0, deck_outline_height / 2.0);
 
@@ -211,6 +254,12 @@ impl Deck {
                     offset: card.offset,
                 },
             );
+
+            /* TODO: draw card face
+                - Number
+                - Suit
+                - Color
+            */
         }
     }
 }

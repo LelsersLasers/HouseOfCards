@@ -23,6 +23,7 @@ pub const DECK_SPACING_INSIDE: f32 = 0.02; // scale
 pub const DECK_WIDTH: f32 = 0.12; // scale
 pub const DECK_HEIGHT: f32 = 0.16; // scale
 pub const DECK_THICKNESS: f32 = 0.01; // scale
+pub const DECK_DESIGN_COUNT: u32 = 5;
 
 pub const DISCARD_ROTATION: f32 = 0.1;
 pub const DISCARD_OFFSET: f32 = 0.05;
