@@ -21,7 +21,10 @@ impl MouseInfo {
 
     pub fn update(&mut self, delta: f32) {
         let current_pos = mq::mouse_position().into();
-        if current_pos != self.last_pos || mq::is_mouse_button_down(mq::MouseButton::Left) {
+        if current_pos != self.last_pos
+            || mq::is_mouse_button_down(mq::MouseButton::Left)
+            || mq::is_mouse_button_down(mq::MouseButton::Right)
+        {
             self.time_since_idle = 0.0;
             self.active = true;
         } else {

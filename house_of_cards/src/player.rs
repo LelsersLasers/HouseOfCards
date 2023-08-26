@@ -29,20 +29,37 @@ impl Player {
     ) -> HandleInputResult {
         // WASD keys to move (no arrow keys)
         // diagonal movement is allowed
-        let mut movement = mq::Vec2::ZERO;
-        if mq::is_key_down(mq::KeyCode::W) {
-            movement.y -= 1.0;
-        }
-        if mq::is_key_down(mq::KeyCode::S) {
-            movement.y += 1.0;
-        }
-        if mq::is_key_down(mq::KeyCode::A) {
-            movement.x -= 1.0;
-        }
-        if mq::is_key_down(mq::KeyCode::D) {
-            movement.x += 1.0;
-        }
-        movement = movement.normalize_or_zero();
+
+        let movement = (if mq::is_mouse_button_down(mq::MouseButton::Right) {
+            let mouse_pos = mouse_info.get_last_pos();
+            let mouse_pos_relative_to_center =
+                mouse_pos - mq::Vec2::new(mq::screen_width() / 2.0, mq::screen_height() / 2.0);
+            let angle = mouse_pos_relative_to_center
+                .y
+                .atan2(mouse_pos_relative_to_center.x);
+            println!("angle: {}", angle);
+            mq::Vec2::new(angle.cos(), angle.sin())
+        } else {
+            let mut movement = mq::Vec2::ZERO;
+            if mq::is_key_down(mq::KeyCode::W) {
+                movement.y -= 1.0;
+            }
+            if mq::is_key_down(mq::KeyCode::S) {
+                movement.y += 1.0;
+            }
+            if mq::is_key_down(mq::KeyCode::A) {
+                movement.x -= 1.0;
+            }
+            if mq::is_key_down(mq::KeyCode::D) {
+                movement.x += 1.0;
+            }
+            movement
+        })
+        .normalize_or_zero();
+
+        // update player position
+        let speed = consts::PLAYER_SPEED * delta * self.weapon.movement_speed_modifier;
+        self.pos += movement * speed;
 
         // arrow keys to aim
         // diagonal aiming is allowed
@@ -60,10 +77,6 @@ impl Player {
             aim_vec.x += 1.0;
         }
         aim_vec = aim_vec.normalize_or_zero();
-
-        // update player position
-        let speed = consts::PLAYER_SPEED * delta * self.weapon.movement_speed_modifier;
-        self.pos += movement * speed;
 
         // update player direction
         if aim_vec != mq::Vec2::ZERO {

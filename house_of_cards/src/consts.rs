@@ -10,7 +10,7 @@ pub const BACKGROUND_COLORS: [mq::Color; 6] = colors::SURFACE_COLORS;
 
 pub const TILES_PER_SCALE: u32 = 12;
 
-pub const PLAYER_SPEED: f32 = 1.5; // tiles per second
+pub const PLAYER_SPEED: f32 = 1.25; // tiles per second
 pub const PLAYER_SIZE: f32 = 0.012; // scale
 
 pub const TIME_TO_MOUSE_IDLE: f32 = 2.5; // seconds
@@ -31,7 +31,7 @@ pub const DISCARD_TO_DRAW: usize = 5;
 pub const FPS_SPACING: f32 = 0.01; // scale
 pub const FPS_FONT_SIZE: f32 = 0.04; // scale
 
-pub const AR: weapon::Weapon = weapon::Weapon::new(5.0, 6.0, 1.0, 3.0);
+pub const AR: weapon::Weapon = weapon::Weapon::new(5.0, 12.0, 1.0, 7.5);
 
 pub const BULLET_SIZE: f32 = 0.005; // scale
 pub const BULLET_OUTLINE: f32 = 0.0005; // scale

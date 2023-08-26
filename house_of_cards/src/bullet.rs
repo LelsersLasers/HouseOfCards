@@ -56,6 +56,12 @@ impl Bullet {
                 colors::NORD0
             },
         );
-        mq::draw_circle_lines(draw_pos.x, draw_pos.y, scale * consts::BULLET_SIZE, scale * consts::BULLET_OUTLINE, colors::NORD4)
+        mq::draw_circle_lines(
+            draw_pos.x,
+            draw_pos.y,
+            scale * consts::BULLET_SIZE,
+            scale * consts::BULLET_OUTLINE,
+            colors::NORD4,
+        )
     }
 }
