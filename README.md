@@ -2,6 +2,12 @@
 
 Twin stick shooter using Rust and Macroquad with the theme of cards
 
+## Controls
+
+- Movement: WASD or hold right mouse button
+- Aim: arrow keys or mouse
+- Shoot: left click or space
+- Reload: R
 
 ## Planning
 

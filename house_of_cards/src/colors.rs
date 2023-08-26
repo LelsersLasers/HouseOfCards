@@ -1,3 +1,6 @@
+// ignore dead code warnings
+#![allow(dead_code)]
+
 use macroquad::prelude as mq;
 use macroquad::prelude::Color;
 
