@@ -3,9 +3,12 @@ pub struct Weapon {
     reload_time: f32, // seconds
     reloading: bool,
     pub range: f32,                   // tiles
-    pub movement_speed_modifier: f32, // multiplier to player movement speed
+    ms_modifier_walking: f32,
+    ms_modifier_shooting: f32,
+    
     time_until_next_shot: f32,        // seconds
     pub bullet_speed: f32,            // tiles per second
+
 }
 
 impl Weapon {
@@ -14,7 +17,8 @@ impl Weapon {
         fire_rate: f32,
         reload_time: f32,
         range: f32,
-        movement_speed_modifier: f32,
+        ms_modifier_walking: f32,
+        ms_modifier_shooting: f32,
         bullet_speed: f32,
     ) -> Self {
         Self {
@@ -22,9 +26,18 @@ impl Weapon {
             reload_time,
             reloading: false,
             range,
-            movement_speed_modifier,
+            ms_modifier_walking,
+            ms_modifier_shooting,
             time_until_next_shot: 0.0,
             bullet_speed,
+        }
+    }
+
+    pub fn get_ms_penalty(&self) -> f32 {
+        if self.can_shoot() {
+            self.ms_modifier_walking
+        } else {
+            self.ms_modifier_shooting
         }
     }
 

@@ -9,6 +9,15 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 - Shoot: left click or space
 - Reload: R
 
+## TODO
+
+- Enemies
+- Hitboxes
+- Camera soft follow
+- Player XP/levels
+- Power up selection
+- Other screens
+
 ## Planning
 
 - World

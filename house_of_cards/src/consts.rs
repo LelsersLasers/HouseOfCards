@@ -31,7 +31,7 @@ pub const DISCARD_TO_DRAW: usize = 5;
 pub const FPS_SPACING: f32 = 0.01; // scale
 pub const FPS_FONT_SIZE: f32 = 0.04; // scale
 
-pub const AR: weapon::Weapon = weapon::Weapon::new(5.0, 2.5, 12.0, 1.0, 7.5);
+pub const AR: weapon::Weapon = weapon::Weapon::new(5.0, 2.5, 12.0, 1.0, 0.75, 7.5);
 
 pub const BULLET_SIZE: f32 = 0.005; // scale
 pub const BULLET_OUTLINE: f32 = 0.0005; // scale

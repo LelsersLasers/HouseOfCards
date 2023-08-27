@@ -57,7 +57,7 @@ impl Player {
         .normalize_or_zero();
 
         // update player position
-        let speed = consts::PLAYER_SPEED * delta * self.weapon.movement_speed_modifier;
+        let speed = consts::PLAYER_SPEED * delta * self.weapon.get_ms_penalty();
         self.pos += movement * speed;
 
         // arrow keys to aim
