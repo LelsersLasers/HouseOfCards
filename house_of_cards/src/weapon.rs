@@ -2,13 +2,12 @@ pub struct Weapon {
     fire_rate: f32,   // shots per second
     reload_time: f32, // seconds
     reloading: bool,
-    pub range: f32,                   // tiles
+    pub range: f32, // tiles
     ms_modifier_walking: f32,
     ms_modifier_shooting: f32,
-    
-    time_until_next_shot: f32,        // seconds
-    pub bullet_speed: f32,            // tiles per second
 
+    time_until_next_shot: f32, // seconds
+    pub bullet_speed: f32,     // tiles per second
 }
 
 impl Weapon {

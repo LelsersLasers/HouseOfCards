@@ -4,8 +4,10 @@ mod bullet;
 mod colors;
 mod consts;
 mod deck;
+mod enemy;
 mod mouse;
 mod player;
+mod util;
 mod weapon;
 mod world;
 
@@ -33,6 +35,8 @@ async fn main() {
 
     let mut world = world::World::new();
     world.update_locations_to_build(&player, consts::WINDOW_START_SIZE as f32);
+
+    let mut enemy_manager = enemy::EnemyManager::new();
 
     let mut bullets: Vec<bullet::Bullet> = Vec::new();
 
@@ -86,6 +90,8 @@ async fn main() {
         bullets.iter_mut().for_each(|bullet| bullet.update(delta));
         bullets.retain(bullet::Bullet::should_remove);
 
+        enemy_manager.update(&player, delta);
+
         if mq::is_key_pressed(mq::KeyCode::R) && !deck.is_full() {
             deck.combine();
             player.weapon.reload();
@@ -93,6 +99,7 @@ async fn main() {
 
         world.draw(&player, scale);
         player.draw(scale);
+        enemy_manager.draw(&player, scale);
         for bullet in bullets.iter() {
             bullet.draw(&player, scale);
         }

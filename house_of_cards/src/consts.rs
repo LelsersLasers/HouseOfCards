@@ -32,6 +32,14 @@ pub const FPS_SPACING: f32 = 0.01; // scale
 pub const FPS_FONT_SIZE: f32 = 0.04; // scale
 
 pub const AR: weapon::Weapon = weapon::Weapon::new(5.0, 2.5, 12.0, 1.0, 0.75, 7.5);
+pub const SWORD: weapon::Weapon = weapon::Weapon::new(1.0, 0.0, 0.25, 1.0, 0.75, -1.0);
 
 pub const BULLET_SIZE: f32 = 0.005; // scale
 pub const BULLET_OUTLINE: f32 = 0.0005; // scale
+
+pub const ENEMY_SIZE: f32 = 0.02; // scale
+pub const ENEMY_SPEED: f32 = PLAYER_SPEED * 2.0 / 3.0; // tiles per second
+
+pub const ENEMY_SPAWN_RATE: f32 = 0.5; // seconds
+pub const ENEMY_SPAWN_RADIUS: f32 = TILES_PER_SCALE as f32 + 2.0; // tiles
+pub const ENEMY_WAVE_COUNTS: fn(i32) -> i32 = |wave| 5 + 5 * wave;
