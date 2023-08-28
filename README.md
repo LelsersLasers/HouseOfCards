@@ -11,6 +11,7 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 
 ## TODO
 
+- Auto reload?
 - Camera soft follow
 - Multiple tyles of enemies
 - Player XP/levels

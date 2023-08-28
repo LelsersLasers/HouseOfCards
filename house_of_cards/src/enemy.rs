@@ -213,8 +213,8 @@ impl EnemyManager {
 
         let enemy = Enemy::new(
             spawn_pos,
-            self.wave as f32,
-            self.wave as f32,
+            consts::ENEMY_WAVE_HP(self.wave),
+            consts::ENEMY_WAVE_DAMAGE(self.wave),
             consts::ENEMY_SPEED,
             EnemyType::Melee(MeleeAttack::new()),
         );
