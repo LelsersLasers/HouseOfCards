@@ -160,7 +160,7 @@ impl hitbox::Rectangle for Enemy {
 
 pub struct EnemyManager {
     pub enemies: Vec<Enemy>,
-    wave: i32,
+    pub wave: i32,
     enemies_left_to_spawn: i32, // not enemies.len()
     time_until_next_spawn: f32, // in seconds
 }

@@ -162,11 +162,23 @@ async fn main() {
         }
 
         {
+            let wave = enemy_manager.wave;
+            let text = format!("Wave: {}", wave);
+            let x = scale * consts::FPS_SPACING;
+            let font_size = scale * consts::FPS_FONT_SIZE;
+            let y = scale * (consts::FPS_SPACING + consts::FPS_FONT_SIZE / 2.0) + font_size * 1.05;
+            let color = colors::NORD6;
+
+            mq::draw_text(&text, x, y, font_size, color);
+        }
+
+        {
             let enemies_left = enemy_manager.enemies_left();
             let text = format!("Enemies left: {}", enemies_left);
             let x = scale * consts::FPS_SPACING;
             let font_size = scale * consts::FPS_FONT_SIZE;
-            let y = scale * (consts::FPS_SPACING + consts::FPS_FONT_SIZE / 2.0) + font_size * 1.05;
+            let y = scale * (consts::FPS_SPACING + consts::FPS_FONT_SIZE / 2.0)
+                + (font_size * 1.05) * 2.0;
             let color = colors::NORD6;
 
             mq::draw_text(&text, x, y, font_size, color);

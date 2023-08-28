@@ -73,7 +73,21 @@ impl Card {
     // }
 
     pub fn damage(&self) -> f32 {
-        self.value as f32
+        match self {
+            Self {
+                suit: Suit::Joker,
+                value,
+            } => -5.0,
+            Self { suit: _, value } => {
+                if self.is_face() {
+                    10.0
+                } else if self.is_ace() {
+                    f32::INFINITY
+                } else {
+                    *value as f32
+                }
+            }
+        }
     }
 
     fn is_face(&self) -> bool {

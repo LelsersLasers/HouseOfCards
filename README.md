@@ -11,13 +11,23 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 
 ## TODO
 
-- Simple melee enemies
 - Camera soft follow
 - Multiple tyles of enemies
 - Player XP/levels
 - Power up selection
 - Other screens
+- Particles?
 - Spatial hash for collision detection?
+
+## Extra mechanics
+
+- End of wave
+    - If max hp => gain +1 max hp (and +1 hp)
+    - Else gain +1 hp
+- Damage
+    - Jokers => -5.0
+    - Face: 10
+    - Ace: One shot
 
 ## Planning
 
