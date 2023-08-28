@@ -13,6 +13,8 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 
 - Auto reload?
 - Death screen + reset
+- Score system
+- Font
 - Camera soft follow
 - Multiple tyles of enemies
 - Player XP/levels
@@ -20,6 +22,7 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 - Other screens
 - Particles?
 - Spatial hash for collision detection?
+- Touch controls?
 
 ## Extra mechanics
 
