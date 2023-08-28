@@ -1,10 +1,10 @@
 use macroquad::prelude as mq;
 
-use crate::{colors, consts, player, util, weapon};
+use crate::{colors, consts, player, util, weapon, hitbox};
 
 pub struct Enemy {
     pos: mq::Vec2, // tiles
-    health: f32,
+    pub health: f32,
     max_health: f32,
     damage: f32,
     speed: f32,     // tiles per second
@@ -60,8 +60,26 @@ impl Enemy {
     }
 }
 
+impl hitbox::Rectangle for Enemy {
+    fn position(&self) -> mq::Vec2 {
+        self.pos
+    }
+
+    fn width(&self) -> f32 {
+        consts::ENEMY_SIZE * 2.0 * consts::TILES_PER_SCALE as f32
+    }
+
+    fn height(&self) -> f32 {
+        consts::ENEMY_SIZE * 2.0 * consts::TILES_PER_SCALE as f32
+    }
+
+    fn rotation(&self) -> f32 {
+        self.direction
+    }
+}
+
 pub struct EnemyManager {
-    enemies: Vec<Enemy>,
+    pub enemies: Vec<Enemy>,
     wave: i32,
     enemies_left_to_spawn: i32,  // not enemies.len()
     time_until_next_spawn: f32, // in seconds
@@ -78,6 +96,7 @@ impl EnemyManager {
     }
 
     pub fn update(&mut self, player: &player::Player, delta: f32) {
+        self.enemies.retain(|enemy| enemy.health > 0.0);
         for enemy in self.enemies.iter_mut() {
             // if enemy.update(player, delta) {
             //     player.take_damage(enemy.damage);

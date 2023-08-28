@@ -10,6 +10,7 @@ mod player;
 mod util;
 mod weapon;
 mod world;
+mod hitbox;
 
 /*
     Scale is the size of the window, in pixels.
@@ -88,7 +89,17 @@ async fn main() {
         }
 
         bullets.iter_mut().for_each(|bullet| bullet.update(delta));
-        bullets.retain(bullet::Bullet::should_remove);
+
+        for bullet in bullets.iter_mut() {
+            for enemy in enemy_manager.enemies.iter_mut() {
+                if hitbox::rectangle_circle_collide(enemy, bullet) {
+                    enemy.health -= bullet.card.damage();
+                    bullet.remove();
+                }
+            }
+        }
+
+        bullets.retain(bullet::Bullet::should_keep);
 
         enemy_manager.update(&player, delta);
 

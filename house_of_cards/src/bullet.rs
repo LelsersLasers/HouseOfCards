@@ -1,6 +1,6 @@
 use macroquad::prelude as mq;
 
-use crate::{colors, consts, deck, player};
+use crate::{colors, consts, deck, player, hitbox};
 
 // TODO: make play nice with changing screen size
 pub struct Bullet {
@@ -9,7 +9,7 @@ pub struct Bullet {
     direction: f32,          // in radians
     speed: f32,              // in tiles per second
     distance_to_travel: f32, // in tiles
-    card: deck::Card,
+    pub card: deck::Card,
     alive: bool,
 }
 
@@ -32,15 +32,21 @@ impl Bullet {
         }
     }
 
-    pub fn should_remove(&self) -> bool {
-        !self.alive
+    pub fn should_keep(&self) -> bool {
+        self.alive
+    }
+
+    pub fn remove(&mut self) {
+        self.alive = false;
     }
 
     pub fn update(&mut self, delta: f32) {
         let direction_vec = mq::Vec2::new(self.direction.cos(), self.direction.sin());
         self.pos += direction_vec * self.speed * delta;
         let distance_traveled = self.pos.distance(self.start_pos);
-        self.alive = distance_traveled >= self.distance_to_travel;
+        if distance_traveled >= self.distance_to_travel {
+            self.remove();
+        }
     }
 
     pub fn draw(&self, player: &player::Player, scale: f32) {
@@ -63,5 +69,15 @@ impl Bullet {
             scale * consts::BULLET_OUTLINE,
             colors::NORD4,
         )
+    }
+}
+
+impl hitbox::Circle for Bullet {
+    fn center(&self) -> mq::Vec2 {
+        self.pos
+    }
+
+    fn radius(&self) -> f32 {
+        consts::BULLET_SIZE * consts::TILES_PER_SCALE as f32
     }
 }
