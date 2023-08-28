@@ -12,12 +12,12 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 ## TODO
 
 - Simple melee enemies
-- Hitboxes
 - Camera soft follow
 - Multiple tyles of enemies
 - Player XP/levels
 - Power up selection
 - Other screens
+- Spatial hash for collision detection?
 
 ## Planning
 
