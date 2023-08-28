@@ -33,6 +33,7 @@ async fn main() {
     mq::rand::srand(instant::now() as u64);
 
     let mut player = player::Player::new(consts::AR);
+    let mut score = 0;
 
     let mut world = world::World::new();
     world.update_locations_to_build(&player, consts::WINDOW_START_SIZE as f32);
@@ -104,12 +105,15 @@ async fn main() {
 
         bullets.retain(bullet::Bullet::should_keep);
 
-        let wave_finished = enemy_manager.update(&mut player, delta);
+        let enemy_manager_update_result = enemy_manager.update(&mut player, delta);
+        score += enemy_manager_update_result.enemies_killed;
 
         // heal or increase max health
-        if wave_finished {
+        if enemy_manager_update_result.wave_finished {
             player.health += 1.0;
             player.max_health = player.max_health.max(player.health);
+
+            score += consts::ENEMY_WAVE_SCORE(enemy_manager.wave);
         }
 
         if mq::is_key_pressed(mq::KeyCode::R) && !deck.is_full() {
@@ -178,6 +182,17 @@ async fn main() {
             let font_size = scale * consts::FPS_FONT_SIZE;
             let y = scale * (consts::FPS_SPACING + consts::FPS_FONT_SIZE / 2.0)
                 + (font_size * 1.05) * 2.0;
+            let color = colors::NORD6;
+
+            mq::draw_text(&text, x, y, font_size, color);
+        }
+
+        {
+            let text = format!("Score: {}", score);
+            let x = scale * consts::FPS_SPACING;
+            let font_size = scale * consts::FPS_FONT_SIZE;
+            let y = scale * (consts::FPS_SPACING + consts::FPS_FONT_SIZE / 2.0)
+                + (font_size * 1.05) * 3.0;
             let color = colors::NORD6;
 
             mq::draw_text(&text, x, y, font_size, color);

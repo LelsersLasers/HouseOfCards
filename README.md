@@ -12,7 +12,6 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 ## TODO
 
 - Death screen + reset
-- Score system
 - Font
 - Camera soft follow
 - Multiple tyles of enemies
@@ -32,6 +31,9 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
     - Jokers => -5.0
     - Face: 10
     - Ace: One shot
+- Score
+	- +1 point per enemy killed
+	- Wave^2 points per wave completed
 
 ## Planning
 

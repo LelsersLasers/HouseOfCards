@@ -158,6 +158,11 @@ impl hitbox::Rectangle for Enemy {
     }
 }
 
+pub struct EnemyManagerUpdateResult {
+    pub wave_finished: bool,
+    pub enemies_killed: i32,
+}
+
 pub struct EnemyManager {
     pub enemies: Vec<Enemy>,
     pub wave: i32,
@@ -179,8 +184,11 @@ impl EnemyManager {
         self.enemies_left_to_spawn + self.enemies.len() as i32
     }
 
-    pub fn update(&mut self, player: &mut player::Player, delta: f32) -> bool {
+    pub fn update(&mut self, player: &mut player::Player, delta: f32) -> EnemyManagerUpdateResult {
+        let previous_enemy_count = self.enemies.len() as i32;
         self.enemies.retain(|enemy| enemy.health > 0.0);
+        let enemies_killed = previous_enemy_count - self.enemies.len() as i32;
+
         for enemy in self.enemies.iter_mut() {
             // if enemy.update(player, delta) {
             //     player.take_damage(enemy.damage);
@@ -194,15 +202,22 @@ impl EnemyManager {
 
         if self.enemies.is_empty() && self.enemies_left_to_spawn <= 0 {
             self.wave += 1;
-            self.enemies_left_to_spawn = consts::ENEMY_WAVE_COUNTS(self.wave);
+            self.enemies_left_to_spawn = consts::ENEMY_WAVE_COUNT(self.wave);
             self.time_until_next_spawn = 1.0 / consts::ENEMY_SPAWN_RATE;
-            return true;
+            return EnemyManagerUpdateResult {
+                wave_finished: true,
+                enemies_killed,
+            };
         } else if self.time_until_next_spawn <= 0.0 && self.enemies_left_to_spawn > 0 {
             self.spawn_enemy(player);
             self.time_until_next_spawn = 1.0 / consts::ENEMY_SPAWN_RATE;
         }
 
-        false
+
+        EnemyManagerUpdateResult {
+            wave_finished: false,
+            enemies_killed,
+        }
     }
 
     fn spawn_enemy(&mut self, player: &player::Player) {

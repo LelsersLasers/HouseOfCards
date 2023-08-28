@@ -52,15 +52,14 @@ pub const ENEMY_MELEE_RELOAD_TIME: f32 = 1.0; // seconds
 
 pub const ENEMY_MELEE_CHARGE_THICKNESS: f32 = 0.005; // scale
 
-pub const ENEMY_SPAWN_RATE: f32 = 2.0; // enemies / seconds
+pub const ENEMY_SPAWN_RATE: f32 = 3.0; // enemies / seconds
 pub const ENEMY_SPAWN_RADIUS: f32 = TILES_PER_SCALE as f32 + 2.0; // tiles
 
-// Note: wave starts at 1
-pub const ENEMY_WAVE_COUNTS: fn(i32) -> i32 = |wave| 10 + 5 * (wave - 1);
+// Note: wave spawning starts at 1
+pub const ENEMY_WAVE_COUNT: fn(i32) -> i32 = |wave| 5 + 5 * (wave - 1);
+pub const ENEMY_WAVE_SCORE: fn(i32) -> i32 = |wave| (wave - 1).pow(2);
 
-pub const ENEMY_WAVE_HP: fn(i32) -> f32 = |wave| 10.0 + 3.0 * (wave - 1) as f32;
-pub const ENEMY_WAVE_DAMAGE: fn(i32) -> f32 = |wave| 1.0 + 0.25 * (wave - 1) as f32;
-
-
+pub const ENEMY_WAVE_HP: fn(i32) -> f32 = |wave| 5.0 + 2.0 * (wave - 1) as f32;
+pub const ENEMY_WAVE_DAMAGE: fn(i32) -> f32 = |wave| 1.0 + 0.1 * (wave - 1) as f32;
 
 pub const AUTO_RELOAD: bool = true;
