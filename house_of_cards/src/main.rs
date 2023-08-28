@@ -85,6 +85,9 @@ async fn main() {
                     card,
                 );
                 bullets.push(bullet);
+            } else if consts::AUTO_RELOAD {
+                deck.combine();
+                player.weapon.reload();
             }
         }
 
@@ -105,12 +108,7 @@ async fn main() {
 
         // heal or increase max health
         if wave_finished {
-            if player.health == player.max_health {
-                player.max_health += 1.0;
-                player.health += 1.0;
-            } else {
-                player.health += 1.0;
-            }
+            player.max_health = player.max_health.max(player.health);
         }
 
         if mq::is_key_pressed(mq::KeyCode::R) && !deck.is_full() {

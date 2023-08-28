@@ -60,3 +60,7 @@ pub const ENEMY_WAVE_COUNTS: fn(i32) -> i32 = |wave| 10 + 5 * (wave - 1);
 
 pub const ENEMY_WAVE_HP: fn(i32) -> f32 = |wave| 10.0 + 3.0 * (wave - 1) as f32;
 pub const ENEMY_WAVE_DAMAGE: fn(i32) -> f32 = |wave| wave as f32;
+
+
+
+pub const AUTO_RELOAD: bool = true;

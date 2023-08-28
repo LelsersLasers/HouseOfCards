@@ -1,6 +1,6 @@
 use macroquad::prelude as mq;
 
-use crate::{colors, consts, hitbox, mouse, weapon};
+use crate::{colors, deck, consts, hitbox, mouse, weapon};
 
 pub struct HandleInputResult {
     pub moved: bool,
