@@ -46,7 +46,7 @@ pub const BULLET_OUTLINE: f32 = 0.0005; // scale
 pub const ENEMY_SIZE: f32 = 0.02; // scale
 pub const ENEMY_SPEED: f32 = PLAYER_SPEED * 2.0 / 3.0; // tiles per second
 
-pub const ENEMY_MELEE_RANGE: f32 = 0.75; // tiles
+pub const ENEMY_MELEE_RANGE: f32 = 0.5; // tiles
 pub const ENEMY_MELEE_CHARGE_TIME: f32 = 0.5; // seconds
 pub const ENEMY_MELEE_RELOAD_TIME: f32 = 1.0; // seconds
 
@@ -59,7 +59,7 @@ pub const ENEMY_SPAWN_RADIUS: f32 = TILES_PER_SCALE as f32 + 2.0; // tiles
 pub const ENEMY_WAVE_COUNTS: fn(i32) -> i32 = |wave| 10 + 5 * (wave - 1);
 
 pub const ENEMY_WAVE_HP: fn(i32) -> f32 = |wave| 10.0 + 3.0 * (wave - 1) as f32;
-pub const ENEMY_WAVE_DAMAGE: fn(i32) -> f32 = |wave| wave as f32;
+pub const ENEMY_WAVE_DAMAGE: fn(i32) -> f32 = |wave| 1.0 + 0.25 * (wave - 1) as f32;
 
 
 

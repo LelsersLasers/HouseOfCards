@@ -108,6 +108,7 @@ async fn main() {
 
         // heal or increase max health
         if wave_finished {
+            player.health += 1.0;
             player.max_health = player.max_health.max(player.health);
         }
 
