@@ -5,12 +5,12 @@ mod colors;
 mod consts;
 mod deck;
 mod enemy;
+mod hitbox;
 mod mouse;
 mod player;
 mod util;
 mod weapon;
 mod world;
-mod hitbox;
 
 /*
     Scale is the size of the window, in pixels.
@@ -101,7 +101,17 @@ async fn main() {
 
         bullets.retain(bullet::Bullet::should_keep);
 
-        enemy_manager.update(&player, delta);
+        let wave_finished = enemy_manager.update(&mut player, delta);
+
+        // heal or increase max health
+        if wave_finished {
+            if player.health == player.max_health {
+                player.max_health += 1.0;
+                player.health += 1.0;
+            } else {
+                player.health += 1.0;
+            }
+        }
 
         if mq::is_key_pressed(mq::KeyCode::R) && !deck.is_full() {
             deck.combine();
@@ -118,11 +128,45 @@ async fn main() {
         mouse_info.draw(scale);
 
         {
+            // Player HP bar
+            let bar_width = scale * consts::PLAYER_HP_BAR_WIDTH;
+            let bar_height = scale * consts::PLAYER_HP_BAR_HEIGHT;
+            let bar_thickness = scale * consts::PLAYER_HP_BAR_THICKNESS;
+
+            // center horizontally
+            let x = mq::screen_width() / 2.0 - bar_width / 2.0;
+            let y =
+                mq::screen_height() - bar_height / 2.0 - scale * consts::PLAYER_HP_BAR_BOT_OFFSET;
+
+            let hp = player.health;
+            let max_hp = player.max_health;
+            let hp_ratio = hp / max_hp;
+
+            // background
+            mq::draw_rectangle(x, y, bar_width, bar_height, colors::NORD6_ALPHA);
+            // hp
+            mq::draw_rectangle(x, y, bar_width * hp_ratio, bar_height, colors::NORD14);
+            // background outline
+            mq::draw_rectangle_lines(x, y, bar_width, bar_height, bar_thickness, colors::NORD6);
+        }
+
+        {
             let fps = 1.0 / delta;
             let text = format!("FPS: {:.0}", fps);
             let x = scale * consts::FPS_SPACING;
             let y = scale * (consts::FPS_SPACING + consts::FPS_FONT_SIZE / 2.0);
             let font_size = scale * consts::FPS_FONT_SIZE;
+            let color = colors::NORD6;
+
+            mq::draw_text(&text, x, y, font_size, color);
+        }
+
+        {
+            let enemies_left = enemy_manager.enemies_left();
+            let text = format!("Enemies left: {}", enemies_left);
+            let x = scale * consts::FPS_SPACING;
+            let font_size = scale * consts::FPS_FONT_SIZE;
+            let y = scale * (consts::FPS_SPACING + consts::FPS_FONT_SIZE / 2.0) + font_size * 1.05;
             let color = colors::NORD6;
 
             mq::draw_text(&text, x, y, font_size, color);

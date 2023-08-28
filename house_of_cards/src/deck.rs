@@ -73,7 +73,7 @@ impl Card {
     // }
 
     pub fn damage(&self) -> f32 {
-       self.value as f32
+        self.value as f32
     }
 
     fn is_face(&self) -> bool {

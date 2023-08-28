@@ -1,6 +1,6 @@
 use macroquad::prelude as mq;
 
-use crate::{colors, consts, mouse, weapon};
+use crate::{colors, consts, hitbox, mouse, weapon};
 
 pub struct HandleInputResult {
     pub moved: bool,
@@ -11,6 +11,8 @@ pub struct Player {
     pub pos: mq::Vec2,  // in tiles
     pub direction: f32, // in radians
     pub weapon: weapon::Weapon,
+    pub health: f32,
+    pub max_health: f32,
 }
 
 impl Player {
@@ -19,6 +21,8 @@ impl Player {
             pos: mq::Vec2::ZERO,
             direction: 0.0,
             weapon,
+            health: consts::PLAYER_MAX_HEALTH,
+            max_health: consts::PLAYER_MAX_HEALTH,
         }
     }
 
@@ -140,5 +144,15 @@ impl Player {
         );
 
         mq::draw_triangle(top_point, side_point_1, side_point_2, colors::NORD4);
+    }
+}
+
+impl hitbox::Circle for Player {
+    fn center(&self) -> mq::Vec2 {
+        self.pos
+    }
+
+    fn radius(&self) -> f32 {
+        consts::PLAYER_SIZE * consts::PLAYER_SIZE
     }
 }

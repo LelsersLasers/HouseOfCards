@@ -1,6 +1,6 @@
 use macroquad::prelude as mq;
 
-use crate::{colors, consts, deck, player, hitbox};
+use crate::{colors, consts, deck, hitbox, player};
 
 // TODO: make play nice with changing screen size
 pub struct Bullet {
