@@ -12,7 +12,7 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 
 ## TODO
 
-- 0.3.0
+- 0.2.0
     - Pause menu
 	- Camera soft follow
 - Else

@@ -9,6 +9,7 @@ mod game_state;
 mod hitbox;
 mod mouse;
 mod player;
+mod timer;
 mod util;
 mod weapon;
 mod world;
@@ -30,6 +31,7 @@ async fn play() {
     let mut score = 0;
 
     let mut time_counter = 0.0;
+    let mut fps_timer = timer::Timer::new_with_state(0.1, 1.0 / 60.0);
 
     let mut world = world::World::new();
     world.update_locations_to_build(&player, consts::WINDOW_START_SIZE as f32);
@@ -60,6 +62,10 @@ async fn play() {
 
         let delta = mq::get_frame_time();
         time_counter += delta;
+
+        if fps_timer.update(time_counter) {
+            fps_timer.update_state(delta);
+        }
 
         let scale = mq::screen_width().min(mq::screen_height());
 
@@ -166,9 +172,12 @@ async fn play() {
         }
 
         let texts = [
-            (0.05, format!("FPS: {:.0}", 1.0 / delta)),
+            (0.05, format!("FPS: {:.0}", 1.0 / fps_timer.get_state())),
             (-0.19, format!("Wave: {}", enemy_manager.wave)),
-            (0.05, format!("Enemies left: {}", enemy_manager.enemies_left())),
+            (
+                0.05,
+                format!("Enemies left: {}", enemy_manager.enemies_left()),
+            ),
             (0.05, format!("Score: {}", score)),
         ];
         let font_size = (scale * consts::FONT_SIZE).round() as u16;
