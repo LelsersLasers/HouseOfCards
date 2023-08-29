@@ -1,6 +1,6 @@
 use macroquad::prelude as mq;
 
-use crate::{colors, consts, deck, hitbox, player};
+use crate::{camera, colors, consts, deck, hitbox};
 
 // TODO: make play nice with changing screen size
 pub struct Bullet {
@@ -49,8 +49,8 @@ impl Bullet {
         }
     }
 
-    pub fn draw(&self, player: &player::Player, scale: f32) {
-        let draw_pos = (self.pos - player.pos) * scale / consts::TILES_PER_SCALE as f32
+    pub fn draw(&self, camera: &camera::Camera, scale: f32) {
+        let draw_pos = (self.pos - camera.pos) * scale / consts::TILES_PER_SCALE as f32
             + mq::Vec2::new(mq::screen_width() / 2.0, mq::screen_height() / 2.0);
         mq::draw_circle(
             draw_pos.x,

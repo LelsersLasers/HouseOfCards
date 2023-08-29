@@ -19,6 +19,8 @@ pub const PLAYER_HP_BAR_HEIGHT: f32 = 0.025; // scale
 pub const PLAYER_HP_BAR_BOT_OFFSET: f32 = 0.05; // scale
 pub const PLAYER_HP_BAR_THICKNESS: f32 = 0.0075; // scale
 
+pub const CAMERA_FOLLOW_SPEED: f32 = 0.9;
+
 pub const TIME_TO_MOUSE_IDLE: f32 = 2.5; // seconds
 
 pub const CROSSHAIR_SIZE: f32 = 0.02; // scale

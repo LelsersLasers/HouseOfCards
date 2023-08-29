@@ -1,6 +1,6 @@
 use macroquad::prelude as mq;
 
-use crate::{colors, consts, hitbox, player, util, weapon};
+use crate::{camera, colors, consts, hitbox, player, util, weapon};
 
 pub struct MeleeAttack {
     time_until_next_attack: f32,
@@ -19,9 +19,9 @@ impl MeleeAttack {
         self.time_in_range > 0.0 && self.time_until_next_attack <= 0.0
     }
 
-    fn can_attack(&self) -> bool {
-        self.time_in_range >= consts::ENEMY_MELEE_CHARGE_TIME && self.time_until_next_attack <= 0.0
-    }
+    // fn can_attack(&self) -> bool {
+    //     self.time_in_range >= consts::ENEMY_MELEE_CHARGE_TIME && self.time_until_next_attack <= 0.0
+    // }
 
     fn update(&mut self, delta: f32) {
         self.time_until_next_attack -= delta;
@@ -92,8 +92,8 @@ impl Enemy {
         }
     }
 
-    pub fn draw(&self, player: &player::Player, scale: f32) {
-        let draw_pos = (self.pos - player.pos) * scale / consts::TILES_PER_SCALE as f32
+    pub fn draw(&self, camera: &camera::Camera, scale: f32) {
+        let draw_pos = (self.pos - camera.pos) * scale / consts::TILES_PER_SCALE as f32
             + mq::Vec2::new(mq::screen_width() / 2.0, mq::screen_height() / 2.0);
 
         // melee attack indicator
@@ -236,9 +236,9 @@ impl EnemyManager {
         self.enemies_left_to_spawn -= 1;
     }
 
-    pub fn draw(&self, player: &player::Player, scale: f32) {
+    pub fn draw(&self, camera: &camera::Camera, scale: f32) {
         for enemy in self.enemies.iter() {
-            enemy.draw(player, scale);
+            enemy.draw(camera, scale);
         }
     }
 }

@@ -12,8 +12,6 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 
 ## TODO
 
-- 0.2.0
-	- Camera soft follow
 - Else
 	- Ranged enemies
     - Waveless spawn system

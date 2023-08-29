@@ -1,6 +1,7 @@
 use macroquad::prelude as mq;
 
 mod bullet;
+mod camera;
 mod colors;
 mod consts;
 mod deck;
@@ -103,11 +104,13 @@ async fn play() {
     let mut player = player::Player::new(consts::AR);
     let mut score = 0;
 
+    let mut camera = camera::Camera::new();
+
     let mut time_counter = 0.0;
     let mut fps_timer = timer::Timer::new_with_state(0.1, 1.0 / 60.0);
 
     let mut world = world::World::new();
-    world.update_locations_to_build(&player, consts::WINDOW_START_SIZE as f32);
+    world.update_locations_to_build(&camera, consts::WINDOW_START_SIZE as f32);
 
     let mut enemy_manager = enemy::EnemyManager::new();
 
@@ -152,12 +155,13 @@ async fn play() {
 
         //----------------------------------------------------------------------------//
         if game_state == game_state::GameState::Alive {
-            let handle_input_result = player.handle_input(&mut mouse_info, delta);
-            if handle_input_result.moved || resized {
-                world.update_locations_to_build(&player, scale);
+            let player_shot = player.handle_input(&mut mouse_info, delta);
+            let camera_moved = camera.update(&player, delta);
+            if camera_moved || resized {
+                world.update_locations_to_build(&camera, scale);
             }
 
-            if handle_input_result.shot {
+            if player_shot {
                 let card = deck.draw_card();
                 if let Some(card) = card {
                     let bullet = bullet::Bullet::new(
@@ -213,11 +217,11 @@ async fn play() {
         //----------------------------------------------------------------------------//
 
         //----------------------------------------------------------------------------//
-        world.draw(&player, scale);
-        player.draw(scale);
-        enemy_manager.draw(&player, scale);
+        world.draw(&camera, scale);
+        player.draw(&camera, scale);
+        enemy_manager.draw(&camera, scale);
         for bullet in bullets.iter() {
-            bullet.draw(&player, scale);
+            bullet.draw(&camera, scale);
         }
         deck.draw(&player.weapon, scale);
         mouse_info.draw(scale);

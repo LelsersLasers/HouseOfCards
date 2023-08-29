@@ -76,7 +76,7 @@ impl Card {
         match self {
             Self {
                 suit: Suit::Joker,
-                value,
+                value: _,
             } => -5.0,
             Self { suit: _, value } => {
                 if self.is_face() {

@@ -1,7 +1,7 @@
 use macroquad::prelude as mq;
 use std::collections::HashMap;
 
-use crate::{colors, consts, player};
+use crate::{camera, colors, consts};
 
 #[derive(Clone, Copy, Eq, PartialEq)]
 pub enum Tile {
@@ -115,20 +115,20 @@ impl World {
         }
     }
 
-    fn get_world_bounds_info(&self, player: &player::Player, scale: f32) -> WorldBoundsInfo {
+    fn get_world_bounds_info(&self, camera: &camera::Camera, scale: f32) -> WorldBoundsInfo {
         let tile_size = scale / consts::TILES_PER_SCALE as f32;
 
         let tiles_count_x = mq::screen_width() / tile_size;
         let tiles_count_y = mq::screen_height() / tile_size;
 
-        let start_x = player.pos.x - (tiles_count_x / 2.0);
+        let start_x = camera.pos.x - (tiles_count_x / 2.0);
         let start_x_floor = start_x.floor() as i32;
-        let end_x = player.pos.x + (tiles_count_x / 2.0);
+        let end_x = camera.pos.x + (tiles_count_x / 2.0);
         let end_x_ceil = end_x.ceil() as i32;
 
-        let start_y = player.pos.y - (tiles_count_y / 2.0);
+        let start_y = camera.pos.y - (tiles_count_y / 2.0);
         let start_y_floor = start_y.floor() as i32;
-        let end_y = player.pos.y + (tiles_count_y / 2.0);
+        let end_y = camera.pos.y + (tiles_count_y / 2.0);
         let end_y_ceil = end_y.ceil() as i32;
 
         WorldBoundsInfo {
@@ -148,7 +148,7 @@ impl World {
         }
     }
 
-    pub fn draw(&self, player: &player::Player, scale: f32) {
+    pub fn draw(&self, camera: &camera::Camera, scale: f32) {
         let WorldBoundsInfo {
             start_x,
             start_x_floor,
@@ -163,7 +163,7 @@ impl World {
             tiles_count_x: _,
             tiles_count_y: _,
             tile_size,
-        } = self.get_world_bounds_info(player, scale);
+        } = self.get_world_bounds_info(camera, scale);
 
         for x in start_x_floor..end_x_ceil {
             for y in start_y_floor..end_y_ceil {
@@ -181,7 +181,7 @@ impl World {
         }
     }
 
-    pub fn update_locations_to_build(&mut self, player: &player::Player, scale: f32) {
+    pub fn update_locations_to_build(&mut self, camera: &camera::Camera, scale: f32) {
         // fill in all tiles that are within the player's view
 
         let WorldBoundsInfo {
@@ -198,7 +198,7 @@ impl World {
             tiles_count_x: _,
             tiles_count_y: _,
             tile_size: _,
-        } = self.get_world_bounds_info(player, scale);
+        } = self.get_world_bounds_info(camera, scale);
 
         self.locations_to_build.clear();
 
@@ -211,7 +211,7 @@ impl World {
                     self.locations_to_build.push(LocationBuildInfo {
                         location: (x, y),
                         neighbors: neighbors.len() as u32,
-                        dist: player
+                        dist: camera
                             .pos
                             .distance(mq::Vec2::new(x as f32 + 0.5, y as f32 + 0.5)),
                     });
