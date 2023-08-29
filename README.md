@@ -13,18 +13,21 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 ## TODO
 
 - Version 0.2.0:
-	- Death
 	- Font
 - Else:
+    - Pause menu
 	- Camera soft follow
-	- Multiple tyles of enemies
+	- Ranged enemies
+    - Waveless spawn system
 	- Player XP/levels
 	- Power up selection
 	- Other screens
+    - Other weapons
 - Maybe
 	- Particles?
 	- Spatial hash for collision detection?
 	- Touch controls?
+    - Art/animations for everything else
 
 ## Extra mechanics
 

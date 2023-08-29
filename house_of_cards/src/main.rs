@@ -65,64 +65,68 @@ async fn play() {
 
         mouse_info.update(delta);
 
-        let handle_input_result = player.handle_input(&mut mouse_info, delta);
+        //----------------------------------------------------------------------------//
+        if game_state == game_state::GameState::Alive {
+            let handle_input_result = player.handle_input(&mut mouse_info, delta);
+            if handle_input_result.moved || resized {
+                world.update_locations_to_build(&player, scale);
+            }
 
-        if handle_input_result.moved || resized {
-            world.update_locations_to_build(&player, scale);
-        }
-        world.build_locations();
+            if handle_input_result.shot {
+                let card = deck.draw_card();
+                if let Some(card) = card {
+                    let bullet = bullet::Bullet::new(
+                        player.pos,
+                        player.direction,
+                        player.weapon.bullet_speed,
+                        player.weapon.range,
+                        card,
+                    );
+                    bullets.push(bullet);
+                } else if consts::AUTO_RELOAD {
+                    deck.combine();
+                    player.weapon.reload();
+                }
+            }
 
-        if handle_input_result.shot {
-            let card = deck.draw_card();
-            if let Some(card) = card {
-                let bullet = bullet::Bullet::new(
-                    player.pos,
-                    player.direction,
-                    player.weapon.bullet_speed,
-                    player.weapon.range,
-                    card,
-                );
-                bullets.push(bullet);
-            } else if consts::AUTO_RELOAD {
+            bullets.iter_mut().for_each(|bullet| bullet.update(delta));
+
+            for bullet in bullets.iter_mut() {
+                for enemy in enemy_manager.enemies.iter_mut() {
+                    if hitbox::rectangle_circle_collide(enemy, bullet) {
+                        enemy.health -= bullet.card.damage();
+                        bullet.remove();
+                    }
+                }
+            }
+
+            bullets.retain(bullet::Bullet::should_keep);
+
+            let enemy_manager_update_result = enemy_manager.update(&mut player, delta);
+            score += enemy_manager_update_result.enemies_killed;
+
+            // heal or increase max health
+            if enemy_manager_update_result.wave_finished {
+                player.health += 1.0;
+                player.max_health = player.max_health.max(player.health);
+
+                score += consts::ENEMY_WAVE_SCORE(enemy_manager.wave);
+            }
+
+            if mq::is_key_pressed(mq::KeyCode::R) && !deck.is_full() {
                 deck.combine();
                 player.weapon.reload();
             }
-        }
 
-        bullets.iter_mut().for_each(|bullet| bullet.update(delta));
-
-        for bullet in bullets.iter_mut() {
-            for enemy in enemy_manager.enemies.iter_mut() {
-                if hitbox::rectangle_circle_collide(enemy, bullet) {
-                    enemy.health -= bullet.card.damage();
-                    bullet.remove();
-                }
+            if player.health <= 0.0 {
+                game_state = game_state::GameState::Dead;
+                player.health = player.health.max(0.0);
             }
         }
+        world.build_locations(); // do even if dead/in pause
+                                 //----------------------------------------------------------------------------//
 
-        bullets.retain(bullet::Bullet::should_keep);
-
-        let enemy_manager_update_result = enemy_manager.update(&mut player, delta);
-        score += enemy_manager_update_result.enemies_killed;
-
-        // heal or increase max health
-        if enemy_manager_update_result.wave_finished {
-            player.health += 1.0;
-            player.max_health = player.max_health.max(player.health);
-
-            score += consts::ENEMY_WAVE_SCORE(enemy_manager.wave);
-        }
-
-        if mq::is_key_pressed(mq::KeyCode::R) && !deck.is_full() {
-            deck.combine();
-            player.weapon.reload();
-        }
-
-        if player.health <= 0.0 {
-            game_state = game_state::GameState::Dead;
-            player.health = player.health.max(0.0);
-        }
-
+        //----------------------------------------------------------------------------//
         world.draw(&player, scale);
         player.draw(scale);
         enemy_manager.draw(&player, scale);
@@ -214,6 +218,7 @@ async fn play() {
                 return;
             }
         }
+        //----------------------------------------------------------------------------//
 
         mq::next_frame().await
     }
