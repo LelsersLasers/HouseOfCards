@@ -306,7 +306,9 @@ async fn play() {
             );
         }
 
-        if game_state != game_state::GameState::Dead && mq::is_key_pressed(mq::KeyCode::Escape) {
+        if game_state != game_state::GameState::Dead
+            && (mq::is_key_pressed(mq::KeyCode::Escape) || mq::is_key_pressed(mq::KeyCode::P))
+        {
             game_state.toggle_pause();
         }
         //----------------------------------------------------------------------------//
