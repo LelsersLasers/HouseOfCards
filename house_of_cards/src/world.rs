@@ -211,7 +211,9 @@ impl World {
                     self.locations_to_build.push(LocationBuildInfo {
                         location: (x, y),
                         neighbors: neighbors.len() as u32,
-                        dist: player.pos.distance(mq::Vec2::new(x as f32, y as f32)),
+                        dist: player
+                            .pos
+                            .distance(mq::Vec2::new(x as f32 + 0.5, y as f32 + 0.5)),
                     });
                 }
             }
