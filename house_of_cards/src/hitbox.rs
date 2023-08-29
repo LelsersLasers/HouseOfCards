@@ -1,6 +1,6 @@
 use macroquad::prelude as mq;
 
-// CREDIT: https://chat.openai.com/share/f0826594-c5e9-4ea6-a1cf-0a010295fbfa
+// Math from: https://chat.openai.com/share/f0826594-c5e9-4ea6-a1cf-0a010295fbfa
 
 pub trait Circle {
     fn center(&self) -> mq::Vec2;

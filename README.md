@@ -12,11 +12,10 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 
 ## TODO
 
-- Version 0.2.0:
-	- Font
-- Else:
+- 0.3.0
     - Pause menu
 	- Camera soft follow
+- Else
 	- Ranged enemies
     - Waveless spawn system
 	- Player XP/levels
@@ -78,4 +77,5 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 ## Credits
 
 - Pixel Art Cards: https://www.reddit.com/r/PixelArt/comments/i1t1gn/pixel_art_playing_card_designs_created_in_aseprite/
-    - Converted to Nord palette using: https://ign.schrodinger-hat.it/
+- Math for rotated rectangle hitbox: https://chat.openai.com/share/f0826594-c5e9-4ea6-a1cf-0a010295fbfa
+- Font: https://fonts.google.com/specimen/Annie+Use+Your+Telescope

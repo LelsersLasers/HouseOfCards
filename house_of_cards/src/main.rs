@@ -41,6 +41,12 @@ async fn play() {
     let cards_texture = mq::load_texture("./resources/nord-cards-transparent.png")
         .await
         .unwrap();
+
+    let font = mq::load_ttf_font_from_bytes(include_bytes!(
+        "../resources/AnnieUseYourTelescope-Regular.ttf"
+    ))
+    .unwrap();
+
     let mut deck = deck::Deck::new(cards_texture);
 
     let mut old_width = mq::screen_width();
@@ -160,18 +166,32 @@ async fn play() {
         }
 
         let texts = [
-            format!("FPS: {:.0}", 1.0 / delta),
-            format!("Wave: {}", enemy_manager.wave),
-            format!("Enemies left: {}", enemy_manager.enemies_left()),
-            format!("Score: {}", score),
+            (0.05, format!("FPS: {:.0}", 1.0 / delta)),
+            (-0.19, format!("Wave: {}", enemy_manager.wave)),
+            (0.05, format!("Enemies left: {}", enemy_manager.enemies_left())),
+            (0.05, format!("Score: {}", score)),
         ];
-        let font_size = scale * consts::FONT_SIZE;
+        let font_size = (scale * consts::FONT_SIZE).round() as u16;
         let x = scale * consts::FONT_SPACING;
+        let mut y = scale * consts::FONT_SPACING;
         let color = colors::NORD6;
-        for (i, text) in texts.iter().enumerate() {
-            let y = scale * (consts::FONT_SPACING + consts::FONT_SIZE / 2.0)
-                + (font_size * consts::FONT_LINE_SPACING) * i as f32;
-            mq::draw_text(text, x, y, font_size, color);
+        for (extra_spacing, text) in texts.iter() {
+            let text_dims = mq::measure_text(text, Some(font), font_size, 1.0);
+            y += text_dims.offset_y;
+
+            mq::draw_text_ex(
+                text,
+                x,
+                y,
+                mq::TextParams {
+                    font,
+                    font_size,
+                    color,
+                    ..Default::default()
+                },
+            );
+
+            y += scale * consts::FONT_SIZE * extra_spacing;
         }
 
         if game_state == game_state::GameState::Dead {
@@ -191,26 +211,45 @@ async fn play() {
                         + consts::DEATH_FONT_BOUNCE_MAX
                             * wrap_fn(consts::DEATH_FONT_BOUNCE_SPEED * time_counter)))
                 .round() as u16;
-                // let font_size = scale * consts::DEATH_FONT_SIZE;
-                let text_dims = mq::measure_text(text, None, font_size, 1.0);
+                let text_dims = mq::measure_text(text, Some(font), font_size, 1.0);
 
                 let x = mq::screen_width() / 2.0 - text_dims.width / 2.0;
                 let y =
                     mq::screen_height() / 2.0 - text_dims.height / 2.0 + text_dims.offset_y / 2.0;
 
-                mq::draw_text(text, x, y, font_size as f32, colors::NORD6);
+                mq::draw_text_ex(
+                    text,
+                    x,
+                    y,
+                    mq::TextParams {
+                        font,
+                        font_size,
+                        color: colors::NORD6,
+                        ..Default::default()
+                    },
+                );
             }
 
             {
                 let text = "Press R to restart";
-                let font_size = scale * consts::FONT_SIZE;
-                let text_dims = mq::measure_text(text, None, font_size as u16, 1.0);
+                let font_size = (scale * consts::FONT_SIZE).round() as u16;
+                let text_dims = mq::measure_text(text, Some(font), font_size, 1.0);
 
                 let x = mq::screen_width() / 2.0 - text_dims.width / 2.0;
                 let y = mq::screen_height() / 2.0 - text_dims.height / 2.0
                     + scale * consts::DEATH_FONT_SIZE / 2.0;
 
-                mq::draw_text(text, x, y, font_size, colors::NORD4);
+                mq::draw_text_ex(
+                    text,
+                    x,
+                    y,
+                    mq::TextParams {
+                        font,
+                        font_size,
+                        color: colors::NORD4,
+                        ..Default::default()
+                    },
+                );
             }
 
             if mq::is_key_pressed(mq::KeyCode::R) {

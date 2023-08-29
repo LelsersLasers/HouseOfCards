@@ -36,7 +36,6 @@ pub const DISCARD_TO_DRAW: usize = 5;
 
 pub const FONT_SPACING: f32 = 0.01; // scale
 pub const FONT_SIZE: f32 = 0.04; // scale
-pub const FONT_LINE_SPACING: f32 = 0.8; // font_size * scale
 
 pub const DEATH_FONT_SIZE: f32 = 0.15; // scale
 pub const DEATH_FONT_BOUNCE_MAX: f32 = 0.125; // font size
