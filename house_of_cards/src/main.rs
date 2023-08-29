@@ -114,7 +114,7 @@ async fn play() {
 
     let mut enemy_manager = enemy::EnemyManager::new();
 
-    let mut bullets: Vec<bullet::Bullet> = Vec::new();
+    let mut player_bullets: Vec<bullet::Bullet> = Vec::new();
 
     let cards_texture = mq::load_texture("./resources/nord-cards-transparent.png")
         .await
@@ -169,27 +169,33 @@ async fn play() {
                         player.direction,
                         player.weapon.bullet_speed,
                         player.weapon.range,
-                        card,
+                        bullet::BulletDamage::Card(card),
                     );
-                    bullets.push(bullet);
+                    player_bullets.push(bullet);
                 } else if consts::AUTO_RELOAD {
                     deck.combine();
                     player.weapon.reload();
                 }
             }
 
-            bullets.iter_mut().for_each(|bullet| bullet.update(delta));
+            player_bullets
+                .iter_mut()
+                .for_each(|bullet| bullet.update(delta));
 
-            for bullet in bullets.iter_mut() {
+            for bullet in player_bullets.iter_mut() {
                 for enemy in enemy_manager.enemies.iter_mut() {
                     if hitbox::rectangle_circle_collide(enemy, bullet) {
-                        enemy.health -= bullet.card.damage();
+                        enemy.health -= match bullet.bullet_damage {
+                            bullet::BulletDamage::Standard(damage) => damage,
+                            bullet::BulletDamage::Card(card) => card.damage(),
+                        };
+
                         bullet.remove();
                     }
                 }
             }
 
-            bullets.retain(bullet::Bullet::should_keep);
+            player_bullets.retain(bullet::Bullet::should_keep);
 
             let enemy_manager_update_result = enemy_manager.update(&mut player, delta);
             score += enemy_manager_update_result.enemies_killed;
@@ -219,8 +225,8 @@ async fn play() {
         //----------------------------------------------------------------------------//
         world.draw(&camera, scale);
         player.draw(&camera, scale);
-        enemy_manager.draw(&camera, scale);
-        for bullet in bullets.iter() {
+        enemy_manager.draw(&camera, &player, scale);
+        for bullet in player_bullets.iter() {
             bullet.draw(&camera, scale);
         }
         deck.draw(&player.weapon, scale);

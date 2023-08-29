@@ -4,7 +4,7 @@ use macroquad::rand::ChooseRandom;
 use crate::{colors, consts, weapon};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
-enum Suit {
+pub enum Suit {
     Spades,
     Hearts,
     Clubs,
@@ -20,7 +20,7 @@ pub struct Card {
 }
 
 impl Card {
-    fn new(suit: Suit, value: u8) -> Self {
+    pub fn new(suit: Suit, value: u8) -> Self {
         Self { suit, value }
     }
 

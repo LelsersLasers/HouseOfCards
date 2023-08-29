@@ -2,14 +2,18 @@ use macroquad::prelude as mq;
 
 use crate::{camera, colors, consts, deck, hitbox};
 
-// TODO: make play nice with changing screen size
+pub enum BulletDamage {
+    Standard(f32),
+    Card(deck::Card),
+}
+
 pub struct Bullet {
     start_pos: mq::Vec2,     // in tiles
     pos: mq::Vec2,           // in tiles
     direction: f32,          // in radians
     speed: f32,              // in tiles per second
     distance_to_travel: f32, // in tiles
-    pub card: deck::Card,
+    pub bullet_damage: BulletDamage,
     alive: bool,
 }
 
@@ -19,7 +23,7 @@ impl Bullet {
         direction: f32,
         speed: f32,
         distance_to_travel: f32,
-        card: deck::Card,
+        bullet_damage: BulletDamage,
     ) -> Self {
         Self {
             start_pos,
@@ -27,7 +31,7 @@ impl Bullet {
             direction,
             speed,
             distance_to_travel,
-            card,
+            bullet_damage,
             alive: true,
         }
     }
@@ -56,10 +60,15 @@ impl Bullet {
             draw_pos.x,
             draw_pos.y,
             scale * consts::BULLET_SIZE,
-            if self.card.is_red() {
-                colors::NORD11
-            } else {
-                colors::NORD0
+            match self.bullet_damage {
+                BulletDamage::Standard(_) => colors::NORD8,
+                BulletDamage::Card(card) => {
+                    if card.is_red() {
+                        colors::NORD11
+                    } else {
+                        colors::NORD0
+                    }
+                }
             },
         );
         mq::draw_circle_lines(

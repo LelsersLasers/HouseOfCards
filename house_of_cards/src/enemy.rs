@@ -1,6 +1,6 @@
 use macroquad::prelude as mq;
 
-use crate::{camera, colors, consts, hitbox, player, util, weapon};
+use crate::{bullet, camera, colors, consts, hitbox, player, util, weapon};
 
 pub struct MeleeAttack {
     time_until_next_attack: f32,
@@ -43,6 +43,8 @@ pub struct Enemy {
     enemy_type: EnemyType,
 }
 
+pub struct Shot(bool);
+
 impl Enemy {
     pub fn new(pos: mq::Vec2, health: f32, damage: f32, speed: f32, enemy_type: EnemyType) -> Self {
         Self {
@@ -56,13 +58,20 @@ impl Enemy {
         }
     }
 
-    pub fn update(&mut self, player: &mut player::Player, delta: f32) -> bool {
+    pub fn update(&mut self, player: &mut player::Player, delta: f32) -> Shot {
+        // returns shot
+
         let vec_to_player = player.pos - self.pos;
         let distance_to_player = vec_to_player.length();
 
         self.direction = vec_to_player.y.atan2(vec_to_player.x);
-        let movement =
+        let mut movement =
             mq::Vec2::new(self.direction.cos(), self.direction.sin()) * self.speed * delta;
+
+        if let EnemyType::Ranged(ref mut weapon) = self.enemy_type {
+            weapon.update(delta);
+            movement *= weapon.get_ms_penalty();
+        }
         self.pos += movement;
 
         match self.enemy_type {
@@ -76,42 +85,51 @@ impl Enemy {
                             melee_attack.time_in_range = 0.0;
 
                             player.health -= self.damage;
-
-                            return true;
                         }
                     } else {
                         melee_attack.time_in_range = 0.0;
                     }
                 }
 
-                false
+                Shot(false)
             }
             EnemyType::Ranged(ref mut weapon) => {
-                distance_to_player < weapon.range && weapon.try_shoot()
+                Shot(distance_to_player < consts::ENEMY_RANGED_RANGE && weapon.try_shoot())
             }
         }
     }
 
-    pub fn draw(&self, camera: &camera::Camera, scale: f32) {
+    pub fn draw(&self, camera: &camera::Camera, player: &player::Player, scale: f32) {
         let draw_pos = (self.pos - camera.pos) * scale / consts::TILES_PER_SCALE as f32
             + mq::Vec2::new(mq::screen_width() / 2.0, mq::screen_height() / 2.0);
 
-        // melee attack indicator
-        if let EnemyType::Melee(ref melee_attack) = self.enemy_type {
-            let draw_radius = consts::ENEMY_MELEE_RANGE * scale / consts::TILES_PER_SCALE as f32;
-            if melee_attack.is_charging() {
-                mq::draw_circle(draw_pos.x, draw_pos.y, draw_radius, colors::NORD6_BIG_ALPHA);
+        // attack indicator
+        match self.enemy_type {
+            EnemyType::Melee(ref melee_attack) => {
+                let draw_radius =
+                    consts::ENEMY_MELEE_RANGE * scale / consts::TILES_PER_SCALE as f32;
+                if melee_attack.is_charging() {
+                    mq::draw_circle(draw_pos.x, draw_pos.y, draw_radius, colors::NORD6_BIG_ALPHA);
 
-                let charge_ratio =
-                    1.0 - melee_attack.time_in_range / consts::ENEMY_MELEE_CHARGE_TIME;
+                    let charge_ratio =
+                        1.0 - melee_attack.time_in_range / consts::ENEMY_MELEE_CHARGE_TIME;
 
-                mq::draw_circle_lines(
-                    draw_pos.x,
-                    draw_pos.y,
-                    draw_radius * charge_ratio.clamp(0.0, 1.0),
-                    consts::ENEMY_MELEE_CHARGE_THICKNESS * scale,
-                    colors::NORD6_ALPHA,
-                );
+                    mq::draw_circle_lines(
+                        draw_pos.x,
+                        draw_pos.y,
+                        draw_radius * charge_ratio.clamp(0.0, 1.0),
+                        consts::ENEMY_MELEE_CHARGE_THICKNESS * scale,
+                        colors::NORD6_ALPHA,
+                    );
+                }
+            }
+            EnemyType::Ranged(_) => {
+                let distance_to_player = player.pos.distance(self.pos);
+                if distance_to_player < consts::ENEMY_RANGED_RANGE {
+                    let draw_radius =
+                        consts::ENEMY_RANGED_RANGE * scale / consts::TILES_PER_SCALE as f32;
+                    mq::draw_circle(draw_pos.x, draw_pos.y, draw_radius, colors::NORD6_BIG_ALPHA);
+                }
             }
         }
 
@@ -168,6 +186,7 @@ pub struct EnemyManager {
     pub wave: i32,
     enemies_left_to_spawn: i32, // not enemies.len()
     time_until_next_spawn: f32, // in seconds
+    enemy_bullets: Vec<bullet::Bullet>,
 }
 
 impl EnemyManager {
@@ -177,6 +196,7 @@ impl EnemyManager {
             wave: 0,
             enemies_left_to_spawn: 0,
             time_until_next_spawn: 0.0,
+            enemy_bullets: Vec::new(),
         }
     }
 
@@ -190,13 +210,29 @@ impl EnemyManager {
         let enemies_killed = previous_enemy_count - self.enemies.len() as i32;
 
         for enemy in self.enemies.iter_mut() {
-            // if enemy.update(player, delta) {
-            //     player.take_damage(enemy.damage);
-            // }
-            enemy.update(player, delta);
+            let shot = enemy.update(player, delta);
+            let enemy_weapon = if let EnemyType::Ranged(ref mut weapon) = enemy.enemy_type {
+                weapon
+            } else {
+                continue;
+            };
+            if let Shot(true) = shot {
+                let bullet = bullet::Bullet::new(
+                    enemy.pos,
+                    enemy.direction,
+                    enemy_weapon.bullet_speed,
+                    enemy_weapon.range,
+                    bullet::BulletDamage::Standard(enemy.damage),
+                );
+                self.enemy_bullets.push(bullet);
+            }
         }
 
-        // self.enemies.retain(|enemy| enemy.health > 0.0);
+        self.enemy_bullets
+            .iter_mut()
+            .for_each(|bullet| bullet.update(delta));
+
+        self.enemy_bullets.retain(bullet::Bullet::should_keep);
 
         self.time_until_next_spawn -= delta;
 
@@ -225,20 +261,29 @@ impl EnemyManager {
             * consts::ENEMY_SPAWN_RADIUS
             + player.pos;
 
+        let enemy_type = if mq::rand::gen_range(0.0, 1.0) < consts::ENEMY_RANGED_CHANCE {
+            EnemyType::Melee(MeleeAttack::new())
+        } else {
+            EnemyType::Ranged(consts::ENEMY_WEAPON)
+        };
         let enemy = Enemy::new(
             spawn_pos,
             consts::ENEMY_WAVE_HP(self.wave),
             consts::ENEMY_WAVE_DAMAGE(self.wave),
             consts::ENEMY_SPEED,
-            EnemyType::Melee(MeleeAttack::new()),
+            enemy_type,
         );
         self.enemies.push(enemy);
         self.enemies_left_to_spawn -= 1;
     }
 
-    pub fn draw(&self, camera: &camera::Camera, scale: f32) {
+    pub fn draw(&self, camera: &camera::Camera, player: &player::Player, scale: f32) {
         for enemy in self.enemies.iter() {
-            enemy.draw(camera, scale);
+            enemy.draw(camera, player, scale);
+        }
+
+        for bullet in self.enemy_bullets.iter() {
+            bullet.draw(camera, scale);
         }
     }
 }
