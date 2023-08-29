@@ -33,15 +33,16 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 ## Extra mechanics
 
 - End of wave
-    - Gain +1 hp
-	- If would increase max hp, increase max hp to match
+	- Gain 1 hp
+	- If would increase max hp, increase max hp to new current hp
 - Damage
-    - Jokers => -5.0
-    - Face: 10
-    - Ace: One shot
+	- Joker => -5 damage
+	- Face => 10 damage
+	- Ace => One shot
+	- Else => number value of card
 - Score
-	- +1 point per enemy killed
-	- Wave^2 points per wave completed
+	- 1 point per enemy killed
+	- (Wave number)^2 points at the end of the wave
 
 ## Planning
 
