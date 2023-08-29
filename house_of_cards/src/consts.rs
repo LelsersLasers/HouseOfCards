@@ -37,9 +37,9 @@ pub const DISCARD_TO_DRAW: usize = 5;
 pub const FONT_SPACING: f32 = 0.01; // scale
 pub const FONT_SIZE: f32 = 0.04; // scale
 
-pub const DEATH_FONT_SIZE: f32 = 0.15; // scale
-pub const DEATH_FONT_BOUNCE_MAX: f32 = 0.125; // font size
-pub const DEATH_FONT_BOUNCE_SPEED: f32 = 0.8;
+pub const LARGE_FONT_SIZE: f32 = 0.15; // scale
+pub const LARGE_FONT_BOUNCE_MAX: f32 = 0.125; // font size
+pub const LARGE_FONT_BOUNCE_SPEED: f32 = 0.8;
 
 pub const AR: weapon::Weapon = weapon::Weapon::new(5.0, 2.5, 12.0, 1.0, 0.75, 7.5);
 // pub const SWORD: weapon::Weapon = weapon::Weapon::new(1.0, 0.0, 0.25, 1.0, 0.75, -1.0);
