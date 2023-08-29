@@ -34,8 +34,13 @@ pub const DISCARD_ROTATION: f32 = 0.1;
 pub const DISCARD_OFFSET: f32 = 0.05;
 pub const DISCARD_TO_DRAW: usize = 5;
 
-pub const FPS_SPACING: f32 = 0.01; // scale
-pub const FPS_FONT_SIZE: f32 = 0.04; // scale
+pub const FONT_SPACING: f32 = 0.01; // scale
+pub const FONT_SIZE: f32 = 0.04; // scale
+pub const FONT_LINE_SPACING: f32 = 0.8; // font_size * scale
+
+pub const DEATH_FONT_SIZE: f32 = 0.15; // scale
+pub const DEATH_FONT_BOUNCE_MAX: f32 = 0.125; // font size
+pub const DEATH_FONT_BOUNCE_SPEED: f32 = 0.8;
 
 pub const AR: weapon::Weapon = weapon::Weapon::new(5.0, 2.5, 12.0, 1.0, 0.75, 7.5);
 // pub const SWORD: weapon::Weapon = weapon::Weapon::new(1.0, 0.0, 0.25, 1.0, 0.75, -1.0);
@@ -44,7 +49,7 @@ pub const BULLET_SIZE: f32 = 0.005; // scale
 pub const BULLET_OUTLINE: f32 = 0.0005; // scale
 
 pub const ENEMY_SIZE: f32 = 0.02; // scale
-pub const ENEMY_SPEED: f32 = PLAYER_SPEED * 2.0 / 3.0; // tiles per second
+pub const ENEMY_SPEED: f32 = PLAYER_SPEED * 0.6; // tiles per second
 
 pub const ENEMY_MELEE_RANGE: f32 = 0.5; // tiles
 pub const ENEMY_MELEE_CHARGE_TIME: f32 = 0.5; // seconds

@@ -5,18 +5,13 @@ mod colors;
 mod consts;
 mod deck;
 mod enemy;
+mod game_state;
 mod hitbox;
 mod mouse;
 mod player;
 mod util;
 mod weapon;
 mod world;
-
-/*
-    Scale is the size of the window, in pixels.
-    Player position is in tiles.
-    10 tiles fit in scale.
-*/
 
 fn window_conf() -> mq::Conf {
     mq::Conf {
@@ -28,12 +23,13 @@ fn window_conf() -> mq::Conf {
     }
 }
 
-#[macroquad::main(window_conf)]
-async fn main() {
-    mq::rand::srand(instant::now() as u64);
+async fn play() {
+    let mut game_state = game_state::GameState::new();
 
     let mut player = player::Player::new(consts::AR);
     let mut score = 0;
+
+    let mut time_counter = 0.0;
 
     let mut world = world::World::new();
     world.update_locations_to_build(&player, consts::WINDOW_START_SIZE as f32);
@@ -57,6 +53,7 @@ async fn main() {
         mq::clear_background(consts::BACKGROUND_COLOR);
 
         let delta = mq::get_frame_time();
+        time_counter += delta;
 
         let scale = mq::screen_width().min(mq::screen_height());
 
@@ -121,6 +118,11 @@ async fn main() {
             player.weapon.reload();
         }
 
+        if player.health <= 0.0 {
+            game_state = game_state::GameState::Dead;
+            player.health = player.health.max(0.0);
+        }
+
         world.draw(&player, scale);
         player.draw(scale);
         enemy_manager.draw(&player, scale);
@@ -153,51 +155,75 @@ async fn main() {
             mq::draw_rectangle_lines(x, y, bar_width, bar_height, bar_thickness, colors::NORD6);
         }
 
-        {
-            let fps = 1.0 / delta;
-            let text = format!("FPS: {:.0}", fps);
-            let x = scale * consts::FPS_SPACING;
-            let y = scale * (consts::FPS_SPACING + consts::FPS_FONT_SIZE / 2.0);
-            let font_size = scale * consts::FPS_FONT_SIZE;
-            let color = colors::NORD6;
-
-            mq::draw_text(&text, x, y, font_size, color);
+        let texts = [
+            format!("FPS: {:.0}", 1.0 / delta),
+            format!("Wave: {}", enemy_manager.wave),
+            format!("Enemies left: {}", enemy_manager.enemies_left()),
+            format!("Score: {}", score),
+        ];
+        let font_size = scale * consts::FONT_SIZE;
+        let x = scale * consts::FONT_SPACING;
+        let color = colors::NORD6;
+        for (i, text) in texts.iter().enumerate() {
+            let y = scale * (consts::FONT_SPACING + consts::FONT_SIZE / 2.0)
+                + (font_size * consts::FONT_LINE_SPACING) * i as f32;
+            mq::draw_text(text, x, y, font_size, color);
         }
 
-        {
-            let wave = enemy_manager.wave;
-            let text = format!("Wave: {}", wave);
-            let x = scale * consts::FPS_SPACING;
-            let font_size = scale * consts::FPS_FONT_SIZE;
-            let y = scale * (consts::FPS_SPACING + consts::FPS_FONT_SIZE / 2.0) + font_size * 1.05;
-            let color = colors::NORD6;
+        if game_state == game_state::GameState::Dead {
+            mq::draw_rectangle(
+                0.0,
+                0.0,
+                mq::screen_width(),
+                mq::screen_height(),
+                colors::NORD0_BIG_ALPHA,
+            );
 
-            mq::draw_text(&text, x, y, font_size, color);
-        }
+            {
+                let text = "You died!";
+                let wrap_fn: fn(f32) -> f32 = |time_counter| (time_counter % 2.0 - 1.0).abs();
+                let font_size = ((scale * consts::DEATH_FONT_SIZE)
+                    * (1.0
+                        + consts::DEATH_FONT_BOUNCE_MAX
+                            * wrap_fn(consts::DEATH_FONT_BOUNCE_SPEED * time_counter)))
+                .round() as u16;
+                // let font_size = scale * consts::DEATH_FONT_SIZE;
+                let text_dims = mq::measure_text(text, None, font_size, 1.0);
 
-        {
-            let enemies_left = enemy_manager.enemies_left();
-            let text = format!("Enemies left: {}", enemies_left);
-            let x = scale * consts::FPS_SPACING;
-            let font_size = scale * consts::FPS_FONT_SIZE;
-            let y = scale * (consts::FPS_SPACING + consts::FPS_FONT_SIZE / 2.0)
-                + (font_size * 1.05) * 2.0;
-            let color = colors::NORD6;
+                let x = mq::screen_width() / 2.0 - text_dims.width / 2.0;
+                let y =
+                    mq::screen_height() / 2.0 - text_dims.height / 2.0 + text_dims.offset_y / 2.0;
 
-            mq::draw_text(&text, x, y, font_size, color);
-        }
+                mq::draw_text(text, x, y, font_size as f32, colors::NORD6);
+            }
 
-        {
-            let text = format!("Score: {}", score);
-            let x = scale * consts::FPS_SPACING;
-            let font_size = scale * consts::FPS_FONT_SIZE;
-            let y = scale * (consts::FPS_SPACING + consts::FPS_FONT_SIZE / 2.0)
-                + (font_size * 1.05) * 3.0;
-            let color = colors::NORD6;
+            {
+                let text = "Press R to restart";
+                let font_size = scale * consts::FONT_SIZE;
+                let text_dims = mq::measure_text(text, None, font_size as u16, 1.0);
 
-            mq::draw_text(&text, x, y, font_size, color);
+                let x = mq::screen_width() / 2.0 - text_dims.width / 2.0;
+                let y = mq::screen_height() / 2.0 - text_dims.height / 2.0
+                    + scale * consts::DEATH_FONT_SIZE / 2.0;
+
+                mq::draw_text(text, x, y, font_size, colors::NORD4);
+            }
+
+            if mq::is_key_pressed(mq::KeyCode::R) {
+                mq::next_frame().await;
+                return;
+            }
         }
 
         mq::next_frame().await
+    }
+}
+
+#[macroquad::main(window_conf)]
+async fn main() {
+    mq::rand::srand(instant::now() as u64);
+
+    loop {
+        play().await;
     }
 }

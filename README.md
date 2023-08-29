@@ -8,19 +8,23 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 - Aim: arrow keys or mouse
 - Shoot: left click or space
 - Reload: R
+- Reset after death: R
 
 ## TODO
 
-- Death screen + reset
-- Font
-- Camera soft follow
-- Multiple tyles of enemies
-- Player XP/levels
-- Power up selection
-- Other screens
-- Particles?
-- Spatial hash for collision detection?
-- Touch controls?
+- Version 0.2.0:
+	- Death
+	- Font
+- Else:
+	- Camera soft follow
+	- Multiple tyles of enemies
+	- Player XP/levels
+	- Power up selection
+	- Other screens
+- Maybe
+	- Particles?
+	- Spatial hash for collision detection?
+	- Touch controls?
 
 ## Extra mechanics
 

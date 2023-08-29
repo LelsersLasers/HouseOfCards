@@ -213,7 +213,6 @@ impl EnemyManager {
             self.time_until_next_spawn = 1.0 / consts::ENEMY_SPAWN_RATE;
         }
 
-
         EnemyManagerUpdateResult {
             wave_finished: false,
             enemies_killed,
