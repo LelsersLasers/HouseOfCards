@@ -2,12 +2,12 @@ use macroquad::prelude as mq;
 
 use crate::{bullet, camera, colors, consts, hitbox, player, util, weapon};
 
-pub struct MeleeAttack {
+pub struct EnemyAttack {
     time_until_next_attack: f32,
     time_in_range: f32,
 }
 
-impl MeleeAttack {
+impl EnemyAttack {
     fn new() -> Self {
         Self {
             time_until_next_attack: 0.0,
@@ -29,8 +29,38 @@ impl MeleeAttack {
 }
 
 pub enum EnemyType {
-    Melee(MeleeAttack),
-    Ranged(weapon::Weapon),
+    Melee,
+    Ranged,
+}
+
+impl EnemyType {
+    fn range(&self) -> f32 {
+        match self {
+            EnemyType::Melee => consts::ENEMY_MELEE_RANGE,
+            EnemyType::Ranged => consts::ENEMY_RANGED_RANGE,
+        }
+    }
+
+    fn charge_time(&self) -> f32 {
+        match self {
+            EnemyType::Melee => consts::ENEMY_MELEE_CHARGE_TIME,
+            EnemyType::Ranged => consts::ENEMY_RANGED_CHARGE_TIME,
+        }
+    }
+
+    fn reload_time(&self) -> f32 {
+        match self {
+            EnemyType::Melee => consts::ENEMY_MELEE_RELOAD_TIME,
+            EnemyType::Ranged => consts::ENEMY_RANGED_RELOAD_TIME,
+        }
+    }
+
+    fn is_melee(&self) -> bool {
+        match self {
+            EnemyType::Melee => true,
+            EnemyType::Ranged => false,
+        }
+    }
 }
 
 pub struct Enemy {
@@ -41,6 +71,7 @@ pub struct Enemy {
     speed: f32,     // tiles per second
     direction: f32, // radians
     enemy_type: EnemyType,
+    enemy_attack: EnemyAttack,
 }
 
 pub struct Shot(bool);
@@ -55,6 +86,7 @@ impl Enemy {
             speed,
             direction: 0.0,
             enemy_type,
+            enemy_attack: EnemyAttack::new(),
         }
     }
 
@@ -68,39 +100,44 @@ impl Enemy {
         let mut movement =
             mq::Vec2::new(self.direction.cos(), self.direction.sin()) * self.speed * delta;
 
-        if let EnemyType::Ranged(ref mut weapon) = self.enemy_type {
-            weapon.update(delta);
-            if distance_to_player < consts::ENEMY_RANGED_MIN_RANGE {
-                movement = mq::Vec2::ZERO;
-            } else {
-                movement *= weapon.get_ms_penalty();
-            }
-        }
-        self.pos += movement;
+        let mut shot = Shot(false);
 
-        match self.enemy_type {
-            EnemyType::Melee(ref mut melee_attack) => {
-                melee_attack.update(delta);
-                if melee_attack.time_until_next_attack <= 0.0 {
-                    if distance_to_player < consts::ENEMY_MELEE_RANGE {
-                        melee_attack.time_in_range += delta;
-                        if melee_attack.time_in_range >= consts::ENEMY_MELEE_CHARGE_TIME {
-                            melee_attack.time_until_next_attack = consts::ENEMY_MELEE_RELOAD_TIME;
-                            melee_attack.time_in_range = 0.0;
+        self.enemy_attack.update(delta);
 
-                            player.health -= self.damage;
-                        }
+        if self.enemy_attack.time_until_next_attack <= 0.0 {
+            let range = self.enemy_type.range();
+            if distance_to_player < range {
+                self.enemy_attack.time_in_range += delta;
+                let charge_time = self.enemy_type.charge_time();
+                if self.enemy_attack.time_in_range >= charge_time {
+                    let reload_time = self.enemy_type.reload_time();
+                    self.enemy_attack.time_until_next_attack = reload_time;
+                    self.enemy_attack.time_in_range = 0.0;
+
+                    if self.enemy_type.is_melee() {
+                        player.health -= self.damage;
                     } else {
-                        melee_attack.time_in_range = 0.0;
+                        shot = Shot(true);
                     }
                 }
-
-                Shot(false)
-            }
-            EnemyType::Ranged(ref mut weapon) => {
-                Shot(distance_to_player < consts::ENEMY_RANGED_RANGE && weapon.try_shoot())
+            } else {
+                self.enemy_attack.time_in_range = 0.0;
             }
         }
+
+        if !self.enemy_type.is_melee() {
+            if self.enemy_attack.is_charging()
+                || distance_to_player < consts::ENEMY_RANGED_MIN_RANGE
+            {
+                movement = mq::Vec2::ZERO;
+            } else {
+                movement *= consts::ENEMY_RANGED_SPEED_PENALTY;
+            }
+        }
+
+        self.pos += movement;
+
+        shot
     }
 
     pub fn draw(&self, camera: &camera::Camera, scale: f32) {
@@ -108,13 +145,13 @@ impl Enemy {
             + mq::Vec2::new(mq::screen_width() / 2.0, mq::screen_height() / 2.0);
 
         // attack indicator
-        if let EnemyType::Melee(ref melee_attack) = self.enemy_type {
+        if self.enemy_type.is_melee() {
             let draw_radius = consts::ENEMY_MELEE_RANGE * scale / consts::TILES_PER_SCALE as f32;
-            if melee_attack.is_charging() {
+            if self.enemy_attack.is_charging() {
                 mq::draw_circle(draw_pos.x, draw_pos.y, draw_radius, colors::NORD6_BIG_ALPHA);
 
                 let charge_ratio =
-                    1.0 - melee_attack.time_in_range / consts::ENEMY_MELEE_CHARGE_TIME;
+                    1.0 - self.enemy_attack.time_in_range / consts::ENEMY_MELEE_CHARGE_TIME;
 
                 mq::draw_circle_lines(
                     draw_pos.x,
@@ -135,8 +172,8 @@ impl Enemy {
             square_raduis,
             util::rad_to_deg(self.direction + std::f32::consts::PI / 4.0), // rotate 45 degrees
             match self.enemy_type {
-                EnemyType::Melee(_) => colors::NORD11,
-                EnemyType::Ranged(_) => colors::NORD12,
+                EnemyType::Melee => colors::NORD11,
+                EnemyType::Ranged => colors::NORD12,
             },
         );
 
@@ -208,17 +245,12 @@ impl EnemyManager {
         for enemy in self.enemies.iter_mut() {
             let shot = enemy.update(player, delta);
 
-            let enemy_weapon = if let EnemyType::Ranged(ref mut weapon) = enemy.enemy_type {
-                weapon
-            } else {
-                continue;
-            };
             if let Shot(true) = shot {
                 let bullet = bullet::Bullet::new(
                     enemy.pos,
                     enemy.direction,
-                    enemy_weapon.bullet_speed,
-                    enemy_weapon.range,
+                    consts::ENEMY_RANGED_BULLET_SPEED,
+                    consts::ENEMT_RANGED_BULLET_RANGE,
                     bullet::BulletDamage::Standard(enemy.damage),
                 );
                 self.enemy_bullets.push(bullet);
@@ -270,9 +302,9 @@ impl EnemyManager {
             + player.pos;
 
         let enemy_type = if mq::rand::gen_range(0.0, 1.0) < consts::ENEMY_RANGED_CHANCE {
-            EnemyType::Melee(MeleeAttack::new())
+            EnemyType::Melee
         } else {
-            EnemyType::Ranged(consts::ENEMY_WEAPON)
+            EnemyType::Ranged
         };
         let enemy = Enemy::new(
             spawn_pos,

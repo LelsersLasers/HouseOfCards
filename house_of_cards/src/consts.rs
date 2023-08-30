@@ -44,8 +44,6 @@ pub const LARGE_FONT_BOUNCE_MAX: f32 = 0.125; // font size
 pub const LARGE_FONT_BOUNCE_SPEED: f32 = 0.8;
 
 pub const AR: weapon::Weapon = weapon::Weapon::new(5.0, 2.5, 12.0, 1.0, 0.75, 7.5);
-// pub const SWORD: weapon::Weapon = weapon::Weapon::new(1.0, 0.0, 0.25, 1.0, 0.75, -1.0);
-pub const ENEMY_WEAPON: weapon::Weapon = weapon::Weapon::new(0.25, 0.0, 12.0, 0.9, 0.7, 4.0);
 
 pub const BULLET_SIZE: f32 = 0.005; // scale
 pub const BULLET_OUTLINE: f32 = 0.0005; // scale
@@ -59,6 +57,12 @@ pub const ENEMY_MELEE_RELOAD_TIME: f32 = 1.0; // seconds
 
 pub const ENEMY_RANGED_RANGE: f32 = 4.0; // tiles
 pub const ENEMY_RANGED_MIN_RANGE: f32 = 2.0; // tiles
+pub const ENEMY_RANGED_CHARGE_TIME: f32 = 0.75; // seconds
+pub const ENEMY_RANGED_RELOAD_TIME: f32 = 4.0; // seconds
+pub const ENEMY_RANGED_SPEED_PENALTY: f32 = 0.75; // percent
+
+pub const ENEMY_RANGED_BULLET_SPEED: f32 = 4.0; // tiles per second
+pub const ENEMT_RANGED_BULLET_RANGE: f32 = 12.0; // tiles
 
 pub const ENEMY_MELEE_CHARGE_THICKNESS: f32 = 0.005; // scale
 

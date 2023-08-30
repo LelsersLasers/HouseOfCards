@@ -14,10 +14,11 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 ## TODO
 
 - 0.3.0
-	- Ranged enemies
-		- Stop moving before shooting
     - Waveless spawn system
+    - Convert update/etc return types to be `struct something(bool)` (instead of just `bool`)
+    - Always drawn hp bars on top
 - Else
+    - Improve mouse feel
 	- Improve hitboxes
 	- Player XP/levels
 	- Power up selection
