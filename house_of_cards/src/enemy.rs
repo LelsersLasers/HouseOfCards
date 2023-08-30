@@ -19,10 +19,6 @@ impl EnemyAttack {
         self.time_in_range > 0.0 && self.time_until_next_attack <= 0.0
     }
 
-    // fn can_attack(&self) -> bool {
-    //     self.time_in_range >= consts::ENEMY_MELEE_CHARGE_TIME && self.time_until_next_attack <= 0.0
-    // }
-
     fn update(&mut self, delta: f32) {
         self.time_until_next_attack -= delta;
     }

@@ -63,10 +63,6 @@ impl MouseInfo {
         }
     }
 
-    pub fn is_active(&self) -> bool {
-        self.active
-    }
-
     pub fn get_last_pos(&self) -> mq::Vec2 {
         self.last_pos
     }
