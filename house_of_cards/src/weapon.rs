@@ -1,4 +1,4 @@
-use crate::util;
+use crate::{powerup, util};
 
 pub struct Weapon {
     fire_rate: f32,   // shots per second
@@ -42,8 +42,9 @@ impl Weapon {
         }
     }
 
-    pub fn reload(&mut self) {
-        self.time_until_next_shot = self.reload_time;
+    pub fn reload(&mut self, powerups: &powerup::Powerups) {
+        let reload_mod = powerups.reload_mod();
+        self.time_until_next_shot = self.reload_time * reload_mod;
         self.reloading = true;
     }
 

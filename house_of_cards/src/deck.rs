@@ -1,7 +1,7 @@
 use macroquad::prelude as mq;
 use macroquad::rand::ChooseRandom;
 
-use crate::{colors, consts, weapon};
+use crate::{colors, consts, powerup, weapon};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum Suit {
@@ -64,16 +64,25 @@ impl Card {
             Suit::Joker | Suit::Back => self.value == 0,
         }
     }
-    // pub fn is_black(&self) -> bool {
-    //     match self.suit {
-    //         Suit::Hearts | Suit::Diamonds => false,
-    //         Suit::Spades | Suit::Clubs => true,
-    //         Suit::Joker | Suit::Back => self.value == 1,
-    //     }
-    // }
 
-    pub fn damage(&self) -> f32 {
-        match self {
+    pub fn heal_amount(&self, powerups: &powerup::Powerups) -> f32 {
+        if self.suit == Suit::Hearts {
+            powerups.hearts_heal_amount()
+        } else {
+            0.0
+        }
+    }
+
+    pub fn stun_time(&self, powerups: &powerup::Powerups) -> f32 {
+        if self.suit == Suit::Clubs {
+            powerups.clubs_stun_time()
+        } else {
+            0.0
+        }
+    }
+
+    pub fn damage(&self, powerups: Option<&powerup::Powerups>) -> f32 {
+        let mut damage = match self {
             Self {
                 suit: Suit::Joker,
                 value: _,
@@ -87,7 +96,15 @@ impl Card {
                     *value as f32
                 }
             }
+        };
+        if let Some(powerups) = powerups {
+            damage += powerups.damage_add();
+            if self.suit == Suit::Spades {
+                damage *= powerups.spades_damage_mod();
+            }
         }
+
+        damage
     }
 
     fn is_face(&self) -> bool {

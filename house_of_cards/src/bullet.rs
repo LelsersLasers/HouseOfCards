@@ -1,10 +1,16 @@
 use macroquad::prelude as mq;
 
-use crate::{camera, colors, consts, deck, hitbox};
+use crate::{camera, colors, consts, deck, hitbox, powerup};
 
 pub enum BulletDamage {
     Standard(f32),
     Card(deck::Card),
+}
+
+pub struct BulletHitResult {
+    pub damage: f32,
+    pub stun_time: f32,
+    pub heal_amount: f32,
 }
 
 pub struct Bullet {
@@ -14,7 +20,7 @@ pub struct Bullet {
     speed: f32,              // in tiles per second
     distance_to_travel: f32, // in tiles
     pub bullet_damage: BulletDamage,
-    alive: bool,
+    hp: i32,
 }
 
 impl Bullet {
@@ -24,6 +30,7 @@ impl Bullet {
         speed: f32,
         distance_to_travel: f32,
         bullet_damage: BulletDamage,
+        hp: i32,
     ) -> Self {
         Self {
             start_pos,
@@ -32,16 +39,35 @@ impl Bullet {
             speed,
             distance_to_travel,
             bullet_damage,
-            alive: true,
+            hp,
         }
     }
 
     pub fn should_keep(&self) -> bool {
-        self.alive
+        self.hp > 0
+    }
+
+    pub fn hit(&mut self) {
+        self.hp -= 1;
     }
 
     pub fn remove(&mut self) {
-        self.alive = false;
+        self.hp = 0;
+    }
+
+    pub fn hit_result(&mut self, powerups: &powerup::Powerups) -> BulletHitResult {
+        match self.bullet_damage {
+            BulletDamage::Standard(damage) => BulletHitResult {
+                damage,
+                stun_time: 0.0,
+                heal_amount: 0.0,
+            },
+            BulletDamage::Card(card) => BulletHitResult {
+                damage: card.damage(Some(powerups)),
+                stun_time: card.stun_time(powerups),
+                heal_amount: card.heal_amount(powerups),
+            },
+        }
     }
 
     pub fn update(&mut self, delta: f32) {

@@ -45,6 +45,15 @@ pub const LARGE_FONT_SIZE: f32 = 0.15; // scale
 pub const LARGE_FONT_BOUNCE_MAX: f32 = 0.125; // font size
 pub const LARGE_FONT_BOUNCE_SPEED: f32 = 0.8;
 
+pub const DAMAGE_ADD: f32 = 1.0;
+pub const HEALTH_ADD: f32 = 2.0;
+pub const RELOAD_MOD: f32 = 0.25;
+pub const SPEED_MOD: f32 = 0.5;
+
+pub const HEARTS_HEAL_CHANCE: f32 = 0.05;
+pub const CLUBS_STUN_TIME: f32 = 0.25; // seconds
+pub const SPADES_DAMAGE_CHANCE: f32 = 0.1;
+
 pub const AR: weapon::Weapon = weapon::Weapon::new(5.0, 2.5, 12.0, 1.0, 0.75, 7.5);
 
 pub const BULLET_SIZE: f32 = 0.005; // scale
@@ -72,7 +81,6 @@ pub const ENEMY_RANGED_CHANCE: f32 = 0.33; // percent
 
 // Note: wave spawning starts at 1
 pub const ENEMY_WAVE_COUNT: fn(i32) -> i32 = |wave| 5 + 5 * (wave - 1);
-pub const ENEMY_WAVE_SCORE: fn(i32) -> i32 = |wave| (wave - 1).pow(2);
 
 pub const ENEMY_WAVE_HP: fn(i32) -> f32 = |wave| 5.0 + 2.0 * (wave - 1) as f32;
 pub const ENEMY_WAVE_DAMAGE: fn(i32) -> f32 = |wave| 1.0 + 0.1 * (wave - 1) as f32;

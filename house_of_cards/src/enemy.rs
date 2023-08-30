@@ -2,6 +2,27 @@ use macroquad::prelude as mq;
 
 use crate::{bullet, camera, colors, consts, hitbox, player, timer, util};
 
+pub struct EnemyStunned {
+    pub time_remaining: f32,
+}
+
+impl EnemyStunned {
+    pub fn new() -> Self {
+        Self {
+            time_remaining: 0.0,
+        }
+    }
+
+    pub fn update(&mut self, delta: f32) {
+        self.time_remaining -= delta;
+        self.time_remaining = self.time_remaining.max(0.0);
+    }
+
+    pub fn is_stunned(&self) -> bool {
+        self.time_remaining > 0.0
+    }
+}
+
 pub struct EnemyAttack {
     time_until_next_attack: f32,
     time_in_range: f32,
@@ -68,6 +89,7 @@ pub struct Enemy {
     direction: f32, // radians
     enemy_type: EnemyType,
     enemy_attack: EnemyAttack,
+    pub enemy_stunned: EnemyStunned,
 }
 
 impl Enemy {
@@ -81,10 +103,16 @@ impl Enemy {
             direction: 0.0,
             enemy_type,
             enemy_attack: EnemyAttack::new(),
+            enemy_stunned: EnemyStunned::new(),
         }
     }
 
     pub fn update(&mut self, player: &mut player::Player, delta: f32) -> util::Shot {
+        self.enemy_stunned.update(delta);
+        if self.enemy_stunned.is_stunned() {
+            return util::Shot(false);
+        }
+
         let vec_to_player = player.pos - self.pos;
         let distance_to_player = vec_to_player.length();
 
@@ -222,11 +250,6 @@ impl hitbox::Rectangle for Enemy {
     }
 }
 
-pub struct EnemyManagerUpdateResult {
-    pub wave_finished: bool,
-    pub enemies_killed: i32,
-}
-
 pub struct EnemyManager {
     pub enemies: Vec<Enemy>,
     pub wave: i32,                // used internally to calculate enemy stats
@@ -246,10 +269,10 @@ impl EnemyManager {
         }
     }
 
-    pub fn update(&mut self, player: &mut player::Player, delta: f32) -> EnemyManagerUpdateResult {
+    pub fn update(&mut self, player: &mut player::Player, delta: f32) -> util::EnemiesKilled {
         let previous_enemy_count = self.enemies.len() as i32;
         self.enemies.retain(|enemy| enemy.health > 0.0);
-        let enemies_killed = previous_enemy_count - self.enemies.len() as i32;
+        let enemies_killed = util::EnemiesKilled(previous_enemy_count - self.enemies.len() as i32);
 
         for enemy in self.enemies.iter_mut() {
             let shot = enemy.update(player, delta);
@@ -261,6 +284,7 @@ impl EnemyManager {
                     consts::ENEMY_RANGED_BULLET_SPEED,
                     consts::ENEMT_RANGED_BULLET_RANGE,
                     bullet::BulletDamage::Standard(enemy.damage),
+                    1,
                 );
                 self.enemy_bullets.push(bullet);
             }
@@ -274,7 +298,7 @@ impl EnemyManager {
             if hitbox::circles_collide(bullet, player) {
                 player.health -= match bullet.bullet_damage {
                     bullet::BulletDamage::Standard(damage) => damage,
-                    bullet::BulletDamage::Card(card) => card.damage(),
+                    bullet::BulletDamage::Card(card) => card.damage(None),
                 };
 
                 bullet.remove();
@@ -283,12 +307,10 @@ impl EnemyManager {
 
         self.enemy_bullets.retain(bullet::Bullet::should_keep);
 
-        let mut wave_finished = false;
         if let util::Ticked(true) = self.spawn_timer.update(delta) {
             if self.enemies_until_next_wave <= 0 {
                 self.wave += 1;
                 self.enemies_until_next_wave = consts::ENEMY_WAVE_COUNT(self.wave);
-                wave_finished = true;
                 self.spawn_timer
                     .update_period(1.0 / consts::ENEMY_WAVE_SPAWN_RATE(self.wave));
             }
@@ -298,10 +320,7 @@ impl EnemyManager {
             self.spawn_enemy(player);
         }
 
-        EnemyManagerUpdateResult {
-            wave_finished,
-            enemies_killed,
-        }
+        enemies_killed
     }
 
     fn spawn_enemy(&mut self, player: &player::Player) {

@@ -5,3 +5,4 @@ pub fn rad_to_deg(rad: f32) -> f32 {
 pub struct Shot(pub bool);
 pub struct Moved(pub bool);
 pub struct Ticked(pub bool);
+pub struct EnemiesKilled(pub i32);

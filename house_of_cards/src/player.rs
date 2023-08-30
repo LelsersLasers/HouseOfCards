@@ -1,6 +1,6 @@
 use macroquad::prelude as mq;
 
-use crate::{camera, colors, consts, hitbox, mouse, util, weapon};
+use crate::{camera, colors, consts, hitbox, mouse, powerup, util, weapon};
 
 pub struct Player {
     pub pos: mq::Vec2,  // in tiles
@@ -8,6 +8,8 @@ pub struct Player {
     pub weapon: weapon::Weapon,
     pub health: f32,
     pub max_health: f32,
+    pub xp: f32,
+    pub level: u32,
 }
 
 impl Player {
@@ -18,10 +20,17 @@ impl Player {
             weapon,
             health: consts::PLAYER_MAX_HEALTH,
             max_health: consts::PLAYER_MAX_HEALTH,
+            xp: 0.0,
+            level: 1,
         }
     }
 
-    pub fn handle_input(&mut self, mouse_info: &mut mouse::MouseInfo, delta: f32) -> util::Shot {
+    pub fn handle_input(
+        &mut self,
+        mouse_info: &mut mouse::MouseInfo,
+        powerups: &powerup::Powerups,
+        delta: f32,
+    ) -> util::Shot {
         let movement = (if mq::is_mouse_button_down(mq::MouseButton::Right) {
             let mouse_pos = mouse_info.get_last_pos();
             let mouse_pos_relative_to_center =
@@ -49,7 +58,7 @@ impl Player {
         .normalize_or_zero();
 
         let speed = consts::PLAYER_SPEED * delta * self.weapon.get_ms_penalty();
-        self.pos += movement * speed;
+        self.pos += movement * speed * powerups.speed_mod();
 
         let mut aim_vec = mq::Vec2::ZERO;
         if mq::is_key_down(mq::KeyCode::Up) {

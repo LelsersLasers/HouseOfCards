@@ -10,6 +10,7 @@ mod game_state;
 mod hitbox;
 mod mouse;
 mod player;
+mod powerup;
 mod timer;
 mod util;
 mod weapon;
@@ -104,6 +105,8 @@ async fn play() {
     let mut player = player::Player::new(consts::AR);
     let mut score = 0;
 
+    let powerups = powerup::Powerups::new();
+
     let mut camera = camera::Camera::new();
 
     let mut time_counter = 0.0;
@@ -156,7 +159,7 @@ async fn play() {
 
         //----------------------------------------------------------------------------//
         if game_state == game_state::GameState::Alive {
-            let player_shot = player.handle_input(&mut mouse_info, delta);
+            let player_shot = player.handle_input(&mut mouse_info, &powerups, delta);
             let camera_moved = camera.update(&player, delta);
             if camera_moved.0 || resized {
                 world.update_locations_to_build(&camera, scale);
@@ -171,11 +174,12 @@ async fn play() {
                         player.weapon.bullet_speed,
                         player.weapon.range,
                         bullet::BulletDamage::Card(card),
+                        powerups.diamonds_bullet_hp(),
                     );
                     player_bullets.push(bullet);
                 } else if consts::AUTO_RELOAD {
                     deck.combine();
-                    player.weapon.reload();
+                    player.weapon.reload(&powerups);
                 }
             }
 
@@ -186,32 +190,31 @@ async fn play() {
             for bullet in player_bullets.iter_mut() {
                 for enemy in enemy_manager.enemies.iter_mut() {
                     if hitbox::rectangle_circle_collide(enemy, bullet) {
-                        enemy.health -= match bullet.bullet_damage {
-                            bullet::BulletDamage::Standard(damage) => damage,
-                            bullet::BulletDamage::Card(card) => card.damage(),
-                        };
+                        let bullet::BulletHitResult {
+                            damage,
+                            stun_time,
+                            heal_amount,
+                        } = bullet.hit_result(&powerups);
 
-                        bullet.remove();
+                        enemy.health -= damage;
+                        enemy.enemy_stunned.time_remaining += stun_time;
+
+                        player.health += heal_amount;
+                        player.health = player.health.min(player.max_health);
+
+                        bullet.hit();
                     }
                 }
             }
 
             player_bullets.retain(bullet::Bullet::should_keep);
 
-            let enemy_manager_update_result = enemy_manager.update(&mut player, delta);
-            score += enemy_manager_update_result.enemies_killed;
-
-            // heal or increase max health
-            if enemy_manager_update_result.wave_finished {
-                player.health += 1.0;
-                player.max_health = player.max_health.max(player.health);
-
-                score += consts::ENEMY_WAVE_SCORE(enemy_manager.wave);
-            }
+            let enemies_killed = enemy_manager.update(&mut player, delta);
+            score += enemies_killed.0;
 
             if mq::is_key_pressed(mq::KeyCode::R) && !deck.is_full() {
                 deck.combine();
-                player.weapon.reload();
+                player.weapon.reload(&powerups);
             }
 
             if player.health <= 0.0 {
