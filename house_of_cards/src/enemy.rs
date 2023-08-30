@@ -1,6 +1,6 @@
 use macroquad::prelude as mq;
 
-use crate::{bullet, camera, colors, consts, hitbox, player, util, weapon};
+use crate::{bullet, camera, colors, consts, hitbox, player, util};
 
 pub struct EnemyAttack {
     time_until_next_attack: f32,
