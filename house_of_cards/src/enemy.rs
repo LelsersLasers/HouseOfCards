@@ -273,9 +273,6 @@ impl EnemyManager {
                 self.wave += 1;
                 self.enemies_until_next_wave = consts::ENEMY_WAVE_COUNT(self.wave);
                 wave_finished = true;
-                let v = consts::ENEMY_WAVE_SPAWN_RATE(self.wave);
-                let t = 1.0 / v;
-                println!("v: {}; t: {}", v, t);
                 self.spawn_timer
                     .update_period(1.0 / consts::ENEMY_WAVE_SPAWN_RATE(self.wave));
             }

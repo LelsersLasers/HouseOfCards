@@ -8,6 +8,7 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 - Aim: arrow keys or mouse
 - Shoot: left click or space
 - Reload: R
+    - Auto reload is enabled if you run out of cards
 - Reset after death: R
 - Pause: escape or p
 
@@ -30,9 +31,6 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 
 ## Extra mechanics
 
-- End of wave
-	- Gain 1 hp
-	- If would increase max hp, increase max hp to new current hp
 - Damage
 	- Joker => -5 damage
 	- Face => 10 damage
@@ -40,7 +38,10 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 	- Else => number value of card
 - Score
 	- 1 point per enemy killed
-	- (Wave number)^2 points at the end of the wave
+- Every once and a while
+    - Gain 1 hp
+        - If would increase max hp, increase max hp to new current hp
+    - Gain points based on how long you have survived
 
 ## Planning
 
