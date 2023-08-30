@@ -16,7 +16,6 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 - 0.3.0
 	- Ranged enemies
 		- Stop moving before shooting
-		- Bullets deal damage to player
     - Waveless spawn system
 - Else
 	- Improve hitboxes

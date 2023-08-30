@@ -58,6 +58,7 @@ pub const ENEMY_MELEE_CHARGE_TIME: f32 = 0.5; // seconds
 pub const ENEMY_MELEE_RELOAD_TIME: f32 = 1.0; // seconds
 
 pub const ENEMY_RANGED_RANGE: f32 = 4.0; // tiles
+pub const ENEMY_RANGED_MIN_RANGE: f32 = 2.0; // tiles
 
 pub const ENEMY_MELEE_CHARGE_THICKNESS: f32 = 0.005; // scale
 

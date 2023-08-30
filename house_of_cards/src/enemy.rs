@@ -70,7 +70,11 @@ impl Enemy {
 
         if let EnemyType::Ranged(ref mut weapon) = self.enemy_type {
             weapon.update(delta);
-            movement *= weapon.get_ms_penalty();
+            if distance_to_player < consts::ENEMY_RANGED_MIN_RANGE {
+                movement = mq::Vec2::ZERO;
+            } else {
+                movement *= weapon.get_ms_penalty();
+            }
         }
         self.pos += movement;
 
@@ -203,6 +207,7 @@ impl EnemyManager {
 
         for enemy in self.enemies.iter_mut() {
             let shot = enemy.update(player, delta);
+
             let enemy_weapon = if let EnemyType::Ranged(ref mut weapon) = enemy.enemy_type {
                 weapon
             } else {
@@ -223,6 +228,17 @@ impl EnemyManager {
         self.enemy_bullets
             .iter_mut()
             .for_each(|bullet| bullet.update(delta));
+
+        for bullet in self.enemy_bullets.iter_mut() {
+            if hitbox::circles_collide(bullet, player) {
+                player.health -= match bullet.bullet_damage {
+                    bullet::BulletDamage::Standard(damage) => damage,
+                    bullet::BulletDamage::Card(card) => card.damage(),
+                };
+
+                bullet.remove();
+            }
+        }
 
         self.enemy_bullets.retain(bullet::Bullet::should_keep);
 
