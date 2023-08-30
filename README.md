@@ -15,7 +15,6 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 
 - 0.3.0
     - Waveless spawn system
-    - Convert update/etc return types to be `struct something(bool)` (instead of just `bool`)
     - Always drawn hp bars on top
 - Else
     - Improve mouse feel

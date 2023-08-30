@@ -74,8 +74,6 @@ pub struct Enemy {
     enemy_attack: EnemyAttack,
 }
 
-pub struct Shot(bool);
-
 impl Enemy {
     pub fn new(pos: mq::Vec2, health: f32, damage: f32, speed: f32, enemy_type: EnemyType) -> Self {
         Self {
@@ -90,9 +88,7 @@ impl Enemy {
         }
     }
 
-    pub fn update(&mut self, player: &mut player::Player, delta: f32) -> Shot {
-        // returns shot
-
+    pub fn update(&mut self, player: &mut player::Player, delta: f32) -> util::Shot {
         let vec_to_player = player.pos - self.pos;
         let distance_to_player = vec_to_player.length();
 
@@ -100,7 +96,7 @@ impl Enemy {
         let mut movement =
             mq::Vec2::new(self.direction.cos(), self.direction.sin()) * self.speed * delta;
 
-        let mut shot = Shot(false);
+        let mut shot = util::Shot(false);
 
         self.enemy_attack.update(delta);
 
@@ -117,7 +113,7 @@ impl Enemy {
                     if self.enemy_type.is_melee() {
                         player.health -= self.damage;
                     } else {
-                        shot = Shot(true);
+                        shot = util::Shot(true);
                     }
                 }
             } else {
@@ -245,7 +241,7 @@ impl EnemyManager {
         for enemy in self.enemies.iter_mut() {
             let shot = enemy.update(player, delta);
 
-            if let Shot(true) = shot {
+            if let util::Shot(true) = shot {
                 let bullet = bullet::Bullet::new(
                     enemy.pos,
                     enemy.direction,

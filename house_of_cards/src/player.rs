@@ -1,6 +1,6 @@
 use macroquad::prelude as mq;
 
-use crate::{camera, colors, consts, hitbox, mouse, weapon};
+use crate::{camera, colors, consts, hitbox, mouse, util, weapon};
 
 pub struct Player {
     pub pos: mq::Vec2,  // in tiles
@@ -21,10 +21,7 @@ impl Player {
         }
     }
 
-    pub fn handle_input(&mut self, mouse_info: &mut mouse::MouseInfo, delta: f32) -> bool {
-        // WASD keys to move (no arrow keys)
-        // diagonal movement is allowed
-
+    pub fn handle_input(&mut self, mouse_info: &mut mouse::MouseInfo, delta: f32) -> util::Shot {
         let movement = (if mq::is_mouse_button_down(mq::MouseButton::Right) {
             let mouse_pos = mouse_info.get_last_pos();
             let mouse_pos_relative_to_center =
@@ -51,12 +48,9 @@ impl Player {
         })
         .normalize_or_zero();
 
-        // update player position
         let speed = consts::PLAYER_SPEED * delta * self.weapon.get_ms_penalty();
         self.pos += movement * speed;
 
-        // arrow keys to aim
-        // diagonal aiming is allowed
         let mut aim_vec = mq::Vec2::ZERO;
         if mq::is_key_down(mq::KeyCode::Up) {
             aim_vec.y -= 1.0;
@@ -72,7 +66,6 @@ impl Player {
         }
         aim_vec = aim_vec.normalize_or_zero();
 
-        // update player direction
         if aim_vec != mq::Vec2::ZERO {
             self.direction = aim_vec.y.atan2(aim_vec.x);
             mouse_info.set_active(false);
@@ -86,14 +79,14 @@ impl Player {
             self.direction = movement.y.atan2(movement.x);
         }
 
-        // update weapon
         self.weapon.update(delta);
-        let mut shot = false;
-        if mq::is_key_down(mq::KeyCode::Space) || mq::is_mouse_button_down(mq::MouseButton::Left) {
-            shot = self.weapon.try_shoot();
-        }
-
-        shot
+        // uses short-circuiting to only `try_shoot` if the player is requesting to shoot
+        // `.0` is used to get the `bool` from the `Shot` struct
+        util::Shot(
+            (mq::is_key_down(mq::KeyCode::Space)
+                || mq::is_mouse_button_down(mq::MouseButton::Left))
+                && self.weapon.try_shoot().0,
+        )
     }
 
     pub fn draw(&self, camera: &camera::Camera, scale: f32) {

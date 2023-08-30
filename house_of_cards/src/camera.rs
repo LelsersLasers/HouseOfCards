@@ -1,6 +1,6 @@
 use macroquad::prelude as mq;
 
-use crate::{consts, player};
+use crate::{consts, player, util};
 
 pub struct Camera {
     pub pos: mq::Vec2, // tiles
@@ -13,7 +13,7 @@ impl Camera {
         }
     }
 
-    pub fn update(&mut self, player: &player::Player, delta: f32) -> bool {
+    pub fn update(&mut self, player: &player::Player, delta: f32) -> util::Moved {
         // soft follow
 
         let old_pos = self.pos;
@@ -24,6 +24,6 @@ impl Camera {
 
         self.pos += movement;
 
-        old_pos != self.pos
+        util::Moved(old_pos != self.pos)
     }
 }

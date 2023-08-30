@@ -139,7 +139,7 @@ async fn play() {
         let delta = mq::get_frame_time();
         time_counter += delta;
 
-        if fps_timer.update(time_counter) {
+        if let util::Ticked(true) = fps_timer.update(time_counter) {
             fps_timer.update_state(delta);
         }
 
@@ -157,11 +157,11 @@ async fn play() {
         if game_state == game_state::GameState::Alive {
             let player_shot = player.handle_input(&mut mouse_info, delta);
             let camera_moved = camera.update(&player, delta);
-            if camera_moved || resized {
+            if camera_moved.0 || resized {
                 world.update_locations_to_build(&camera, scale);
             }
 
-            if player_shot {
+            if let util::Shot(true) = player_shot {
                 let card = deck.draw_card();
                 if let Some(card) = card {
                     let bullet = bullet::Bullet::new(

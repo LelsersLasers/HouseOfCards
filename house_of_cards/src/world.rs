@@ -5,68 +5,18 @@ use crate::{camera, colors, consts};
 
 #[derive(Clone, Copy, Eq, PartialEq)]
 pub enum Tile {
-    // Red,
-    // Orange,
-    // Yellow,
-    // Green,
-    // Blue,
-    // Purple,
-    // Zero,
-    // One,
-    // Two,
     Background(usize),
     Black,
 }
 impl Tile {
     pub fn get_color(&self) -> mq::Color {
         match self {
-            // Tile::Red => colors::NORD11,
-            // Tile::Orange => colors::NORD12,
-            // Tile::Yellow => colors::NORD13,
-            // Tile::Green => colors::NORD14,
-            // Tile::Blue => colors::NORD10,
-            // Tile::Purple => colors::NORD15,
-            // Tile::Black => colors::NORD0,
-            // Tile::Zero => colors::DRACULA0,
-            // Tile::One => colors::DRACULA1,
-            // Tile::Two => colors::DRACULA2,
             Tile::Background(index) => consts::BACKGROUND_COLORS[*index],
             Tile::Black => colors::NORD0,
         }
     }
 
     pub fn can_place_next_to(&self, other: &Tile) -> bool {
-        // red can only go next to orange or purple or red
-        // orange can only go next to red or yellow or orange
-        // yellow can only go next to orange or green or yellow
-        // green can only go next to yellow or blue or green
-        // blue can only go next to green or purple or blue
-        // purple can only go next to blue or red or purple
-
-        // self == other
-        //     // || matches!(
-        //     //     (self, other),
-        //     //     (Tile::Red, Tile::Orange)
-        //     //         | (Tile::Red, Tile::Purple)
-        //     //         | (Tile::Orange, Tile::Red)
-        //     //         | (Tile::Orange, Tile::Yellow)
-        //     //         | (Tile::Yellow, Tile::Orange)
-        //     //         | (Tile::Yellow, Tile::Green)
-        //     //         | (Tile::Green, Tile::Yellow)
-        //     //         | (Tile::Green, Tile::Blue)
-        //     //         | (Tile::Blue, Tile::Green)
-        //     //         | (Tile::Blue, Tile::Purple)
-        //     //         | (Tile::Purple, Tile::Blue)
-        //     //         | (Tile::Purple, Tile::Red)
-        //     // )
-        //     || matches!(
-        //         (self, other),
-        //         (Tile::Zero, Tile::One)
-        //             | (Tile::One, Tile::Zero)
-        //             | (Tile::One, Tile::Two)
-        //             | (Tile::Two, Tile::One)
-        //     )
-
         match (self, other) {
             (Tile::Background(self_index), Tile::Background(other_index)) => {
                 (*self_index as i32 - *other_index as i32).abs() <= 1

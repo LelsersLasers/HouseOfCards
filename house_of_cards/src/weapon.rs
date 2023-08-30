@@ -1,3 +1,5 @@
+use crate::util;
+
 pub struct Weapon {
     fire_rate: f32,   // shots per second
     reload_time: f32, // seconds
@@ -61,12 +63,12 @@ impl Weapon {
         self.reloading
     }
 
-    pub fn try_shoot(&mut self) -> bool {
+    pub fn try_shoot(&mut self) -> util::Shot {
         if self.can_shoot() {
             self.time_until_next_shot = 1.0 / self.fire_rate;
-            true
+            util::Shot(true)
         } else {
-            false
+            util::Shot(false)
         }
     }
 }

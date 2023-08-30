@@ -1,3 +1,5 @@
+use crate::util;
+
 pub struct Timer<T> {
     period: f32,
     last: f32,
@@ -29,12 +31,12 @@ impl<T: Default> Timer<T> {
         self.state = state;
     }
 
-    pub fn update(&mut self, ticks: f32) -> bool {
+    pub fn update(&mut self, ticks: f32) -> util::Ticked {
         if self.last + self.period <= ticks {
             self.last += self.period;
-            true
+            util::Ticked(true)
         } else {
-            false
+            util::Ticked(false)
         }
     }
 
