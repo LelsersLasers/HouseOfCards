@@ -225,7 +225,7 @@ async fn play() {
         //----------------------------------------------------------------------------//
         world.draw(&camera, scale);
         player.draw(&camera, scale);
-        enemy_manager.draw(&camera, &player, scale);
+        enemy_manager.draw(&camera, scale);
         for bullet in player_bullets.iter() {
             bullet.draw(&camera, scale);
         }

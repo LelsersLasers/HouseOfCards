@@ -99,37 +99,26 @@ impl Enemy {
         }
     }
 
-    pub fn draw(&self, camera: &camera::Camera, player: &player::Player, scale: f32) {
+    pub fn draw(&self, camera: &camera::Camera, scale: f32) {
         let draw_pos = (self.pos - camera.pos) * scale / consts::TILES_PER_SCALE as f32
             + mq::Vec2::new(mq::screen_width() / 2.0, mq::screen_height() / 2.0);
 
         // attack indicator
-        match self.enemy_type {
-            EnemyType::Melee(ref melee_attack) => {
-                let draw_radius =
-                    consts::ENEMY_MELEE_RANGE * scale / consts::TILES_PER_SCALE as f32;
-                if melee_attack.is_charging() {
-                    mq::draw_circle(draw_pos.x, draw_pos.y, draw_radius, colors::NORD6_BIG_ALPHA);
+        if let EnemyType::Melee(ref melee_attack) = self.enemy_type {
+            let draw_radius = consts::ENEMY_MELEE_RANGE * scale / consts::TILES_PER_SCALE as f32;
+            if melee_attack.is_charging() {
+                mq::draw_circle(draw_pos.x, draw_pos.y, draw_radius, colors::NORD6_BIG_ALPHA);
 
-                    let charge_ratio =
-                        1.0 - melee_attack.time_in_range / consts::ENEMY_MELEE_CHARGE_TIME;
+                let charge_ratio =
+                    1.0 - melee_attack.time_in_range / consts::ENEMY_MELEE_CHARGE_TIME;
 
-                    mq::draw_circle_lines(
-                        draw_pos.x,
-                        draw_pos.y,
-                        draw_radius * charge_ratio.clamp(0.0, 1.0),
-                        consts::ENEMY_MELEE_CHARGE_THICKNESS * scale,
-                        colors::NORD6_ALPHA,
-                    );
-                }
-            }
-            EnemyType::Ranged(_) => {
-                let distance_to_player = player.pos.distance(self.pos);
-                if distance_to_player < consts::ENEMY_RANGED_RANGE {
-                    let draw_radius =
-                        consts::ENEMY_RANGED_RANGE * scale / consts::TILES_PER_SCALE as f32;
-                    mq::draw_circle(draw_pos.x, draw_pos.y, draw_radius, colors::NORD6_BIG_ALPHA);
-                }
+                mq::draw_circle_lines(
+                    draw_pos.x,
+                    draw_pos.y,
+                    draw_radius * charge_ratio.clamp(0.0, 1.0),
+                    consts::ENEMY_MELEE_CHARGE_THICKNESS * scale,
+                    colors::NORD6_ALPHA,
+                );
             }
         }
 
@@ -141,7 +130,10 @@ impl Enemy {
             4,
             square_raduis,
             util::rad_to_deg(self.direction + std::f32::consts::PI / 4.0), // rotate 45 degrees
-            colors::NORD11,
+            match self.enemy_type {
+                EnemyType::Melee(_) => colors::NORD11,
+                EnemyType::Ranged(_) => colors::NORD12,
+            },
         );
 
         // hp bar
@@ -277,9 +269,9 @@ impl EnemyManager {
         self.enemies_left_to_spawn -= 1;
     }
 
-    pub fn draw(&self, camera: &camera::Camera, player: &player::Player, scale: f32) {
+    pub fn draw(&self, camera: &camera::Camera, scale: f32) {
         for enemy in self.enemies.iter() {
-            enemy.draw(camera, player, scale);
+            enemy.draw(camera, scale);
         }
 
         for bullet in self.enemy_bullets.iter() {
