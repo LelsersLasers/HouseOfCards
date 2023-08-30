@@ -132,6 +132,6 @@ impl hitbox::Circle for Player {
     }
 
     fn radius(&self) -> f32 {
-        consts::PLAYER_SIZE * consts::PLAYER_SIZE
+        consts::PLAYER_SIZE * consts::TILES_PER_SCALE as f32
     }
 }

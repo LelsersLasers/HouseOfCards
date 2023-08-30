@@ -19,6 +19,8 @@ pub const PLAYER_HP_BAR_HEIGHT: f32 = 0.025; // scale
 pub const PLAYER_HP_BAR_BOT_OFFSET: f32 = 0.05; // scale
 pub const PLAYER_HP_BAR_THICKNESS: f32 = 0.0075; // scale
 
+pub const FPS_TEXT_UPDATE_PERIOD: f32 = 1.0 / 10.0; // seconds
+
 pub const CAMERA_FOLLOW_SPEED: f32 = 0.95;
 
 pub const TIME_TO_MOUSE_IDLE: f32 = 2.5; // seconds
@@ -66,7 +68,6 @@ pub const ENEMT_RANGED_BULLET_RANGE: f32 = 12.0; // tiles
 
 pub const ENEMY_MELEE_CHARGE_THICKNESS: f32 = 0.005; // scale
 
-pub const ENEMY_SPAWN_RATE: f32 = 0.25; // enemies / seconds
 pub const ENEMY_SPAWN_RADIUS: f32 = TILES_PER_SCALE as f32 + 2.0; // tiles
 pub const ENEMY_RANGED_CHANCE: f32 = 0.33; // percent
 
@@ -76,5 +77,13 @@ pub const ENEMY_WAVE_SCORE: fn(i32) -> i32 = |wave| (wave - 1).pow(2);
 
 pub const ENEMY_WAVE_HP: fn(i32) -> f32 = |wave| 5.0 + 2.0 * (wave - 1) as f32;
 pub const ENEMY_WAVE_DAMAGE: fn(i32) -> f32 = |wave| 1.0 + 0.1 * (wave - 1) as f32;
+
+// x, a, b, c
+// f(x) = ((b - a) / log(c + 1)) * log(x + 1) + a
+// where a = f(0) and b = f(c)
+pub const AUTO_LOG: fn(f32, f32, f32, f32) -> f32 =
+    |x, a, b, c| ((b - a) / (c + 1.0).log10()) * (x + 1.0).log10() + a;
+pub const ENEMY_WAVE_SPAWN_RATE: fn(i32) -> f32 =
+    |wave| AUTO_LOG(wave as f32, 1.0 / 5.0, 1.0 / 2.0, 10.0);
 
 pub const AUTO_RELOAD: bool = true;

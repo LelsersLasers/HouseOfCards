@@ -107,7 +107,8 @@ async fn play() {
     let mut camera = camera::Camera::new();
 
     let mut time_counter = 0.0;
-    let mut fps_timer = timer::Timer::new_with_state(0.1, 1.0 / 60.0);
+
+    let mut fps_timer = timer::Timer::new_with_state(consts::FPS_TEXT_UPDATE_PERIOD, 1.0 / 60.0);
 
     let mut world = world::World::new();
     world.update_locations_to_build(&camera, consts::WINDOW_START_SIZE as f32);
@@ -139,7 +140,7 @@ async fn play() {
         let delta = mq::get_frame_time();
         time_counter += delta;
 
-        if let util::Ticked(true) = fps_timer.update(time_counter) {
+        if let util::Ticked(true) = fps_timer.update(delta) {
             fps_timer.update_state(delta);
         }
 
@@ -197,8 +198,7 @@ async fn play() {
 
             player_bullets.retain(bullet::Bullet::should_keep);
 
-            let enemy_manager_update_result =
-                enemy_manager.update(&mut player, time_counter, delta);
+            let enemy_manager_update_result = enemy_manager.update(&mut player, delta);
             score += enemy_manager_update_result.enemies_killed;
 
             // heal or increase max health
@@ -259,11 +259,11 @@ async fn play() {
 
         let texts = [
             (0.05, format!("FPS: {:.0}", 1.0 / fps_timer.get_state())),
-            (-0.1, format!("Wave: {}", enemy_manager.wave)),
-            (
-                0.05,
-                format!("Enemies alive: {}", enemy_manager.enemies.len()),
-            ),
+            // (-0.1, format!("Wave: {}", enemy_manager.wave)),
+            // (
+            //     0.05,
+            //     format!("Enemies alive: {}", enemy_manager.enemies.len()),
+            // ),
             (0.05, format!("Score: {}", score)),
         ];
         let font_size = (scale * consts::FONT_SIZE).round() as u16;

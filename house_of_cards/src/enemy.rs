@@ -225,17 +225,12 @@ impl EnemyManager {
             enemies: Vec::new(),
             wave: 0,
             enemies_until_next_wave: 0,
-            spawn_timer: timer::Timer::new(1.0 / consts::ENEMY_SPAWN_RATE),
+            spawn_timer: timer::Timer::new(1.0 / consts::ENEMY_WAVE_SPAWN_RATE(0)),
             enemy_bullets: Vec::new(),
         }
     }
 
-    pub fn update(
-        &mut self,
-        player: &mut player::Player,
-        time_counter: f32,
-        delta: f32,
-    ) -> EnemyManagerUpdateResult {
+    pub fn update(&mut self, player: &mut player::Player, delta: f32) -> EnemyManagerUpdateResult {
         let previous_enemy_count = self.enemies.len() as i32;
         self.enemies.retain(|enemy| enemy.health > 0.0);
         let enemies_killed = previous_enemy_count - self.enemies.len() as i32;
@@ -273,11 +268,16 @@ impl EnemyManager {
         self.enemy_bullets.retain(bullet::Bullet::should_keep);
 
         let mut wave_finished = false;
-        if let util::Ticked(true) = self.spawn_timer.update(time_counter) {
+        if let util::Ticked(true) = self.spawn_timer.update(delta) {
             if self.enemies_until_next_wave <= 0 {
                 self.wave += 1;
                 self.enemies_until_next_wave = consts::ENEMY_WAVE_COUNT(self.wave);
                 wave_finished = true;
+                let v = consts::ENEMY_WAVE_SPAWN_RATE(self.wave);
+                let t = 1.0 / v;
+                println!("v: {}; t: {}", v, t);
+                self.spawn_timer
+                    .update_period(1.0 / consts::ENEMY_WAVE_SPAWN_RATE(self.wave));
             }
 
             self.enemies_until_next_wave -= 1;
