@@ -58,7 +58,6 @@ pub const ENEMY_MELEE_CHARGE_TIME: f32 = 0.5; // seconds
 pub const ENEMY_MELEE_RELOAD_TIME: f32 = 1.0; // seconds
 
 pub const ENEMY_RANGED_RANGE: f32 = 4.0; // tiles
-pub const ENEMY_RANGED_MIN_RANGE: f32 = 2.0; // tiles
 pub const ENEMY_RANGED_CHARGE_TIME: f32 = 0.75; // seconds
 pub const ENEMY_RANGED_RELOAD_TIME: f32 = 4.0; // seconds
 pub const ENEMY_RANGED_SPEED_PENALTY: f32 = 0.75; // percent
@@ -84,6 +83,6 @@ pub const ENEMY_WAVE_DAMAGE: fn(i32) -> f32 = |wave| 1.0 + 0.1 * (wave - 1) as f
 pub const AUTO_LOG: fn(f32, f32, f32, f32) -> f32 =
     |x, a, b, c| ((b - a) / (c + 1.0).log10()) * (x + 1.0).log10() + a;
 pub const ENEMY_WAVE_SPAWN_RATE: fn(i32) -> f32 =
-    |wave| AUTO_LOG(wave as f32, 1.0 / 5.0, 1.0 / 2.0, 10.0);
+    |wave| AUTO_LOG(wave as f32, 1.0 / 5.0, 1.0 / 3.0, 10.0);
 
 pub const AUTO_RELOAD: bool = true;
