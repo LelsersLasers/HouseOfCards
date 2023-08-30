@@ -39,8 +39,4 @@ impl<T: Default> Timer<T> {
             util::Ticked(false)
         }
     }
-
-    pub fn reset(&mut self) {
-        self.last = 0.0;
-    }
 }

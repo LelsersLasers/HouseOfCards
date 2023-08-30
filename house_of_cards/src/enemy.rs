@@ -1,6 +1,6 @@
 use macroquad::prelude as mq;
 
-use crate::{bullet, camera, colors, consts, hitbox, player, util};
+use crate::{bullet, camera, colors, consts, hitbox, player, timer, util};
 
 pub struct EnemyAttack {
     time_until_next_attack: f32,
@@ -213,9 +213,9 @@ pub struct EnemyManagerUpdateResult {
 
 pub struct EnemyManager {
     pub enemies: Vec<Enemy>,
-    pub wave: i32,
-    enemies_left_to_spawn: i32, // not enemies.len()
-    time_until_next_spawn: f32, // in seconds
+    pub wave: i32,                // used internally to calculate enemy stats
+    enemies_until_next_wave: i32, // not enemies.len()
+    spawn_timer: timer::Timer<()>,
     enemy_bullets: Vec<bullet::Bullet>,
 }
 
@@ -224,17 +224,18 @@ impl EnemyManager {
         Self {
             enemies: Vec::new(),
             wave: 0,
-            enemies_left_to_spawn: 0,
-            time_until_next_spawn: 0.0,
+            enemies_until_next_wave: 0,
+            spawn_timer: timer::Timer::new(1.0 / consts::ENEMY_SPAWN_RATE),
             enemy_bullets: Vec::new(),
         }
     }
 
-    pub fn enemies_left(&self) -> i32 {
-        self.enemies_left_to_spawn + self.enemies.len() as i32
-    }
-
-    pub fn update(&mut self, player: &mut player::Player, delta: f32) -> EnemyManagerUpdateResult {
+    pub fn update(
+        &mut self,
+        player: &mut player::Player,
+        time_counter: f32,
+        delta: f32,
+    ) -> EnemyManagerUpdateResult {
         let previous_enemy_count = self.enemies.len() as i32;
         self.enemies.retain(|enemy| enemy.health > 0.0);
         let enemies_killed = previous_enemy_count - self.enemies.len() as i32;
@@ -271,23 +272,21 @@ impl EnemyManager {
 
         self.enemy_bullets.retain(bullet::Bullet::should_keep);
 
-        self.time_until_next_spawn -= delta;
+        let mut wave_finished = false;
+        if let util::Ticked(true) = self.spawn_timer.update(time_counter) {
+            if self.enemies_until_next_wave <= 0 {
+                self.wave += 1;
+                self.enemies_until_next_wave = consts::ENEMY_WAVE_COUNT(self.wave);
+                wave_finished = true;
+            }
 
-        if self.enemies.is_empty() && self.enemies_left_to_spawn <= 0 {
-            self.wave += 1;
-            self.enemies_left_to_spawn = consts::ENEMY_WAVE_COUNT(self.wave);
-            self.time_until_next_spawn = 1.0 / consts::ENEMY_SPAWN_RATE;
-            return EnemyManagerUpdateResult {
-                wave_finished: true,
-                enemies_killed,
-            };
-        } else if self.time_until_next_spawn <= 0.0 && self.enemies_left_to_spawn > 0 {
+            self.enemies_until_next_wave -= 1;
+
             self.spawn_enemy(player);
-            self.time_until_next_spawn = 1.0 / consts::ENEMY_SPAWN_RATE;
         }
 
         EnemyManagerUpdateResult {
-            wave_finished: false,
+            wave_finished,
             enemies_killed,
         }
     }
@@ -311,7 +310,6 @@ impl EnemyManager {
             enemy_type,
         );
         self.enemies.push(enemy);
-        self.enemies_left_to_spawn -= 1;
     }
 
     pub fn draw(&self, camera: &camera::Camera, scale: f32) {

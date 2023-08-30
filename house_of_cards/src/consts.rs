@@ -66,7 +66,7 @@ pub const ENEMT_RANGED_BULLET_RANGE: f32 = 12.0; // tiles
 
 pub const ENEMY_MELEE_CHARGE_THICKNESS: f32 = 0.005; // scale
 
-pub const ENEMY_SPAWN_RATE: f32 = 3.0; // enemies / seconds
+pub const ENEMY_SPAWN_RATE: f32 = 0.25; // enemies / seconds
 pub const ENEMY_SPAWN_RADIUS: f32 = TILES_PER_SCALE as f32 + 2.0; // tiles
 pub const ENEMY_RANGED_CHANCE: f32 = 0.33; // percent
 

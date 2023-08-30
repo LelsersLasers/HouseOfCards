@@ -197,7 +197,8 @@ async fn play() {
 
             player_bullets.retain(bullet::Bullet::should_keep);
 
-            let enemy_manager_update_result = enemy_manager.update(&mut player, delta);
+            let enemy_manager_update_result =
+                enemy_manager.update(&mut player, time_counter, delta);
             score += enemy_manager_update_result.enemies_killed;
 
             // heal or increase max health
@@ -258,10 +259,10 @@ async fn play() {
 
         let texts = [
             (0.05, format!("FPS: {:.0}", 1.0 / fps_timer.get_state())),
-            (-0.19, format!("Wave: {}", enemy_manager.wave)),
+            (-0.1, format!("Wave: {}", enemy_manager.wave)),
             (
                 0.05,
-                format!("Enemies left: {}", enemy_manager.enemies_left()),
+                format!("Enemies alive: {}", enemy_manager.enemies.len()),
             ),
             (0.05, format!("Score: {}", score)),
         ];

@@ -15,6 +15,8 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 
 - 0.3.0
     - Waveless spawn system
+        - Increase spawn rate over time?
+    - Make Timer use delta instead of time_counter
 - Else
     - Improve mouse feel
 	- Improve hitboxes
