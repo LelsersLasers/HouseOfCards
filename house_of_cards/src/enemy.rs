@@ -96,29 +96,27 @@ impl Enemy {
 
         self.enemy_attack.update(delta);
 
-        match self.enemy_type {
-            EnemyType::Ranged => {
-                if self.enemy_attack.time_until_next_attack > 0.0 {
-                    self.enemy_attack.time_until_next_attack -= delta;
-                } else if self.enemy_attack.time_in_range > 0.0 {
-                    movement = mq::Vec2::ZERO;
-                    self.enemy_attack.time_in_range += delta;
-                    let charge_time = self.enemy_type.charge_time();
-                    if self.enemy_attack.time_in_range >= charge_time {
-                        let reload_time = self.enemy_type.reload_time();
-                        self.enemy_attack.time_until_next_attack = reload_time;
-                        self.enemy_attack.time_in_range = 0.0;
+        if self.enemy_attack.time_until_next_attack > 0.0 {
+            self.enemy_attack.time_until_next_attack -= delta;
+        } else {
+            match self.enemy_type {
+                EnemyType::Ranged => {
+                    if self.enemy_attack.time_in_range > 0.0 {
+                        movement = mq::Vec2::ZERO;
+                        self.enemy_attack.time_in_range += delta;
+                        let charge_time = self.enemy_type.charge_time();
+                        if self.enemy_attack.time_in_range >= charge_time {
+                            let reload_time = self.enemy_type.reload_time();
+                            self.enemy_attack.time_until_next_attack = reload_time;
+                            self.enemy_attack.time_in_range = 0.0;
 
-                        shot = util::Shot(true);
+                            shot = util::Shot(true);
+                        }
+                    } else if distance_to_player < consts::ENEMY_RANGED_RANGE {
+                        self.enemy_attack.time_in_range += delta;
                     }
-                } else if distance_to_player < consts::ENEMY_RANGED_RANGE {
-                    self.enemy_attack.time_in_range += delta;
                 }
-            }
-            EnemyType::Melee => {
-                if self.enemy_attack.time_until_next_attack > 0.0 {
-                    self.enemy_attack.time_until_next_attack -= delta;
-                } else {
+                EnemyType::Melee => {
                     let range = self.enemy_type.range();
                     if distance_to_player < range {
                         self.enemy_attack.time_in_range += delta;
@@ -134,8 +132,8 @@ impl Enemy {
                         self.enemy_attack.time_in_range = 0.0;
                     }
                 }
-            }
-        };
+            };
+        }
 
         if !self.enemy_type.is_melee() {
             if distance_to_player < consts::ENEMY_RANGED_RANGE {
@@ -313,9 +311,9 @@ impl EnemyManager {
             + player.pos;
 
         let enemy_type = if mq::rand::gen_range(0.0, 1.0) < consts::ENEMY_RANGED_CHANCE {
-            EnemyType::Melee
-        } else {
             EnemyType::Ranged
+        } else {
+            EnemyType::Melee
         };
         let enemy = Enemy::new(
             spawn_pos,
