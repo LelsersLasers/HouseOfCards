@@ -229,6 +229,7 @@ async fn play() {
         for bullet in player_bullets.iter() {
             bullet.draw(&camera, scale);
         }
+        enemy_manager.draw_hp_bars(&camera, scale);
         deck.draw(&player.weapon, scale);
         mouse_info.draw(scale);
 

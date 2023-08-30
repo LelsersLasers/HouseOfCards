@@ -132,6 +132,23 @@ impl Enemy {
         shot
     }
 
+    pub fn draw_hp_bar(&self, camera: &camera::Camera, scale: f32) {
+        let draw_pos = (self.pos - camera.pos) * scale / consts::TILES_PER_SCALE as f32
+            + mq::Vec2::new(mq::screen_width() / 2.0, mq::screen_height() / 2.0);
+        let square_radius = scale * consts::ENEMY_SIZE;
+
+        let hp_bar_ratio = self.health / self.max_health;
+        let hp_bar_width = square_radius * 2.0 * hp_bar_ratio;
+        let hp_bar_height = square_radius / 4.0;
+        mq::draw_rectangle(
+            draw_pos.x - hp_bar_width / 2.0,
+            draw_pos.y - square_radius - hp_bar_height,
+            hp_bar_width,
+            hp_bar_height,
+            colors::NORD14,
+        );
+    }
+
     pub fn draw(&self, camera: &camera::Camera, scale: f32) {
         let draw_pos = (self.pos - camera.pos) * scale / consts::TILES_PER_SCALE as f32
             + mq::Vec2::new(mq::screen_width() / 2.0, mq::screen_height() / 2.0);
@@ -156,29 +173,17 @@ impl Enemy {
         }
 
         // draw square rotated to point in direction of movement
-        let square_raduis = scale * consts::ENEMY_SIZE;
+        let square_radius = scale * consts::ENEMY_SIZE;
         mq::draw_poly(
             draw_pos.x,
             draw_pos.y,
             4,
-            square_raduis,
+            square_radius,
             util::rad_to_deg(self.direction + std::f32::consts::PI / 4.0), // rotate 45 degrees
             match self.enemy_type {
                 EnemyType::Melee => colors::NORD11,
                 EnemyType::Ranged => colors::NORD12,
             },
-        );
-
-        // hp bar
-        let hp_bar_ratio = self.health / self.max_health;
-        let hp_bar_width = square_raduis * 2.0 * hp_bar_ratio;
-        let hp_bar_height = square_raduis / 4.0;
-        mq::draw_rectangle(
-            draw_pos.x - hp_bar_width / 2.0,
-            draw_pos.y - square_raduis - hp_bar_height,
-            hp_bar_width,
-            hp_bar_height,
-            colors::NORD14,
         );
     }
 }
@@ -316,6 +321,12 @@ impl EnemyManager {
 
         for bullet in self.enemy_bullets.iter() {
             bullet.draw(camera, scale);
+        }
+    }
+
+    pub fn draw_hp_bars(&self, camera: &camera::Camera, scale: f32) {
+        for enemy in self.enemies.iter() {
+            enemy.draw_hp_bar(camera, scale);
         }
     }
 }
