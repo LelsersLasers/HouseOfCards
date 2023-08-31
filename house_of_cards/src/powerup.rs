@@ -1,6 +1,6 @@
 use macroquad::prelude as mq;
 
-use crate::{colors, consts};
+use crate::{colors, consts, main};
 
 pub enum PowerupPickLocation {
     Left,
@@ -80,17 +80,11 @@ impl Powerup {
         let width = max_width.min(max_height * consts::POWERUP_PICK_OUTLINE_RATIO);
         let height = max_height.min(max_width / consts::POWERUP_PICK_OUTLINE_RATIO);
 
-        OutlineDrawDimensions {
-            width,
-            height
-        }
+        OutlineDrawDimensions { width, height }
     }
 
     pub fn draw_outline(scale: f32) {
-        let OutlineDrawDimensions {
-            width,
-            height,
-        } = Self::outline_draw_dimensions();
+        let OutlineDrawDimensions { width, height } = Self::outline_draw_dimensions();
 
         let thickness = consts::POWERUP_PICK_OUTLINE_THICKNESS * scale;
 
@@ -104,7 +98,7 @@ impl Powerup {
         mq::draw_rectangle_lines(pos.x, pos.y, width, height, thickness, colors::NORD4);
     }
 
-    pub fn draw(&self, location: PowerupPickLocation, scale: f32) {
+    pub fn draw(&self, location: PowerupPickLocation, font: mq::Font, scale: f32) {
         let OutlineDrawDimensions {
             width: outline_width,
             height: outline_height,
@@ -121,10 +115,8 @@ impl Powerup {
         let height = outline_height - 2.0 * outline_padding;
 
         let card0_pos = outline_pos + mq::Vec2::new(outline_padding, outline_padding);
-        let pos = card0_pos + mq::Vec2::new(
-            (outline_padding + width) * location.as_i32() as f32,
-            0.0,
-        );
+        let pos =
+            card0_pos + mq::Vec2::new((outline_padding + width) * location.as_i32() as f32, 0.0);
 
         mq::draw_rectangle(pos.x, pos.y, width, height, self.color_light_version());
 
@@ -136,6 +128,42 @@ impl Powerup {
             consts::POWERUP_PICK_OUTLINE_THICKNESS * scale,
             self.color(),
         );
+
+        let center = mq::Vec2::new(pos.x + width / 2.0, pos.y + height / 2.0);
+        let main_text = self.main_text();
+        let main_text_font_size = (consts::POWERUP_PICK_FONT_LARGE * scale).round() as u16;
+        let text_dims_large = main_text
+            .iter()
+            .map(|t| mq::measure_text(t, Some(font), main_text_font_size, 1.0))
+            .collect::<Vec<_>>();
+        let largest_text_width = text_dims_large
+            .iter()
+            .map(|d| d.width)
+            .max_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal))
+            .unwrap_or(0.0);
+
+        // draw main text with bottom at y = center.y
+        for i in (0..main_text.len()).rev() {
+            let text = main_text[i];
+            let text_dims = text_dims_large[i];
+            let text_pos = mq::Vec2::new(
+                center.x - text_dims.width / 2.0,
+                center.y + text_dims.height * (i as f32 + 1.0),
+            );
+
+            mq::draw_text_ex(
+                text,
+                text_pos.x,
+                text_pos.y,
+                mq::TextParams {
+                    font,
+                    font_size: main_text_font_size,
+                    font_scale: 1.0,
+                    color: self.color(),
+                    ..mq::TextParams::default()
+                },
+            );
+        }
     }
 
     fn color(&self) -> mq::Color {
@@ -158,6 +186,32 @@ impl Powerup {
         color.b = (color.b + 0.2).min(1.0);
 
         color
+    }
+
+    fn main_text(&self) -> Vec<&str> {
+        match self {
+            Powerup::Damage => vec!["+1 Damage"],
+            Powerup::Health => vec!["+2 Health"],
+            Powerup::Reload => vec!["+33% Reload Speed"],
+            Powerup::Speed => vec!["+5% Speed"],
+            Powerup::Diamonds => vec!["Diamonds:", "Pierce +1 Enemies"],
+            Powerup::Hearts => vec!["Hearts:", "+5% chance to heal"],
+            Powerup::Clubs => vec!["Clubs:", "+0.25s Stun"],
+            Powerup::Spades => vec!["Spades:", "+10% chance to double damage"],
+        }
+    }
+
+    fn sub_text(&self) -> Vec<&str> {
+        match self {
+            Powerup::Damage => vec!["for all cards"],
+            Powerup::Health => vec!["gain hp and max hp"],
+            Powerup::Reload => vec!["than current reload speed"],
+            Powerup::Speed => vec!["from base speed"],
+            Powerup::Diamonds => vec!["bullets go through", "an additional enemy"],
+            Powerup::Hearts => vec!["1 hp on hit"],
+            Powerup::Clubs => vec!["on hit"],
+            Powerup::Spades => vec!["can stack"],
+        }
     }
 }
 

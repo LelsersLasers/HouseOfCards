@@ -338,7 +338,7 @@ async fn play() {
             powerup::Powerup::draw_outline(scale);
             let all_locations = powerup::PowerupPickLocation::all_locations();
             for (powerup, location) in power_up_choices.iter().zip(all_locations) {
-                powerup.draw(location, scale);
+                powerup.draw(location, font, scale);
             }
         }
 

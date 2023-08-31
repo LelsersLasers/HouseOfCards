@@ -59,6 +59,8 @@ pub const POWERUP_PICK_OUTLINE_HEIGHT: f32 = 0.95; // scale
 pub const POWERUP_PICK_OUTLINE_RATIO: f32 = 2. / 1.0; // width / height
 pub const POWERUP_PICK_OUTLINE_PADDING: f32 = 0.02; // scale
 pub const POWERUP_PICK_OUTLINE_THICKNESS: f32 = 0.01;
+pub const POWERUP_PICK_FONT_LARGE: f32 = 0.08; // scale
+pub const POWERUP_PICK_FONT_SMALL: f32 = 0.03; // scale
 
 pub const AR: weapon::Weapon = weapon::Weapon::new(5.0, 2.5, 12.0, 1.0, 0.75, 7.5);
 

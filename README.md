@@ -57,6 +57,15 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 - Clubs stun for 0.25 seconds
 - Spades have 10% chance to double damage
 
+
++2 hp, max hp +2
+33% quicker reload
++5% movement speed
+Diamonds +1 enemy pierce
+Hearts: 5% chance to +1 hp
+Clubs: 0.25s stun
+Spades: 10% chance double damage
+
 ## Credits
 
 - Pixel Art Cards: https://www.reddit.com/r/PixelArt/comments/i1t1gn/pixel_art_playing_card_designs_created_in_aseprite/
