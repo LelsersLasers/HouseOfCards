@@ -138,7 +138,6 @@ async fn play() {
     let mut old_height = mq::screen_height();
 
     let mut mouse_info = mouse::MouseInfo::new();
-    mq::show_mouse(false);
 
     loop {
         mq::clear_background(consts::BACKGROUND_COLOR);
@@ -150,7 +149,8 @@ async fn play() {
             fps_timer.update_state(delta);
         }
 
-        // mq::show_mouse(game_state == game_state::GameState::Powerup);
+        let mouse_shown = game_state == game_state::GameState::Powerup;
+        mq::show_mouse(mouse_shown);
 
         let scale = mq::screen_width().min(mq::screen_height());
 
@@ -256,7 +256,9 @@ async fn play() {
         }
         enemy_manager.draw_hp_bars(&camera, scale);
         deck.draw(&player.weapon, scale);
-        mouse_info.draw(scale);
+        if !mouse_shown {
+            mouse_info.draw(scale);
+        }
 
         {
             // Player HP bar
