@@ -350,7 +350,7 @@ impl EnemyManager {
             spawn_pos,
             consts::ENEMY_WAVE_HP(self.wave),
             consts::ENEMY_WAVE_DAMAGE(self.wave),
-            consts::ENEMY_SPEED,
+            consts::ENEMY_WAVE_SPEED(self.wave),
             enemy_type,
         );
         self.enemies.push(enemy);

@@ -100,8 +100,7 @@ fn draw_overlay(
 }
 
 async fn play() {
-    // let mut game_state = game_state::GameState::new();
-    let mut game_state = game_state::GameState::Powerup;
+    let mut game_state = game_state::GameState::new();
 
     let mut player = player::Player::new(consts::AR);
     let mut score = 0;

@@ -102,6 +102,7 @@ pub const ENEMY_WAVE_COUNT: fn(i32) -> i32 = |wave| 5 + 5 * (wave - 1);
 
 pub const ENEMY_WAVE_HP: fn(i32) -> f32 = |wave| 5.0 + 3.0 * (wave - 1) as f32;
 pub const ENEMY_WAVE_DAMAGE: fn(i32) -> f32 = |wave| 1.0 + 0.2 * (wave - 1) as f32;
+pub const ENEMY_WAVE_SPEED: fn(i32) -> f32 = |wave| ENEMY_SPEED * (1.0 + 0.01 * (wave - 1) as f32);
 
 pub const XP_PER_LEVEL: fn(i32) -> i32 = |level| 2 * level.pow(2);
 

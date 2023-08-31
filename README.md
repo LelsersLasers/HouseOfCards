@@ -14,11 +14,9 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 
 ## TODO
 
-- 0.4.0
-	- Scale enemy movement speed based on wave
-	- Score = xp
-	- Improve gaining xp/score system
 - Else
+	- Improve gaining xp/score system
+		- Score = xp
 	- Level up: stat upgrade choice (damage, hp, reload speed, etc)
 	- Once per wave: super enemy that drops chest that has a passive upgrade
 	- Make chances in power up feel better
