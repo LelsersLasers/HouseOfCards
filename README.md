@@ -14,15 +14,15 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 
 ## TODO
 
-- Else
-	- Improve gaining xp/score system
-		- Score = xp
+- 0.5.0
 	- Level up: stat upgrade choice (damage, hp, reload speed, etc)
 	- Once per wave: super enemy that drops chest that has a passive upgrade
-	- Make chances in power up feel better
+- Else
+	- Improve gaining xp/score system
+		- Score = xp	
     - Improve mouse feel
 	- Sound
-	- Other screens
+	- Other screens?
     - Other weapons?
 - Maybe
 	- Improve hitboxes?
@@ -52,15 +52,6 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 - Hearts have 5% chance to heal 1 hp (won't increase max hp)
 - Clubs stun for 0.25 seconds
 - Spades have 10% chance to double damage
-
-
-+2 hp, max hp +2
-33% quicker reload
-+5% movement speed
-Diamonds +1 enemy pierce
-Hearts: 5% chance to +1 hp
-Clubs: 0.25s stun
-Spades: 10% chance double damage
 
 ## Credits
 
