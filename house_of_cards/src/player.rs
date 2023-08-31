@@ -133,6 +133,79 @@ impl Player {
 
         mq::draw_triangle(top_point, side_point_1, side_point_2, colors::NORD4);
     }
+
+    pub fn draw_bars(&self, font: mq::Font, scale: f32) {
+        let bar_width = scale * consts::PLAYER_HP_BAR_WIDTH;
+        let bar_height = scale * consts::PLAYER_HP_BAR_HEIGHT;
+        let bar_thickness = scale * consts::PLAYER_HP_BAR_THICKNESS;
+
+        // center horizontally
+        let x = mq::screen_width() / 2.0 - bar_width / 2.0;
+        let y = mq::screen_height() - bar_height / 2.0 - scale * consts::PLAYER_HP_BAR_BOT_OFFSET;
+
+        let font_size = (bar_height * consts::PLAYER_BARS_FONT_RATIO).round() as u16;
+
+        // XP bar
+        let xp_ratio = self.xp as f32 / consts::XP_PER_LEVEL(self.level) as f32;
+
+        mq::draw_rectangle(x, y, bar_width, bar_height, colors::NORD6_ALPHA);
+        mq::draw_rectangle(x, y, bar_width * xp_ratio, bar_height, colors::NORD8);
+        mq::draw_rectangle_lines(x, y, bar_width, bar_height, bar_thickness, colors::NORD6);
+
+        // XP text
+        let text = format!("Level {}", self.level);
+        let text_dims = mq::measure_text(&text, Some(font), font_size, 1.0);
+        let text_pos = mq::Vec2::new(
+            mq::screen_width() / 2.0 - text_dims.width / 2.0,
+            y + bar_height / 2.0 + text_dims.offset_y / 2.0,
+        );
+
+        mq::draw_text_ex(
+            &text,
+            text_pos.x,
+            text_pos.y,
+            mq::TextParams {
+                font,
+                font_size,
+                font_scale: 1.0,
+                color: colors::NORD0,
+                ..mq::TextParams::default()
+            },
+        );
+
+        // HP bar
+        let y = y - bar_height - scale * consts::PLAYER_XP_BAR_OFFSET;
+        let hp_ratio = self.health / self.max_health;
+
+        mq::draw_rectangle(x, y, bar_width, bar_height, colors::NORD6_ALPHA);
+        mq::draw_rectangle(x, y, bar_width * hp_ratio, bar_height, colors::NORD14);
+        mq::draw_rectangle_lines(x, y, bar_width, bar_height, bar_thickness, colors::NORD6);
+
+        // HP text
+        let text = format!(
+            "{:.0} / {:.0}",
+            self.health.round(),
+            self.max_health.round()
+        );
+        let text_dims = mq::measure_text(&text, Some(font), font_size, 1.0);
+        let text_pos = mq::Vec2::new(
+            mq::screen_width() / 2.0 - text_dims.width / 2.0,
+            y + bar_height / 2.0 + text_dims.offset_y / 2.0,
+        );
+
+        mq::draw_text_ex(
+            &text,
+            text_pos.x,
+            text_pos.y,
+            mq::TextParams {
+                font,
+                font_size,
+                font_scale: 1.0,
+                color: colors::NORD0,
+                ..mq::TextParams::default()
+            },
+        );
+    }
 }
 
 impl hitbox::Circle for Player {

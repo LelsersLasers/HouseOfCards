@@ -16,8 +16,10 @@ pub const PLAYER_MAX_HEALTH: f32 = 10.0;
 
 pub const PLAYER_HP_BAR_WIDTH: f32 = 0.5; // scale
 pub const PLAYER_HP_BAR_HEIGHT: f32 = 0.025; // scale
-pub const PLAYER_HP_BAR_BOT_OFFSET: f32 = 0.05; // scale
+pub const PLAYER_HP_BAR_BOT_OFFSET: f32 = 0.033; // scale
 pub const PLAYER_HP_BAR_THICKNESS: f32 = 0.0075; // scale
+pub const PLAYER_XP_BAR_OFFSET: f32 = 0.01; // scale
+pub const PLAYER_BARS_FONT_RATIO: f32 = 0.85; // percent
 
 pub const FPS_TEXT_UPDATE_PERIOD: f32 = 1.0 / 10.0; // seconds
 
@@ -91,10 +93,10 @@ pub const ENEMY_RANGED_CHANCE: f32 = 0.33; // percent
 // Note: wave spawning starts at 1
 pub const ENEMY_WAVE_COUNT: fn(i32) -> i32 = |wave| 5 + 5 * (wave - 1);
 
-pub const ENEMY_WAVE_HP: fn(i32) -> f32 = |wave| 5.0 + 2.0 * (wave - 1) as f32;
-pub const ENEMY_WAVE_DAMAGE: fn(i32) -> f32 = |wave| 1.0 + 0.1 * (wave - 1) as f32;
+pub const ENEMY_WAVE_HP: fn(i32) -> f32 = |wave| 5.0 + 3.0 * (wave - 1) as f32;
+pub const ENEMY_WAVE_DAMAGE: fn(i32) -> f32 = |wave| 1.0 + 0.2 * (wave - 1) as f32;
 
-pub const XP_PER_LEVEL: fn(i32) -> i32 = |level| 2 * level.pow(2);
+pub const XP_PER_LEVEL: fn(i32) -> i32 = |level| 2 * (level + 1).pow(2);
 
 // x, a, b, c
 // f(x) = ((b - a) / log(c + 1)) * log(x + 1) + a

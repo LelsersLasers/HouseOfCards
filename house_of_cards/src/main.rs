@@ -259,29 +259,7 @@ async fn play() {
         if !mouse_shown {
             mouse_info.draw(scale);
         }
-
-        {
-            // Player HP bar
-            let bar_width = scale * consts::PLAYER_HP_BAR_WIDTH;
-            let bar_height = scale * consts::PLAYER_HP_BAR_HEIGHT;
-            let bar_thickness = scale * consts::PLAYER_HP_BAR_THICKNESS;
-
-            // center horizontally
-            let x = mq::screen_width() / 2.0 - bar_width / 2.0;
-            let y =
-                mq::screen_height() - bar_height / 2.0 - scale * consts::PLAYER_HP_BAR_BOT_OFFSET;
-
-            let hp = player.health;
-            let max_hp = player.max_health;
-            let hp_ratio = hp / max_hp;
-
-            // background
-            mq::draw_rectangle(x, y, bar_width, bar_height, colors::NORD6_ALPHA);
-            // hp
-            mq::draw_rectangle(x, y, bar_width * hp_ratio, bar_height, colors::NORD14);
-            // background outline
-            mq::draw_rectangle_lines(x, y, bar_width, bar_height, bar_thickness, colors::NORD6);
-        }
+        player.draw_bars(font, scale);
 
         let texts = [
             (0.05, format!("FPS: {:.0}", 1.0 / fps_timer.get_state())),

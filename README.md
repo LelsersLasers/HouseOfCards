@@ -15,9 +15,7 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 ## TODO
 
 - 0.4.0
-	- Player XP/levels
-		- Show level bar under health bar
-	- Put text like # / # for hp and xp bars
+	- Stun indicators
 	- Power up selection
 		- Better font colors
 		- Can use mouse to select
