@@ -132,13 +132,18 @@ impl Powerup {
     ) -> bool {
         let CardDrawDimensions { pos, width, height } = Self::card_draw_dimensions(location, scale);
 
-        let mouse_pos = mouse_info.get_last_pos();
+        let mouse_pos_click = mouse_info.get_last_click();
+        let mouse_pos_now = mouse_info.get_last_pos();
 
-        mq::is_mouse_button_pressed(mq::MouseButton::Left)
-            && mouse_pos.x >= pos.x
-            && mouse_pos.x <= pos.x + width
-            && mouse_pos.y >= pos.y
-            && mouse_pos.y <= pos.y + height
+        mouse_info.mouse_released()
+            && mouse_pos_click.x >= pos.x
+            && mouse_pos_click.x <= pos.x + width
+            && mouse_pos_click.y >= pos.y
+            && mouse_pos_click.y <= pos.y + height
+            && mouse_pos_now.x >= pos.x
+            && mouse_pos_now.x <= pos.x + width
+            && mouse_pos_now.y >= pos.y
+            && mouse_pos_now.y <= pos.y + height
     }
 
     pub fn draw(&self, location: PowerupPickLocation, font: mq::Font, scale: f32) {
