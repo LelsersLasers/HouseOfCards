@@ -229,6 +229,18 @@ impl Enemy {
                 EnemyType::Ranged => colors::NORD12,
             },
         );
+
+        if self.enemy_stunned.is_stunned() {
+            mq::draw_poly_lines(
+                draw_pos.x,
+                draw_pos.y,
+                4,
+                square_radius,
+                util::rad_to_deg(self.direction + std::f32::consts::PI / 4.0), // rotate 45 degrees
+                consts::ENEMY_STUNNED_THICKNESS * scale,
+                colors::NORD10,
+            );
+        }
     }
 }
 

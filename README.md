@@ -15,7 +15,6 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 ## TODO
 
 - 0.4.0
-	- Stun indicators
 	- Power up selection
 		- Better font colors
 		- Can use mouse to select

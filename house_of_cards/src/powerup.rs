@@ -1,6 +1,6 @@
 use macroquad::prelude as mq;
 
-use crate::{colors, consts, main};
+use crate::{colors, consts};
 
 pub enum PowerupPickLocation {
     Left,
