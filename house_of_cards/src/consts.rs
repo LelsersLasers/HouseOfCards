@@ -10,7 +10,7 @@ pub const BACKGROUND_COLORS: [mq::Color; 6] = colors::SURFACE_COLORS;
 
 pub const TILES_PER_SCALE: u32 = 12;
 
-pub const PLAYER_SPEED: f32 = 1.25; // tiles per second
+pub const PLAYER_SPEED: f32 = 1.2; // tiles per second
 pub const PLAYER_SIZE: f32 = 0.012; // scale
 pub const PLAYER_MAX_HEALTH: f32 = 10.0;
 
@@ -50,7 +50,7 @@ pub const LARGE_FONT_BOUNCE_SPEED: f32 = 0.8;
 pub const DAMAGE_ADD: f32 = 1.0;
 pub const HEALTH_ADD: f32 = 2.0;
 pub const RELOAD_MOD: f32 = 0.25;
-pub const SPEED_MOD: f32 = 0.5;
+pub const SPEED_MOD: f32 = 0.05;
 
 pub const HEARTS_HEAL_CHANCE: f32 = 0.05;
 pub const CLUBS_STUN_TIME: f32 = 0.25; // seconds
@@ -100,8 +100,8 @@ pub const ENEMY_RANGED_CHANCE: f32 = 0.33; // percent
 // Note: wave spawning starts at 1
 pub const ENEMY_WAVE_COUNT: fn(i32) -> i32 = |wave| 5 + 5 * (wave - 1);
 
-pub const ENEMY_WAVE_HP: fn(i32) -> f32 = |wave| 5.0 + 3.0 * (wave - 1) as f32;
-pub const ENEMY_WAVE_DAMAGE: fn(i32) -> f32 = |wave| 1.0 + 0.2 * (wave - 1) as f32;
+pub const ENEMY_WAVE_HP: fn(i32) -> f32 = |wave| 5.0 + 5.0 * (wave - 1) as f32;
+pub const ENEMY_WAVE_DAMAGE: fn(i32) -> f32 = |wave| 1.0 + 1.0 * (wave - 1) as f32;
 pub const ENEMY_WAVE_SPEED: fn(i32) -> f32 = |wave| ENEMY_SPEED * (1.0 + 0.01 * (wave - 1) as f32);
 
 pub const XP_PER_LEVEL: fn(i32) -> i32 = |level| 2 * level.pow(2);
@@ -112,6 +112,6 @@ pub const XP_PER_LEVEL: fn(i32) -> i32 = |level| 2 * level.pow(2);
 pub const AUTO_LOG: fn(f32, f32, f32, f32) -> f32 =
     |x, a, b, c| ((b - a) / (c + 1.0).log10()) * (x + 1.0).log10() + a;
 pub const ENEMY_WAVE_SPAWN_RATE: fn(i32) -> f32 =
-    |wave| AUTO_LOG(wave as f32, 1.0 / 5.0, 1.0 / 3.0, 10.0);
+    |wave| AUTO_LOG(wave as f32, 1.0 / 4.0, 1.0 / 2.0, 10.0);
 
 pub const AUTO_RELOAD: bool = true;
