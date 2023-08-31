@@ -256,10 +256,11 @@ async fn play() {
         }
         enemy_manager.draw_hp_bars(&camera, scale);
         deck.draw(&player.weapon, scale);
+        player.draw_bars(font, scale);
+        powerups.draw(scale);
         if !mouse_shown {
             mouse_info.draw(scale);
         }
-        player.draw_bars(font, scale);
 
         let texts = [
             (0.05, format!("FPS: {:.0}", 1.0 / fps_timer.get_state())),

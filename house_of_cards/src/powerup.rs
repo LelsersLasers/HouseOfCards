@@ -222,6 +222,28 @@ impl Powerup {
         }
     }
 
+    pub fn draw_small(&self, id: usize, scale: f32) {
+        let id_y = id % consts::POWERUP_DISPLAY_MAX_HEIGHT;
+        let id_x = id / consts::POWERUP_DISPLAY_MAX_HEIGHT;
+
+        let spacing = consts::POWERUP_DIPLAY_SPACING * scale;
+        let y_offset = consts::POWERUP_DIPLAY_Y_OFFSET * scale;
+        let size = consts::POWERUP_DISPLAY_SIZE * scale;
+
+        let x = spacing + id_x as f32 * (size + spacing);
+        let y = spacing + id_y as f32 * (size + spacing) + y_offset;
+
+        mq::draw_rectangle(x, y, size, size, self.color_light_version());
+        mq::draw_rectangle_lines(
+            x,
+            y,
+            size,
+            size,
+            consts::POWERUP_OUTLINE_THICKNESS * scale,
+            self.color(),
+        );
+    }
+
     fn color(&self) -> mq::Color {
         match self {
             Powerup::Damage => colors::NORD11,
@@ -279,6 +301,12 @@ impl Powerups {
     pub fn new() -> Self {
         Self {
             powerups: Vec::new(),
+        }
+    }
+
+    pub fn draw(&self, scale: f32) {
+        for (i, powerup) in self.powerups.iter().enumerate() {
+            powerup.draw_small(i, scale);
         }
     }
 

@@ -15,9 +15,6 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 ## TODO
 
 - 0.4.0
-	- Power up selection
-		- Better font colors
-	- Display current powerups on screen
 	- Scale enemy movement speed based on wave
 	- Score = xp
 	- Improve gaining xp/score system

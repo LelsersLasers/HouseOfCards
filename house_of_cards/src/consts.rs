@@ -65,6 +65,12 @@ pub const POWERUP_PICK_FONT_LARGE: f32 = 0.043; // scale
 pub const POWERUP_PICK_FONT_SMALL: f32 = 0.03; // scale
 pub const POWERUP_PICK_FONT_SPACING_CENTER: f32 = 0.01;
 
+pub const POWERUP_DISPLAY_SIZE: f32 = 0.05;
+pub const POWERUP_DIPLAY_SPACING: f32 = 0.01;
+pub const POWERUP_DIPLAY_Y_OFFSET: f32 = 0.065;
+pub const POWERUP_DISPLAY_MAX_HEIGHT: usize = 8;
+pub const POWERUP_OUTLINE_THICKNESS: f32 = 0.0075;
+
 pub const AR: weapon::Weapon = weapon::Weapon::new(5.0, 2.5, 12.0, 1.0, 0.75, 7.5);
 
 pub const BULLET_SIZE: f32 = 0.005; // scale
