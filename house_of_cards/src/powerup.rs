@@ -127,9 +127,14 @@ impl Powerup {
     pub fn clicked_on(
         &self,
         location: PowerupPickLocation,
+        need_click_after: f32,
         mouse_info: &mouse::MouseInfo,
         scale: f32,
     ) -> bool {
+        if need_click_after > mouse_info.last_click_time() {
+            return false;
+        }
+
         let CardDrawDimensions { pos, width, height } = Self::card_draw_dimensions(location, scale);
 
         let mouse_pos_click = mouse_info.get_last_click();

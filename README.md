@@ -11,6 +11,7 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
     - Auto reload is enabled if you run out of cards
 - Reset after death: R
 - Pause: escape or p
+- Choose powerup: 1, 2, 3 or left click
 
 ## TODO
 

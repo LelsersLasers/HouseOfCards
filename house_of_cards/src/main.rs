@@ -119,6 +119,7 @@ async fn play() {
     let mut enemy_manager = enemy::EnemyManager::new();
 
     let mut power_up_choices = powerup::Powerup::pick_three();
+    let mut need_click_after = 0.0;
 
     let mut player_bullets: Vec<bullet::Bullet> = Vec::new();
 
@@ -163,7 +164,7 @@ async fn play() {
             should_update_locations_to_build = true;
         }
 
-        mouse_info.update(delta);
+        mouse_info.update(time_counter, delta);
 
         //----------------------------------------------------------------------------//
         if game_state == game_state::GameState::Alive {
@@ -227,6 +228,7 @@ async fn play() {
 
                 game_state = game_state::GameState::Powerup;
                 power_up_choices = powerup::Powerup::pick_three();
+                need_click_after = time_counter;
             }
 
             if mq::is_key_pressed(mq::KeyCode::R) && !deck.is_full() {
@@ -327,7 +329,7 @@ async fn play() {
             let keys = [mq::KeyCode::Key1, mq::KeyCode::Key2, mq::KeyCode::Key3];
             for (i, (key, powerup)) in keys.iter().zip(power_up_choices.iter()).enumerate() {
                 if mq::is_key_pressed(*key)
-                    || powerup.clicked_on(all_locations[i], &mouse_info, scale)
+                    || powerup.clicked_on(all_locations[i], need_click_after, &mouse_info, scale)
                 {
                     selected_powerup = Some(power_up_choices[i]);
                 }

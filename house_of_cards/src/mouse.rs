@@ -9,6 +9,7 @@ pub struct MouseInfo {
     show: bool,
     last_click: mq::Vec2,
     mouse_released: bool,
+    last_click_time: f32,
 }
 
 impl MouseInfo {
@@ -20,10 +21,11 @@ impl MouseInfo {
             show: false,
             last_click: mq::Vec2::ZERO,
             mouse_released: false,
+            last_click_time: 0.0,
         }
     }
 
-    pub fn update(&mut self, delta: f32) {
+    pub fn update(&mut self, time_counter: f32, delta: f32) {
         let current_pos = mq::mouse_position().into();
         if current_pos != self.last_pos
             || mq::is_mouse_button_down(mq::MouseButton::Left)
@@ -42,6 +44,7 @@ impl MouseInfo {
 
         if mq::is_mouse_button_pressed(mq::MouseButton::Left) {
             self.last_click = current_pos;
+            self.last_click_time = time_counter;
         }
 
         self.last_pos = current_pos;
@@ -53,6 +56,10 @@ impl MouseInfo {
 
     pub fn get_last_click(&self) -> mq::Vec2 {
         self.last_click
+    }
+
+    pub fn last_click_time(&self) -> f32 {
+        self.last_click_time
     }
 
     pub fn draw(&self, scale: f32) {
