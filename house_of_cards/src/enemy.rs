@@ -349,7 +349,7 @@ impl EnemyManager {
         let enemy = Enemy::new(
             spawn_pos,
             consts::ENEMY_WAVE_HP(self.wave),
-            consts::ENEMY_WAVE_DAMAGE(self.wave),
+            consts::ENEMY_DAMAGE,
             consts::ENEMY_WAVE_SPEED(self.wave),
             enemy_type,
         );
