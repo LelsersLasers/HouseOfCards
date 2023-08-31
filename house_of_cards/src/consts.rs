@@ -54,9 +54,9 @@ pub const HEARTS_HEAL_CHANCE: f32 = 0.05;
 pub const CLUBS_STUN_TIME: f32 = 0.25; // seconds
 pub const SPADES_DAMAGE_CHANCE: f32 = 0.1;
 
-pub const POWERUP_PICK_OUTLINE_WIDTH: f32 = 0.9; // scale
-pub const POWERUP_PICK_OUTLINE_HEIGHT: f32 = 0.9; // scale
-pub const POWERUP_PICK_OUTLINE_RATIO: f32 = 2.0 / 1.0; // width / height
+pub const POWERUP_PICK_OUTLINE_WIDTH: f32 = 0.95; // scale
+pub const POWERUP_PICK_OUTLINE_HEIGHT: f32 = 0.95; // scale
+pub const POWERUP_PICK_OUTLINE_RATIO: f32 = 2. / 1.0; // width / height
 pub const POWERUP_PICK_OUTLINE_PADDING: f32 = 0.02; // scale
 pub const POWERUP_PICK_OUTLINE_THICKNESS: f32 = 0.01;
 

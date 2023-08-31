@@ -126,7 +126,7 @@ impl Powerup {
             0.0,
         );
 
-        mq::draw_rectangle(pos.x, pos.y, width, height, self.color_big_alpha());
+        mq::draw_rectangle(pos.x, pos.y, width, height, self.color_light_version());
 
         mq::draw_rectangle_lines(
             pos.x,
@@ -151,9 +151,12 @@ impl Powerup {
         }
     }
 
-    fn color_big_alpha(&self) -> mq::Color {
+    fn color_light_version(&self) -> mq::Color {
         let mut color = self.color();
-        color.a = 0.5;
+        color.r = (color.r + 0.2).min(1.0);
+        color.g = (color.g + 0.2).min(1.0);
+        color.b = (color.b + 0.2).min(1.0);
+
         color
     }
 }

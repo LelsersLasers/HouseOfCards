@@ -17,7 +17,6 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 - 0.4.0
 	- Player XP/levels
 	- Power up selection
-		- Not transparent on colors
 	- Scale enemy movement speed based on wave
 	- Score = xp
 	- Improve gaining xp/score system
