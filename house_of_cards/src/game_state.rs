@@ -3,6 +3,7 @@ pub enum GameState {
     Alive,
     Dead,
     Paused,
+    Powerup,
 }
 
 impl GameState {

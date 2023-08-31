@@ -8,8 +8,8 @@ pub struct Player {
     pub weapon: weapon::Weapon,
     pub health: f32,
     pub max_health: f32,
-    pub xp: f32,
-    pub level: u32,
+    pub xp: i32,
+    pub level: i32,
 }
 
 impl Player {
@@ -20,7 +20,7 @@ impl Player {
             weapon,
             health: consts::PLAYER_MAX_HEALTH,
             max_health: consts::PLAYER_MAX_HEALTH,
-            xp: 0.0,
+            xp: 0,
             level: 1,
         }
     }

@@ -54,6 +54,12 @@ pub const HEARTS_HEAL_CHANCE: f32 = 0.05;
 pub const CLUBS_STUN_TIME: f32 = 0.25; // seconds
 pub const SPADES_DAMAGE_CHANCE: f32 = 0.1;
 
+pub const POWERUP_PICK_OUTLINE_WIDTH: f32 = 0.9; // scale
+pub const POWERUP_PICK_OUTLINE_HEIGHT: f32 = 0.9; // scale
+pub const POWERUP_PICK_OUTLINE_RATIO: f32 = 2.0 / 1.0; // width / height
+pub const POWERUP_PICK_OUTLINE_PADDING: f32 = 0.02; // scale
+pub const POWERUP_PICK_OUTLINE_THICKNESS: f32 = 0.01;
+
 pub const AR: weapon::Weapon = weapon::Weapon::new(5.0, 2.5, 12.0, 1.0, 0.75, 7.5);
 
 pub const BULLET_SIZE: f32 = 0.005; // scale
@@ -84,6 +90,8 @@ pub const ENEMY_WAVE_COUNT: fn(i32) -> i32 = |wave| 5 + 5 * (wave - 1);
 
 pub const ENEMY_WAVE_HP: fn(i32) -> f32 = |wave| 5.0 + 2.0 * (wave - 1) as f32;
 pub const ENEMY_WAVE_DAMAGE: fn(i32) -> f32 = |wave| 1.0 + 0.1 * (wave - 1) as f32;
+
+pub const XP_PER_LEVEL: fn(i32) -> i32 = |level| 2 * level.pow(2);
 
 // x, a, b, c
 // f(x) = ((b - a) / log(c + 1)) * log(x + 1) + a

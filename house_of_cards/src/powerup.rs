@@ -1,6 +1,35 @@
 use macroquad::prelude as mq;
 
-use crate::consts;
+use crate::{colors, consts};
+
+pub enum PowerupPickLocation {
+    Left,
+    Center,
+    Right,
+}
+
+impl PowerupPickLocation {
+    pub fn all_locations() -> Vec<PowerupPickLocation> {
+        vec![
+            PowerupPickLocation::Left,
+            PowerupPickLocation::Center,
+            PowerupPickLocation::Right,
+        ]
+    }
+
+    pub fn as_i32(&self) -> i32 {
+        match self {
+            PowerupPickLocation::Left => 0,
+            PowerupPickLocation::Center => 1,
+            PowerupPickLocation::Right => 2,
+        }
+    }
+}
+
+struct OutlineDrawDimensions {
+    width: f32,
+    height: f32,
+}
 
 #[derive(PartialEq, Eq)]
 pub enum Powerup {
@@ -12,6 +41,121 @@ pub enum Powerup {
     Hearts,
     Clubs,
     Spades,
+}
+
+impl Powerup {
+    pub fn pick_three() -> Vec<Powerup> {
+        // three unique random powerups
+        let mut powerups = Vec::new();
+        let mut powerup = Powerup::pick();
+        while powerups.len() < 3 {
+            if !powerups.contains(&powerup) {
+                powerups.push(powerup);
+            }
+            powerup = Powerup::pick();
+        }
+
+        powerups
+    }
+
+    fn pick() -> Powerup {
+        // random powerup
+        match mq::rand::gen_range(0, 8) {
+            0 => Powerup::Damage,
+            1 => Powerup::Health,
+            2 => Powerup::Reload,
+            3 => Powerup::Speed,
+            4 => Powerup::Diamonds,
+            5 => Powerup::Hearts,
+            6 => Powerup::Clubs,
+            7 => Powerup::Spades,
+            _ => unreachable!(),
+        }
+    }
+
+    fn outline_draw_dimensions() -> OutlineDrawDimensions {
+        let max_width = consts::POWERUP_PICK_OUTLINE_WIDTH * mq::screen_width();
+        let max_height = consts::POWERUP_PICK_OUTLINE_HEIGHT * mq::screen_height();
+
+        let width = max_width.min(max_height * consts::POWERUP_PICK_OUTLINE_RATIO);
+        let height = max_height.min(max_width / consts::POWERUP_PICK_OUTLINE_RATIO);
+
+        OutlineDrawDimensions {
+            width,
+            height
+        }
+    }
+
+    pub fn draw_outline(scale: f32) {
+        let OutlineDrawDimensions {
+            width,
+            height,
+        } = Self::outline_draw_dimensions();
+
+        let thickness = consts::POWERUP_PICK_OUTLINE_THICKNESS * scale;
+
+        let pos = mq::Vec2::new(
+            (mq::screen_width() - width) / 2.0,
+            (mq::screen_height() - height) / 2.0,
+        );
+
+        mq::draw_rectangle(pos.x, pos.y, width, height, colors::NORD4_BIG_ALPHA);
+
+        mq::draw_rectangle_lines(pos.x, pos.y, width, height, thickness, colors::NORD4);
+    }
+
+    pub fn draw(&self, location: PowerupPickLocation, scale: f32) {
+        let OutlineDrawDimensions {
+            width: outline_width,
+            height: outline_height,
+        } = Self::outline_draw_dimensions();
+
+        let outline_pos = mq::Vec2::new(
+            (mq::screen_width() - outline_width) / 2.0,
+            (mq::screen_height() - outline_height) / 2.0,
+        );
+
+        let outline_padding = consts::POWERUP_PICK_OUTLINE_PADDING * scale;
+
+        let width = (outline_width - 4.0 * outline_padding) / 3.0;
+        let height = outline_height - 2.0 * outline_padding;
+
+        let card0_pos = outline_pos + mq::Vec2::new(outline_padding, outline_padding);
+        let pos = card0_pos + mq::Vec2::new(
+            (outline_padding + width) * location.as_i32() as f32,
+            0.0,
+        );
+
+        mq::draw_rectangle(pos.x, pos.y, width, height, self.color_big_alpha());
+
+        mq::draw_rectangle_lines(
+            pos.x,
+            pos.y,
+            width,
+            height,
+            consts::POWERUP_PICK_OUTLINE_THICKNESS * scale,
+            self.color(),
+        );
+    }
+
+    fn color(&self) -> mq::Color {
+        match self {
+            Powerup::Damage => colors::NORD11,
+            Powerup::Health => colors::NORD14,
+            Powerup::Reload => colors::NORD12,
+            Powerup::Speed => colors::NORD13,
+            Powerup::Diamonds => colors::NORD7,
+            Powerup::Hearts => colors::NORD8,
+            Powerup::Clubs => colors::NORD9,
+            Powerup::Spades => colors::NORD10,
+        }
+    }
+
+    fn color_big_alpha(&self) -> mq::Color {
+        let mut color = self.color();
+        color.a = 0.5;
+        color
+    }
 }
 
 pub struct Powerups {

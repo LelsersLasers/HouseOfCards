@@ -100,7 +100,8 @@ fn draw_overlay(
 }
 
 async fn play() {
-    let mut game_state = game_state::GameState::new();
+    // let mut game_state = game_state::GameState::new();
+    let mut game_state = game_state::GameState::Powerup;
 
     let mut player = player::Player::new(consts::AR);
     let mut score = 0;
@@ -117,6 +118,8 @@ async fn play() {
     world.update_locations_to_build(&camera, consts::WINDOW_START_SIZE as f32);
 
     let mut enemy_manager = enemy::EnemyManager::new();
+
+    let mut power_up_choices = powerup::Powerup::pick_three();
 
     let mut player_bullets: Vec<bullet::Bullet> = Vec::new();
 
@@ -149,10 +152,14 @@ async fn play() {
 
         let scale = mq::screen_width().min(mq::screen_height());
 
+        let mut should_update_locations_to_build = false;
+
         let resized = old_height != mq::screen_height() || old_width != mq::screen_width();
         if resized {
             old_width = mq::screen_width();
             old_height = mq::screen_height();
+
+            should_update_locations_to_build = true;
         }
 
         mouse_info.update(delta);
@@ -161,8 +168,8 @@ async fn play() {
         if game_state == game_state::GameState::Alive {
             let player_shot = player.handle_input(&mut mouse_info, &powerups, delta);
             let camera_moved = camera.update(&player, delta);
-            if camera_moved.0 || resized {
-                world.update_locations_to_build(&camera, scale);
+            if let util::Moved(true) = camera_moved {
+                should_update_locations_to_build = true;
             }
 
             if let util::Shot(true) = player_shot {
@@ -212,6 +219,15 @@ async fn play() {
             let enemies_killed = enemy_manager.update(&mut player, delta);
             score += enemies_killed.0;
 
+            player.xp += enemies_killed.0;
+            if player.xp >= consts::XP_PER_LEVEL(player.level) {
+                player.xp -= consts::XP_PER_LEVEL(player.level);
+                player.level += 1;
+
+                game_state = game_state::GameState::Powerup;
+                power_up_choices = powerup::Powerup::pick_three();
+            }
+
             if mq::is_key_pressed(mq::KeyCode::R) && !deck.is_full() {
                 deck.combine();
                 player.weapon.reload(&powerups);
@@ -223,6 +239,9 @@ async fn play() {
             }
         }
         // do even if dead/in pause
+        if should_update_locations_to_build {
+            world.update_locations_to_build(&camera, scale);
+        }
         world.build_locations();
         //----------------------------------------------------------------------------//
 
@@ -315,11 +334,15 @@ async fn play() {
                 LargeFont::Static,
                 scale,
             );
+        } else if game_state == game_state::GameState::Powerup {
+            powerup::Powerup::draw_outline(scale);
+            let all_locations = powerup::PowerupPickLocation::all_locations();
+            for (powerup, location) in power_up_choices.iter().zip(all_locations) {
+                powerup.draw(location, scale);
+            }
         }
 
-        if game_state != game_state::GameState::Dead
-            && (mq::is_key_pressed(mq::KeyCode::Escape) || mq::is_key_pressed(mq::KeyCode::P))
-        {
+        if mq::is_key_pressed(mq::KeyCode::Escape) || mq::is_key_pressed(mq::KeyCode::P) {
             game_state.toggle_pause();
         }
         //----------------------------------------------------------------------------//

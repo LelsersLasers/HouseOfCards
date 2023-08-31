@@ -55,6 +55,7 @@ pub const NORD11_ALPHA: mq::Color = mq::Color::new(0.749, 0.380, 0.416, 0.9);
 pub const NORD14_ALPHA: mq::Color = mq::Color::new(0.639, 0.745, 0.549, 0.9);
 
 pub const NORD0_BIG_ALPHA: mq::Color = mq::Color::new(0.180, 0.204, 0.251, 0.5);
+pub const NORD4_BIG_ALPHA: mq::Color = mq::Color::new(0.847, 0.871, 0.914, 0.5);
 pub const NORD6_BIG_ALPHA: mq::Color = mq::Color::new(0.925, 0.937, 0.969, 0.5);
 
 // pub const DRACULA0: mq::Color = mq::Color::new(0.157, 0.165, 0.212, 1.0);
