@@ -1,7 +1,8 @@
 use macroquad::prelude as mq;
 
-use crate::{colors, consts};
+use crate::{colors, consts, mouse};
 
+#[derive(Clone, Copy)]
 pub enum PowerupPickLocation {
     Left,
     Center,
@@ -27,6 +28,13 @@ impl PowerupPickLocation {
 }
 
 struct OutlineDrawDimensions {
+    pos: mq::Vec2,
+    width: f32,
+    height: f32,
+}
+
+struct CardDrawDimensions {
+    pos: mq::Vec2,
     width: f32,
     height: f32,
 }
@@ -80,34 +88,20 @@ impl Powerup {
         let width = max_width.min(max_height * consts::POWERUP_PICK_OUTLINE_RATIO);
         let height = max_height.min(max_width / consts::POWERUP_PICK_OUTLINE_RATIO);
 
-        OutlineDrawDimensions { width, height }
-    }
-
-    pub fn draw_outline(scale: f32) {
-        let OutlineDrawDimensions { width, height } = Self::outline_draw_dimensions();
-
-        let thickness = consts::POWERUP_PICK_OUTLINE_THICKNESS * scale;
-
         let pos = mq::Vec2::new(
             (mq::screen_width() - width) / 2.0,
             (mq::screen_height() - height) / 2.0,
         );
 
-        mq::draw_rectangle(pos.x, pos.y, width, height, colors::NORD4_BIG_ALPHA);
-
-        mq::draw_rectangle_lines(pos.x, pos.y, width, height, thickness, colors::NORD4);
+        OutlineDrawDimensions { pos, width, height }
     }
 
-    pub fn draw(&self, location: PowerupPickLocation, font: mq::Font, scale: f32) {
+    fn card_draw_dimensions(location: PowerupPickLocation, scale: f32) -> CardDrawDimensions {
         let OutlineDrawDimensions {
+            pos: outline_pos,
             width: outline_width,
             height: outline_height,
         } = Self::outline_draw_dimensions();
-
-        let outline_pos = mq::Vec2::new(
-            (mq::screen_width() - outline_width) / 2.0,
-            (mq::screen_height() - outline_height) / 2.0,
-        );
 
         let outline_padding = consts::POWERUP_PICK_OUTLINE_PADDING * scale;
 
@@ -117,6 +111,38 @@ impl Powerup {
         let card0_pos = outline_pos + mq::Vec2::new(outline_padding, outline_padding);
         let pos =
             card0_pos + mq::Vec2::new((outline_padding + width) * location.as_i32() as f32, 0.0);
+
+        CardDrawDimensions { pos, width, height }
+    }
+
+    pub fn draw_outline(scale: f32) {
+        let OutlineDrawDimensions { pos, width, height } = Self::outline_draw_dimensions();
+
+        let thickness = consts::POWERUP_PICK_OUTLINE_THICKNESS * scale;
+
+        mq::draw_rectangle(pos.x, pos.y, width, height, colors::NORD4_BIG_ALPHA);
+        mq::draw_rectangle_lines(pos.x, pos.y, width, height, thickness, colors::NORD4);
+    }
+
+    pub fn clicked_on(
+        &self,
+        location: PowerupPickLocation,
+        mouse_info: &mouse::MouseInfo,
+        scale: f32,
+    ) -> bool {
+        let CardDrawDimensions { pos, width, height } = Self::card_draw_dimensions(location, scale);
+
+        let mouse_pos = mouse_info.get_last_pos();
+
+        mq::is_mouse_button_pressed(mq::MouseButton::Left)
+            && mouse_pos.x >= pos.x
+            && mouse_pos.x <= pos.x + width
+            && mouse_pos.y >= pos.y
+            && mouse_pos.y <= pos.y + height
+    }
+
+    pub fn draw(&self, location: PowerupPickLocation, font: mq::Font, scale: f32) {
+        let CardDrawDimensions { pos, width, height } = Self::card_draw_dimensions(location, scale);
 
         mq::draw_rectangle(pos.x, pos.y, width, height, self.color_light_version());
 

@@ -319,19 +319,21 @@ async fn play() {
         } else if game_state == game_state::GameState::Powerup {
             powerup::Powerup::draw_outline(scale);
             let all_locations = powerup::PowerupPickLocation::all_locations();
-            for (powerup, location) in power_up_choices.iter().zip(all_locations) {
-                powerup.draw(location, font, scale);
+            for (powerup, location) in power_up_choices.iter().zip(all_locations.iter()) {
+                powerup.draw(*location, font, scale);
             }
 
-            let mut powerup = None;
+            let mut selected_powerup = None;
             let keys = [mq::KeyCode::Key1, mq::KeyCode::Key2, mq::KeyCode::Key3];
-            for (i, key) in keys.iter().enumerate() {
-                if mq::is_key_pressed(*key) {
-                    powerup = Some(power_up_choices[i]);
+            for (i, (key, powerup)) in keys.iter().zip(power_up_choices.iter()).enumerate() {
+                if mq::is_key_pressed(*key)
+                    || powerup.clicked_on(all_locations[i], &mouse_info, scale)
+                {
+                    selected_powerup = Some(power_up_choices[i]);
                 }
             }
 
-            if let Some(powerup) = powerup {
+            if let Some(powerup) = selected_powerup {
                 powerups.add(powerup);
 
                 if powerup == powerup::Powerup::Health {
