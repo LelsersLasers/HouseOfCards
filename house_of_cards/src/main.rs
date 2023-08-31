@@ -106,7 +106,7 @@ async fn play() {
     let mut player = player::Player::new(consts::AR);
     let mut score = 0;
 
-    let powerups = powerup::Powerups::new();
+    let mut powerups = powerup::Powerups::new();
 
     let mut camera = camera::Camera::new();
 
@@ -149,6 +149,8 @@ async fn play() {
         if let util::Ticked(true) = fps_timer.update(delta) {
             fps_timer.update_state(delta);
         }
+
+        // mq::show_mouse(game_state == game_state::GameState::Powerup);
 
         let scale = mq::screen_width().min(mq::screen_height());
 
@@ -339,6 +341,25 @@ async fn play() {
             let all_locations = powerup::PowerupPickLocation::all_locations();
             for (powerup, location) in power_up_choices.iter().zip(all_locations) {
                 powerup.draw(location, font, scale);
+            }
+
+            let mut powerup = None;
+            let keys = [mq::KeyCode::Key1, mq::KeyCode::Key2, mq::KeyCode::Key3];
+            for (i, key) in keys.iter().enumerate() {
+                if mq::is_key_pressed(*key) {
+                    powerup = Some(power_up_choices[i]);
+                }
+            }
+
+            if let Some(powerup) = powerup {
+                powerups.add(powerup);
+
+                if powerup == powerup::Powerup::Health {
+                    player.health += consts::HEALTH_ADD;
+                    player.max_health += consts::HEALTH_ADD;
+                }
+
+                game_state = game_state::GameState::Alive;
             }
         }
 

@@ -31,7 +31,7 @@ struct OutlineDrawDimensions {
     height: f32,
 }
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialEq, Eq, Copy, Clone)]
 pub enum Powerup {
     Damage,
     Health,
@@ -130,39 +130,69 @@ impl Powerup {
         );
 
         let center = mq::Vec2::new(pos.x + width / 2.0, pos.y + height / 2.0);
-        let main_text = self.main_text();
-        let main_text_font_size = (consts::POWERUP_PICK_FONT_LARGE * scale).round() as u16;
-        let text_dims_large = main_text
-            .iter()
-            .map(|t| mq::measure_text(t, Some(font), main_text_font_size, 1.0))
-            .collect::<Vec<_>>();
-        let largest_text_width = text_dims_large
-            .iter()
-            .map(|d| d.width)
-            .max_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal))
-            .unwrap_or(0.0);
+        {
+            // let center = center - mq::Vec2::new(0.0, consts::POWERUP_PICK_FONT_SPACING_CENTER * scale);
+            let main_text = self.main_text();
+            let main_text_font_size = (consts::POWERUP_PICK_FONT_LARGE * scale).round() as u16;
+            let text_dims_large = main_text
+                .iter()
+                .map(|t| mq::measure_text(t, Some(font), main_text_font_size, 1.0))
+                .collect::<Vec<_>>();
+            let total_height = text_dims_large.iter().map(|d| d.height).sum::<f32>();
+            let mut y = center.y - total_height;
 
-        // draw main text with bottom at y = center.y
-        for i in (0..main_text.len()).rev() {
-            let text = main_text[i];
-            let text_dims = text_dims_large[i];
-            let text_pos = mq::Vec2::new(
-                center.x - text_dims.width / 2.0,
-                center.y + text_dims.height * (i as f32 + 1.0),
-            );
+            for i in 0..main_text.len() {
+                let text = main_text[i];
+                let text_dims = text_dims_large[i];
+                let x = center.x - text_dims_large[i].width / 2.0;
 
-            mq::draw_text_ex(
-                text,
-                text_pos.x,
-                text_pos.y,
-                mq::TextParams {
-                    font,
-                    font_size: main_text_font_size,
-                    font_scale: 1.0,
-                    color: self.color(),
-                    ..mq::TextParams::default()
-                },
-            );
+                mq::draw_text_ex(
+                    text,
+                    x,
+                    y + text_dims.offset_y,
+                    mq::TextParams {
+                        font,
+                        font_size: main_text_font_size,
+                        font_scale: 1.0,
+                        color: self.color(),
+                        ..mq::TextParams::default()
+                    },
+                );
+                y += text_dims.height;
+            }
+        }
+
+        {
+            let center =
+                center + mq::Vec2::new(0.0, consts::POWERUP_PICK_FONT_SPACING_CENTER * scale);
+            let sub_text = self.sub_text();
+            let sub_text_font_size = (consts::POWERUP_PICK_FONT_SMALL * scale).round() as u16;
+            let text_dims_small = sub_text
+                .iter()
+                .map(|t| mq::measure_text(t, Some(font), sub_text_font_size, 1.0))
+                .collect::<Vec<_>>();
+            // let total_height = text_dims_small.iter().map(|d| d.height).sum::<f32>();
+            let mut y = center.y;
+
+            for i in 0..sub_text.len() {
+                let text = sub_text[i];
+                let text_dims = text_dims_small[i];
+                let x = center.x - text_dims_small[i].width / 2.0;
+
+                mq::draw_text_ex(
+                    text,
+                    x,
+                    y + text_dims.offset_y,
+                    mq::TextParams {
+                        font,
+                        font_size: sub_text_font_size,
+                        font_scale: 1.0,
+                        color: self.color(),
+                        ..mq::TextParams::default()
+                    },
+                );
+                y += text_dims.height;
+            }
         }
     }
 
@@ -181,9 +211,9 @@ impl Powerup {
 
     fn color_light_version(&self) -> mq::Color {
         let mut color = self.color();
-        color.r = (color.r + 0.2).min(1.0);
-        color.g = (color.g + 0.2).min(1.0);
-        color.b = (color.b + 0.2).min(1.0);
+        color.r = (color.r + 0.3).min(1.0);
+        color.g = (color.g + 0.3).min(1.0);
+        color.b = (color.b + 0.3).min(1.0);
 
         color
     }
@@ -197,7 +227,7 @@ impl Powerup {
             Powerup::Diamonds => vec!["Diamonds:", "Pierce +1 Enemies"],
             Powerup::Hearts => vec!["Hearts:", "+5% chance to heal"],
             Powerup::Clubs => vec!["Clubs:", "+0.25s Stun"],
-            Powerup::Spades => vec!["Spades:", "+10% chance to double damage"],
+            Powerup::Spades => vec!["Spades:", "+10% chance to", "double damage"],
         }
     }
 
@@ -238,9 +268,9 @@ impl Powerups {
         self.count(&Powerup::Damage) as f32 * consts::DAMAGE_ADD
     }
 
-    pub fn health_add(&self) -> f32 {
-        self.count(&Powerup::Health) as f32 * consts::HEALTH_ADD
-    }
+    // pub fn health_add(&self) -> f32 {
+    //     self.count(&Powerup::Health) as f32 * consts::HEALTH_ADD
+    // }
 
     pub fn reload_mod(&self) -> f32 {
         (1.0 - consts::RELOAD_MOD).powi(self.count(&Powerup::Reload) as i32)
