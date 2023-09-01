@@ -178,10 +178,13 @@ impl Enemy {
                     } else {
                         self.enemy_attack.time_in_range = 0.0;
                     }
-                },
+                }
                 EnemyType::Super => {
-                    if distance_to_player < range && self.enemy_attack.time_until_next_attack <= 0.0 {
-                        self.enemy_attack.time_until_next_attack = 1.0 / consts::ENEMY_SUPER_WAVE_FIRE_RATE(wave);
+                    if distance_to_player < range && self.enemy_attack.time_until_next_attack <= 0.0
+                    {
+                        // println!("FR: {}", consts::ENEMY_SUPER_WAVE_FIRE_RATE(wave));
+                        self.enemy_attack.time_until_next_attack =
+                            1.0 / consts::ENEMY_SUPER_WAVE_FIRE_RATE(wave);
 
                         enemy_shot_type = EnemyShotType::Spread;
                     }
@@ -196,12 +199,12 @@ impl Enemy {
                 } else {
                     movement *= consts::ENEMY_RANGED_SPEED_PENALTY;
                 }
-            },
+            }
             EnemyType::Super => {
                 if distance_to_player < consts::ENEMY_SUPER_MIN_RANGE {
                     movement = mq::Vec2::ZERO;
                 }
-            },
+            }
             _ => {}
         }
 
@@ -304,6 +307,11 @@ impl hitbox::Rectangle for Enemy {
     }
 }
 
+pub struct EnemiesKilled {
+    pub count: i32,
+    pub super_killed: bool,
+}
+
 pub struct EnemyManager {
     pub enemies: Vec<Enemy>,
     pub wave: i32,                // used internally to calculate enemy stats
@@ -325,16 +333,29 @@ impl EnemyManager {
         }
     }
 
-    pub fn update(&mut self, player: &mut player::Player, delta: f32) -> util::EnemiesKilled {
+    pub fn update(&mut self, player: &mut player::Player, delta: f32) -> EnemiesKilled {
         let previous_enemy_count = self.enemies.len() as i32;
+        let super_count = self
+            .enemies
+            .iter()
+            .filter(|enemy| enemy.enemy_type == EnemyType::Super)
+            .count();
+
         self.enemies.retain(|enemy| enemy.health > 0.0);
-        let enemies_killed = util::EnemiesKilled(previous_enemy_count - self.enemies.len() as i32);
+
+        let count = previous_enemy_count - self.enemies.len() as i32;
+        let super_killed = super_count
+            > self
+                .enemies
+                .iter()
+                .filter(|enemy| enemy.enemy_type == EnemyType::Super)
+                .count();
 
         for enemy in self.enemies.iter_mut() {
             let enemy_shot_type = enemy.update(player, self.wave, delta);
 
             match enemy_shot_type {
-                EnemyShotType::None => {},
+                EnemyShotType::None => {}
                 EnemyShotType::Standard => {
                     let bullet = bullet::Bullet::new(
                         enemy.pos,
@@ -345,7 +366,7 @@ impl EnemyManager {
                         1,
                     );
                     self.enemy_bullets.push(bullet);
-                },
+                }
                 EnemyShotType::Spread => {
                     let spread = consts::ENEMY_SUPER_SPREAD;
                     let angle = enemy.direction + mq::rand::gen_range(-spread, spread);
@@ -360,7 +381,6 @@ impl EnemyManager {
                     self.enemy_bullets.push(bullet);
                 }
             }
-                
         }
 
         self.enemy_bullets
@@ -386,15 +406,21 @@ impl EnemyManager {
                 self.enemies_until_next_wave = consts::ENEMY_WAVE_COUNT(self.wave);
                 self.spawn_timer
                     .update_period(1.0 / consts::ENEMY_WAVE_SPAWN_RATE(self.wave));
-            } else if self.enemies_until_next_wave == 6 {
+            } else if self.enemies_until_next_wave == consts::ENEMY_WAVE_COUNT(self.wave) / 2
+                && self.wave > consts::ENEMY_SUPER_WAVE_START
+            {
                 self.should_spawn_super = true;
-                println!("Wave {}", self.wave);
+                // println!("Wave {}", self.wave);
+                // println!("Fire rate {}", consts::ENEMY_SUPER_WAVE_FIRE_RATE(self.wave));
             }
 
             self.spawn_enemy(player);
         }
 
-        enemies_killed
+        EnemiesKilled {
+            count,
+            super_killed,
+        }
     }
 
     fn spawn_enemy(&mut self, player: &player::Player) {
@@ -416,7 +442,6 @@ impl EnemyManager {
         if enemy_type == EnemyType::Super {
             hp *= consts::ENEMY_SUPER_HP_MOD;
         }
-
 
         let enemy = Enemy::new(
             spawn_pos,

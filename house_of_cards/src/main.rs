@@ -100,7 +100,7 @@ fn draw_overlay(
 }
 
 async fn play() {
-    let mut game_state = game_state::GameState::new();
+    let mut game_state = game_state::GameStateManager::new();
 
     let mut player = player::Player::new(consts::AR);
     let mut score = 0;
@@ -149,7 +149,7 @@ async fn play() {
             fps_timer.update_state(delta);
         }
 
-        let mouse_shown = game_state == game_state::GameState::Powerup;
+        let mouse_shown = game_state.show_mouse();
         mq::show_mouse(mouse_shown);
 
         let scale = mq::screen_width().min(mq::screen_height());
@@ -167,7 +167,7 @@ async fn play() {
         mouse_info.update(time_counter, delta);
 
         //----------------------------------------------------------------------------//
-        if game_state == game_state::GameState::Alive {
+        if game_state.current_state() == game_state::GameState::Alive {
             let player_shot = player.handle_input(&mut mouse_info, &powerups, delta);
             let camera_moved = camera.update(&player, delta);
             if let util::Moved(true) = camera_moved {
@@ -205,7 +205,8 @@ async fn play() {
                             heal_amount,
                         } = bullet.hit_result(&powerups);
 
-                        if !(enemy.enemy_type == enemy::EnemyType::Super && damage == f32::INFINITY) {
+                        if !(enemy.enemy_type == enemy::EnemyType::Super && damage == f32::INFINITY)
+                        {
                             enemy.health -= damage;
                         }
                         enemy.enemy_stunned.time_remaining += stun_time;
@@ -221,15 +222,20 @@ async fn play() {
             player_bullets.retain(bullet::Bullet::should_keep);
 
             let enemies_killed = enemy_manager.update(&mut player, delta);
-            score += enemies_killed.0;
+            score += enemies_killed.count;
 
-            player.xp += enemies_killed.0;
+            player.xp += enemies_killed.count;
             if player.xp >= consts::XP_PER_LEVEL(player.level) {
                 player.xp -= consts::XP_PER_LEVEL(player.level);
                 player.level += 1;
 
-                game_state = game_state::GameState::Powerup;
+                game_state.next(game_state::GameState::PowerupStat);
                 power_up_choices = powerup::Powerup::pick_three(powerup::Powerup::pick_stat);
+                need_click_after = time_counter;
+            }
+            if enemies_killed.super_killed {
+                game_state.next(game_state::GameState::PowerupCard);
+                power_up_choices = powerup::Powerup::pick_three(powerup::Powerup::pick_card);
                 need_click_after = time_counter;
             }
 
@@ -239,7 +245,7 @@ async fn play() {
             }
 
             if player.health <= 0.0 {
-                game_state = game_state::GameState::Dead;
+                game_state.next(game_state::GameState::Dead);
                 player.health = player.health.max(0.0);
             }
         }
@@ -297,7 +303,7 @@ async fn play() {
             y += scale * consts::FONT_SIZE * extra_spacing;
         }
 
-        if game_state == game_state::GameState::Dead {
+        if game_state.current_state() == game_state::GameState::Dead {
             draw_overlay(
                 colors::NORD0_BIG_ALPHA,
                 "You died!",
@@ -311,7 +317,7 @@ async fn play() {
                 mq::next_frame().await;
                 return;
             }
-        } else if game_state == game_state::GameState::Paused {
+        } else if game_state.current_state() == game_state::GameState::Paused {
             draw_overlay(
                 colors::NORD0_BIG_ALPHA,
                 "Paused",
@@ -320,7 +326,7 @@ async fn play() {
                 LargeFont::Static,
                 scale,
             );
-        } else if game_state == game_state::GameState::Powerup {
+        } else if game_state.powerup() {
             powerup::Powerup::draw_outline(scale);
             let all_locations = powerup::PowerupPickLocation::all_locations();
             for (powerup, location) in power_up_choices.iter().zip(all_locations.iter()) {
@@ -345,7 +351,7 @@ async fn play() {
                     player.max_health += consts::HEALTH_ADD;
                 }
 
-                game_state = game_state::GameState::Alive;
+                game_state.back();
             }
         }
 
