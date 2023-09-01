@@ -8,6 +8,7 @@ mod deck;
 mod enemy;
 mod game_state;
 mod hitbox;
+mod joystick;
 mod mouse;
 mod player;
 mod powerup;
@@ -139,6 +140,26 @@ async fn play() {
 
     let mut mouse_info = mouse::MouseInfo::new();
 
+    let scale = mq::screen_width().min(mq::screen_height());
+    let mut movement_joystick = joystick::Joystick::new(
+        consts::JOYSTICK_MAX_RADIUS * scale,
+        mq::Rect::new(
+            0.0,
+            mq::screen_height() / 2.0,
+            mq::screen_width() / 2.0,
+            mq::screen_height() / 2.0,
+        ),
+    );
+    let mut aim_joystick = joystick::Joystick::new(
+        consts::JOYSTICK_MAX_RADIUS * scale,
+        mq::Rect::new(
+            mq::screen_width() / 2.0,
+            mq::screen_height() / 2.0,
+            mq::screen_width() / 2.0,
+            mq::screen_height() / 2.0,
+        ),
+    );
+
     loop {
         mq::clear_background(consts::BACKGROUND_COLOR);
 
@@ -166,9 +187,22 @@ async fn play() {
 
         mouse_info.update(time_counter, delta);
 
+        mq::simulate_mouse_with_touch(game_state.current_state() != game_state::GameState::Alive);
+        let touches = mq::touches();
+        
+        let movement_joystick_result = movement_joystick.update(touches.clone());
+        let aim_joystick_result = aim_joystick.update(touches.clone());
+
         //----------------------------------------------------------------------------//
         if game_state.current_state() == game_state::GameState::Alive {
-            let player_shot = player.handle_input(&mut mouse_info, &powerups, delta);
+            let player_shot = player.handle_input(
+                &mut mouse_info,
+                movement_joystick_result,
+                aim_joystick_result,
+                &powerups,
+                delta,
+            );
+
             let camera_moved = camera.update(&player, delta);
             if let util::Moved(true) = camera_moved {
                 should_update_locations_to_build = true;
@@ -270,6 +304,8 @@ async fn play() {
         if !mouse_shown {
             mouse_info.draw(scale);
         }
+        movement_joystick.draw(scale);
+        aim_joystick.draw(scale);
 
         let texts = [
             (0.05, format!("FPS: {:.0}", 1.0 / fps_timer.get_state())),
@@ -279,6 +315,7 @@ async fn play() {
             //     format!("Enemies alive: {}", enemy_manager.enemies.len()),
             // ),
             (0.05, format!("Score: {}", score)),
+            (0.5, format!("Touches: {:?}", touches.len())),
         ];
         let font_size = (scale * consts::FONT_SIZE).round() as u16;
         let x = scale * consts::FONT_SPACING;

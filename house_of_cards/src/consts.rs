@@ -10,6 +10,10 @@ pub const BACKGROUND_COLORS: [mq::Color; 6] = colors::SURFACE_COLORS;
 
 pub const TILES_PER_SCALE: u32 = 12;
 
+pub const JOYSTICK_MAX_RADIUS: f32 = 0.15; // scale
+pub const JOYSTICK_BALL_SIZE: f32 = 0.05; // scale
+pub const JOYSTICK_THICKNESS: f32 = 0.01; // scale
+
 pub const PLAYER_SPEED: f32 = 1.2; // tiles per second
 pub const PLAYER_SIZE: f32 = 0.012; // scale
 pub const PLAYER_MAX_HEALTH: f32 = 10.0;

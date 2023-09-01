@@ -15,21 +15,27 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 
 ## TODO
 
+- 0.6.x
+	- Touch controls
+        - Reload
+        - Pause
+    - `O` (or some key) to toggle auto shoot
+    - `I` (or some key) to toggle auto reload
 - Else
-    - Seperate Enemy and EnemyManager
     - Tweak
         - XP and score system
         - Scaling system and numbers
         - Super enemy numbers and mechanics
     - Play nice with alt-tab
-    - Improve mouse feel?
-	- Touch controls
+    - Improve aim feel (mouse, arrow keys, joystick)
 	- Sound
 	- Other screens?
+        - Show settings on pause menu?
     - Other weapons?
 - Maybe
 	- Improve hitboxes?
 	- Particles?
+    - Damage numbers?
 	- Spatial hash for collision detection?
 	- Update world build locations less often?
     - Art/animations for everything else

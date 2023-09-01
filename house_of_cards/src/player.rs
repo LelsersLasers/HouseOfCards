@@ -1,6 +1,6 @@
 use macroquad::prelude as mq;
 
-use crate::{camera, colors, consts, hitbox, mouse, powerup, util, weapon};
+use crate::{camera, colors, consts, hitbox, joystick, mouse, powerup, util, weapon};
 
 pub struct Player {
     pub pos: mq::Vec2,  // in tiles
@@ -28,10 +28,14 @@ impl Player {
     pub fn handle_input(
         &mut self,
         mouse_info: &mut mouse::MouseInfo,
+        movement_joystick_result: joystick::JoystickUpdateResult,
+        aim_joystick_result: joystick::JoystickUpdateResult,
         powerups: &powerup::Powerups,
         delta: f32,
     ) -> util::Shot {
-        let movement = (if mq::is_mouse_button_down(mq::MouseButton::Right) {
+        let movement = (if movement_joystick_result.active {
+            movement_joystick_result.pos
+        } else if mq::is_mouse_button_down(mq::MouseButton::Right) {
             let mouse_pos = mouse_info.get_last_pos();
             let mouse_pos_relative_to_center =
                 mouse_pos - mq::Vec2::new(mq::screen_width() / 2.0, mq::screen_height() / 2.0);
@@ -60,23 +64,28 @@ impl Player {
         let speed = consts::PLAYER_SPEED * delta * self.weapon.get_ms_penalty();
         self.pos += movement * speed * powerups.speed_mod();
 
-        let mut aim_vec = mq::Vec2::ZERO;
-        if mq::is_key_down(mq::KeyCode::Up) {
-            aim_vec.y -= 1.0;
-        }
-        if mq::is_key_down(mq::KeyCode::Down) {
-            aim_vec.y += 1.0;
-        }
-        if mq::is_key_down(mq::KeyCode::Left) {
-            aim_vec.x -= 1.0;
-        }
-        if mq::is_key_down(mq::KeyCode::Right) {
-            aim_vec.x += 1.0;
-        }
-        aim_vec = aim_vec.normalize_or_zero();
+        let aim = (if aim_joystick_result.active {
+            aim_joystick_result.pos
+        } else {
+            let mut aim = mq::Vec2::ZERO;
+            if mq::is_key_down(mq::KeyCode::Up) {
+                aim.y -= 1.0;
+            }
+            if mq::is_key_down(mq::KeyCode::Down) {
+                aim.y += 1.0;
+            }
+            if mq::is_key_down(mq::KeyCode::Left) {
+                aim.x -= 1.0;
+            }
+            if mq::is_key_down(mq::KeyCode::Right) {
+                aim.x += 1.0;
+            }
+            aim
+        })
+        .normalize_or_zero();
 
-        if aim_vec != mq::Vec2::ZERO {
-            self.direction = aim_vec.y.atan2(aim_vec.x);
+        if aim != mq::Vec2::ZERO {
+            self.direction = aim.y.atan2(aim.x);
             mouse_info.set_active(false);
         } else if let Some(mouse_pos) = mouse_info.mouse_pos() {
             let mouse_pos_relative_to_center =
@@ -93,7 +102,8 @@ impl Player {
         // `.0` is used to get the `bool` from the `Shot` struct
         util::Shot(
             (mq::is_key_down(mq::KeyCode::Space)
-                || mq::is_mouse_button_down(mq::MouseButton::Left))
+                || mq::is_mouse_button_down(mq::MouseButton::Left)
+                || aim_joystick_result.active)
                 && self.weapon.try_shoot().0,
         )
     }
