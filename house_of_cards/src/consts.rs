@@ -90,19 +90,26 @@ pub const ENEMY_RANGED_RELOAD_TIME: f32 = 4.0; // seconds
 pub const ENEMY_RANGED_SPEED_PENALTY: f32 = 0.75; // percent
 
 pub const ENEMY_RANGED_BULLET_SPEED: f32 = 4.0; // tiles per second
-pub const ENEMT_RANGED_BULLET_RANGE: f32 = 12.0; // tiles
+pub const ENEMY_RANGED_BULLET_RANGE: f32 = 12.0; // tiles
 
 pub const ENEMY_MELEE_CHARGE_THICKNESS: f32 = 0.005; // scale
+
+pub const ENEMY_SUPER_SIZE: f32 = 0.05;
+pub const ENEMY_SUPER_RANGE: f32 = 5.0;
+pub const ENEMY_SUPER_MIN_RANGE: f32 = 1.0;
+pub const ENEMY_SUPER_WAVE_FIRE_RATE: fn(i32) -> f32 = |wave| (wave - 2) as f32 / 4.0;
+pub const ENEMY_SUPER_SPREAD: f32 = 0.5; // radians
+pub const ENEMY_SUPER_HP_MOD: f32 = 5.0;
 
 pub const ENEMY_SPAWN_RADIUS: f32 = TILES_PER_SCALE as f32 + 2.0; // tiles
 pub const ENEMY_RANGED_CHANCE: f32 = 0.33; // percent
 
 // Note: wave spawning starts at 1
-pub const ENEMY_WAVE_COUNT: fn(i32) -> i32 = |wave| 5 + 5 * (wave - 1);
+pub const ENEMY_WAVE_COUNT: fn(i32) -> i32 = |wave| 5 + 3 * (wave - 1);
 
-pub const ENEMY_WAVE_HP: fn(i32) -> f32 = |wave| 5.0 + 5.0 * (wave - 1) as f32;
+pub const ENEMY_WAVE_HP: fn(i32) -> f32 = |wave| 10.0 + 5.0 * (wave - 1) as f32;
 pub const ENEMY_DAMAGE: f32 = 1.0;
-pub const ENEMY_WAVE_SPEED: fn(i32) -> f32 = |wave| ENEMY_SPEED * (1.0 + 0.005 * (wave - 1) as f32);
+pub const ENEMY_WAVE_SPEED: fn(i32) -> f32 = |wave| ENEMY_SPEED * (1.0 + 0.015 * (wave - 1) as f32);
 
 pub const XP_PER_LEVEL: fn(i32) -> i32 = |level| 2 * level.pow(2);
 
@@ -112,6 +119,6 @@ pub const XP_PER_LEVEL: fn(i32) -> i32 = |level| 2 * level.pow(2);
 pub const AUTO_LOG: fn(f32, f32, f32, f32) -> f32 =
     |x, a, b, c| ((b - a) / (c + 1.0).log10()) * (x + 1.0).log10() + a;
 pub const ENEMY_WAVE_SPAWN_RATE: fn(i32) -> f32 =
-    |wave| AUTO_LOG(wave as f32, 1.0 / 3.0, 1.0 / 1.5, 10.0);
+    |wave| AUTO_LOG(wave as f32, 1.0 / 4.0, 1.0 / 2.0, 10.0);
 
 pub const AUTO_RELOAD: bool = true;

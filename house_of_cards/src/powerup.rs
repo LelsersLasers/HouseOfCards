@@ -52,31 +52,38 @@ pub enum Powerup {
 }
 
 impl Powerup {
-    pub fn pick_three() -> Vec<Powerup> {
+    pub fn pick_three(pick_fn: fn() -> Powerup) -> Vec<Powerup> {
         // three unique random powerups
         let mut powerups = Vec::new();
-        let mut powerup = Powerup::pick();
+        let mut powerup = pick_fn();
         while powerups.len() < 3 {
             if !powerups.contains(&powerup) {
                 powerups.push(powerup);
             }
-            powerup = Powerup::pick();
+            powerup = pick_fn();
         }
 
         powerups
     }
 
-    fn pick() -> Powerup {
-        // random powerup
-        match mq::rand::gen_range(0, 8) {
+    pub fn pick_stat() -> Powerup {
+        // random stat powerup
+        match mq::rand::gen_range(0, 4) {
             0 => Powerup::Damage,
             1 => Powerup::Health,
             2 => Powerup::Reload,
             3 => Powerup::Speed,
-            4 => Powerup::Diamonds,
-            5 => Powerup::Hearts,
-            6 => Powerup::Clubs,
-            7 => Powerup::Spades,
+            _ => unreachable!(),
+        }
+    }
+
+    pub fn pick_card() -> Powerup {
+        // random card powerup
+        match mq::rand::gen_range(0, 4) {
+            0 => Powerup::Diamonds,
+            1 => Powerup::Hearts,
+            2 => Powerup::Clubs,
+            3 => Powerup::Spades,
             _ => unreachable!(),
         }
     }

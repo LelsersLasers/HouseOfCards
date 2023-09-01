@@ -118,7 +118,7 @@ async fn play() {
 
     let mut enemy_manager = enemy::EnemyManager::new();
 
-    let mut power_up_choices = powerup::Powerup::pick_three();
+    let mut power_up_choices = powerup::Powerup::pick_three(powerup::Powerup::pick_stat);
     let mut need_click_after = 0.0;
 
     let mut player_bullets: Vec<bullet::Bullet> = Vec::new();
@@ -205,7 +205,9 @@ async fn play() {
                             heal_amount,
                         } = bullet.hit_result(&powerups);
 
-                        enemy.health -= damage;
+                        if !(enemy.enemy_type == enemy::EnemyType::Super && damage == f32::INFINITY) {
+                            enemy.health -= damage;
+                        }
                         enemy.enemy_stunned.time_remaining += stun_time;
 
                         player.health += heal_amount;
@@ -227,7 +229,7 @@ async fn play() {
                 player.level += 1;
 
                 game_state = game_state::GameState::Powerup;
-                power_up_choices = powerup::Powerup::pick_three();
+                power_up_choices = powerup::Powerup::pick_three(powerup::Powerup::pick_stat);
                 need_click_after = time_counter;
             }
 

@@ -45,9 +45,11 @@ impl EnemyAttack {
     }
 }
 
+#[derive(PartialEq, Eq)]
 pub enum EnemyType {
     Melee,
     Ranged,
+    Super,
 }
 
 impl EnemyType {
@@ -55,6 +57,7 @@ impl EnemyType {
         match self {
             EnemyType::Melee => consts::ENEMY_MELEE_RANGE,
             EnemyType::Ranged => consts::ENEMY_RANGED_RANGE,
+            EnemyType::Super => consts::ENEMY_SUPER_RANGE,
         }
     }
 
@@ -62,6 +65,7 @@ impl EnemyType {
         match self {
             EnemyType::Melee => consts::ENEMY_MELEE_CHARGE_TIME,
             EnemyType::Ranged => consts::ENEMY_RANGED_CHARGE_TIME,
+            EnemyType::Super => -1.0,
         }
     }
 
@@ -69,6 +73,15 @@ impl EnemyType {
         match self {
             EnemyType::Melee => consts::ENEMY_MELEE_RELOAD_TIME,
             EnemyType::Ranged => consts::ENEMY_RANGED_RELOAD_TIME,
+            EnemyType::Super => -1.0,
+        }
+    }
+
+    fn size(&self) -> f32 {
+        match self {
+            EnemyType::Melee => consts::ENEMY_SIZE,
+            EnemyType::Ranged => consts::ENEMY_SIZE,
+            EnemyType::Super => consts::ENEMY_SUPER_SIZE,
         }
     }
 
@@ -76,8 +89,15 @@ impl EnemyType {
         match self {
             EnemyType::Melee => true,
             EnemyType::Ranged => false,
+            EnemyType::Super => false,
         }
     }
+}
+
+enum EnemyShotType {
+    None,
+    Standard,
+    Spread,
 }
 
 pub struct Enemy {
@@ -87,7 +107,7 @@ pub struct Enemy {
     damage: f32,
     speed: f32,     // tiles per second
     direction: f32, // radians
-    enemy_type: EnemyType,
+    pub enemy_type: EnemyType,
     enemy_attack: EnemyAttack,
     pub enemy_stunned: EnemyStunned,
 }
@@ -107,10 +127,10 @@ impl Enemy {
         }
     }
 
-    pub fn update(&mut self, player: &mut player::Player, delta: f32) -> util::Shot {
+    fn update(&mut self, player: &mut player::Player, wave: i32, delta: f32) -> EnemyShotType {
         self.enemy_stunned.update(delta);
         if self.enemy_stunned.is_stunned() {
-            return util::Shot(false);
+            return EnemyShotType::None;
         }
 
         let vec_to_player = player.pos - self.pos;
@@ -120,7 +140,11 @@ impl Enemy {
         let mut movement =
             mq::Vec2::new(self.direction.cos(), self.direction.sin()) * self.speed * delta;
 
-        let mut shot = util::Shot(false);
+        let mut enemy_shot_type = EnemyShotType::None;
+
+        let range = self.enemy_type.range();
+        let charge_time = self.enemy_type.charge_time();
+        let reload_time = self.enemy_type.reload_time();
 
         self.enemy_attack.update(delta);
 
@@ -132,25 +156,20 @@ impl Enemy {
                     if self.enemy_attack.time_in_range > 0.0 {
                         movement = mq::Vec2::ZERO;
                         self.enemy_attack.time_in_range += delta;
-                        let charge_time = self.enemy_type.charge_time();
                         if self.enemy_attack.time_in_range >= charge_time {
-                            let reload_time = self.enemy_type.reload_time();
                             self.enemy_attack.time_until_next_attack = reload_time;
                             self.enemy_attack.time_in_range = 0.0;
 
-                            shot = util::Shot(true);
+                            enemy_shot_type = EnemyShotType::Standard;
                         }
                     } else if distance_to_player < consts::ENEMY_RANGED_RANGE {
                         self.enemy_attack.time_in_range += delta;
                     }
                 }
                 EnemyType::Melee => {
-                    let range = self.enemy_type.range();
                     if distance_to_player < range {
                         self.enemy_attack.time_in_range += delta;
-                        let charge_time = self.enemy_type.charge_time();
                         if self.enemy_attack.time_in_range >= charge_time {
-                            let reload_time = self.enemy_type.reload_time();
                             self.enemy_attack.time_until_next_attack = reload_time;
                             self.enemy_attack.time_in_range = 0.0;
 
@@ -159,31 +178,47 @@ impl Enemy {
                     } else {
                         self.enemy_attack.time_in_range = 0.0;
                     }
+                },
+                EnemyType::Super => {
+                    if distance_to_player < range && self.enemy_attack.time_until_next_attack <= 0.0 {
+                        self.enemy_attack.time_until_next_attack = 1.0 / consts::ENEMY_SUPER_WAVE_FIRE_RATE(wave);
+
+                        enemy_shot_type = EnemyShotType::Spread;
+                    }
                 }
             };
         }
 
-        if !self.enemy_type.is_melee() {
-            if distance_to_player < consts::ENEMY_RANGED_RANGE {
-                movement = mq::Vec2::ZERO;
-            } else {
-                movement *= consts::ENEMY_RANGED_SPEED_PENALTY;
-            }
+        match self.enemy_type {
+            EnemyType::Ranged => {
+                if distance_to_player < consts::ENEMY_RANGED_RANGE {
+                    movement = mq::Vec2::ZERO;
+                } else {
+                    movement *= consts::ENEMY_RANGED_SPEED_PENALTY;
+                }
+            },
+            EnemyType::Super => {
+                if distance_to_player < consts::ENEMY_SUPER_MIN_RANGE {
+                    movement = mq::Vec2::ZERO;
+                }
+            },
+            _ => {}
         }
 
         self.pos += movement;
 
-        shot
+        enemy_shot_type
     }
 
     pub fn draw_hp_bar(&self, camera: &camera::Camera, scale: f32) {
         let draw_pos = (self.pos - camera.pos) * scale / consts::TILES_PER_SCALE as f32
             + mq::Vec2::new(mq::screen_width() / 2.0, mq::screen_height() / 2.0);
-        let square_radius = scale * consts::ENEMY_SIZE;
+        let square_radius = scale * self.enemy_type.size();
+        let square_radius_small = scale * EnemyType::Melee.size();
 
         let hp_bar_ratio = self.health / self.max_health;
-        let hp_bar_width = square_radius * 2.0 * hp_bar_ratio;
-        let hp_bar_height = square_radius / 4.0;
+        let hp_bar_width = square_radius_small * 2.0 * hp_bar_ratio;
+        let hp_bar_height = square_radius_small / 4.0;
         mq::draw_rectangle(
             draw_pos.x - hp_bar_width / 2.0,
             draw_pos.y - square_radius - hp_bar_height,
@@ -217,7 +252,7 @@ impl Enemy {
         }
 
         // draw square rotated to point in direction of movement
-        let square_radius = scale * consts::ENEMY_SIZE;
+        let square_radius = scale * self.enemy_type.size();
         mq::draw_poly(
             draw_pos.x,
             draw_pos.y,
@@ -227,6 +262,7 @@ impl Enemy {
             match self.enemy_type {
                 EnemyType::Melee => colors::NORD11,
                 EnemyType::Ranged => colors::NORD12,
+                EnemyType::Super => colors::NORD15,
             },
         );
 
@@ -250,11 +286,17 @@ impl hitbox::Rectangle for Enemy {
     }
 
     fn width(&self) -> f32 {
-        consts::ENEMY_SIZE * 2.0 * consts::TILES_PER_SCALE as f32
+        match self.enemy_type {
+            EnemyType::Super => consts::ENEMY_SUPER_SIZE * 2.0 * consts::TILES_PER_SCALE as f32,
+            _ => consts::ENEMY_SIZE * 2.0 * consts::TILES_PER_SCALE as f32,
+        }
     }
 
     fn height(&self) -> f32 {
-        consts::ENEMY_SIZE * 2.0 * consts::TILES_PER_SCALE as f32
+        match self.enemy_type {
+            EnemyType::Super => consts::ENEMY_SUPER_SIZE * 2.0 * consts::TILES_PER_SCALE as f32,
+            _ => consts::ENEMY_SIZE * 2.0 * consts::TILES_PER_SCALE as f32,
+        }
     }
 
     fn rotation(&self) -> f32 {
@@ -268,6 +310,7 @@ pub struct EnemyManager {
     enemies_until_next_wave: i32, // not enemies.len()
     spawn_timer: timer::Timer<()>,
     enemy_bullets: Vec<bullet::Bullet>,
+    should_spawn_super: bool,
 }
 
 impl EnemyManager {
@@ -278,6 +321,7 @@ impl EnemyManager {
             enemies_until_next_wave: 0,
             spawn_timer: timer::Timer::new(1.0 / consts::ENEMY_WAVE_SPAWN_RATE(0)),
             enemy_bullets: Vec::new(),
+            should_spawn_super: false,
         }
     }
 
@@ -287,19 +331,36 @@ impl EnemyManager {
         let enemies_killed = util::EnemiesKilled(previous_enemy_count - self.enemies.len() as i32);
 
         for enemy in self.enemies.iter_mut() {
-            let shot = enemy.update(player, delta);
+            let enemy_shot_type = enemy.update(player, self.wave, delta);
 
-            if let util::Shot(true) = shot {
-                let bullet = bullet::Bullet::new(
-                    enemy.pos,
-                    enemy.direction,
-                    consts::ENEMY_RANGED_BULLET_SPEED,
-                    consts::ENEMT_RANGED_BULLET_RANGE,
-                    bullet::BulletDamage::Standard(enemy.damage),
-                    1,
-                );
-                self.enemy_bullets.push(bullet);
+            match enemy_shot_type {
+                EnemyShotType::None => {},
+                EnemyShotType::Standard => {
+                    let bullet = bullet::Bullet::new(
+                        enemy.pos,
+                        enemy.direction,
+                        consts::ENEMY_RANGED_BULLET_SPEED,
+                        consts::ENEMY_RANGED_BULLET_RANGE,
+                        bullet::BulletDamage::Standard(enemy.damage),
+                        1,
+                    );
+                    self.enemy_bullets.push(bullet);
+                },
+                EnemyShotType::Spread => {
+                    let spread = consts::ENEMY_SUPER_SPREAD;
+                    let angle = enemy.direction + mq::rand::gen_range(-spread, spread);
+                    let bullet = bullet::Bullet::new(
+                        enemy.pos,
+                        angle,
+                        consts::ENEMY_RANGED_BULLET_SPEED,
+                        consts::ENEMY_RANGED_BULLET_RANGE,
+                        bullet::BulletDamage::Standard(enemy.damage),
+                        1,
+                    );
+                    self.enemy_bullets.push(bullet);
+                }
             }
+                
         }
 
         self.enemy_bullets
@@ -325,9 +386,10 @@ impl EnemyManager {
                 self.enemies_until_next_wave = consts::ENEMY_WAVE_COUNT(self.wave);
                 self.spawn_timer
                     .update_period(1.0 / consts::ENEMY_WAVE_SPAWN_RATE(self.wave));
+            } else if self.enemies_until_next_wave == 6 {
+                self.should_spawn_super = true;
+                println!("Wave {}", self.wave);
             }
-
-            self.enemies_until_next_wave -= 1;
 
             self.spawn_enemy(player);
         }
@@ -341,18 +403,30 @@ impl EnemyManager {
             * consts::ENEMY_SPAWN_RADIUS
             + player.pos;
 
-        let enemy_type = if mq::rand::gen_range(0.0, 1.0) < consts::ENEMY_RANGED_CHANCE {
+        let enemy_type = if self.should_spawn_super {
+            self.should_spawn_super = false;
+            EnemyType::Super
+        } else if mq::rand::gen_range(0.0, 1.0) < consts::ENEMY_RANGED_CHANCE {
             EnemyType::Ranged
         } else {
             EnemyType::Melee
         };
+
+        let mut hp = consts::ENEMY_WAVE_HP(self.wave);
+        if enemy_type == EnemyType::Super {
+            hp *= consts::ENEMY_SUPER_HP_MOD;
+        }
+
+
         let enemy = Enemy::new(
             spawn_pos,
-            consts::ENEMY_WAVE_HP(self.wave),
+            hp,
             consts::ENEMY_DAMAGE,
             consts::ENEMY_WAVE_SPEED(self.wave),
             enemy_type,
         );
+
+        self.enemies_until_next_wave -= 1;
         self.enemies.push(enemy);
     }
 
