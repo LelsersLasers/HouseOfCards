@@ -440,7 +440,7 @@ impl EnemyManager {
 
         let mut hp = consts::ENEMY_WAVE_HP(self.wave);
         if enemy_type == EnemyType::Super {
-            hp *= consts::ENEMY_SUPER_HP_MOD;
+            hp *= consts::ENEMY_SUPER_HP_MOD(self.wave);
         }
 
         let enemy = Enemy::new(

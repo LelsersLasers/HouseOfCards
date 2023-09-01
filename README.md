@@ -15,20 +15,15 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 
 ## TODO
 
-- 0.5.0
-	- Level up: stat upgrade choice (damage, hp, reload speed, etc)
-	- Once per wave: super enemy that drops chest that has a passive upgrade
-        - Super enemy
-            - Physically bigger
-            - More hp
-            - Additional mechanics
-                - Shoots cones of bullets
-    - Seperate Enemy and EnemyManager
 - Else
+    - Seperate Enemy and EnemyManager
+    - Tweak
+        - XP and score system
+        - Scaling system and numbers
+        - Super enemy numbers and mechanics
     - Play nice with alt-tab
-	- Improve gaining xp/score system
-		- Score = xp	
-    - Improve mouse feel
+    - Improve mouse feel?
+	- Touch controls
 	- Sound
 	- Other screens?
     - Other weapons?
@@ -37,7 +32,6 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 	- Particles?
 	- Spatial hash for collision detection?
 	- Update world build locations less often?
-	- Touch controls?
     - Art/animations for everything else
 
 ## Extra mechanics

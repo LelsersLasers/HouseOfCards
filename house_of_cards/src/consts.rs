@@ -101,15 +101,15 @@ pub const ENEMY_SUPER_WAVE_START: i32 = 2;
 pub const ENEMY_SUPER_WAVE_FIRE_RATE: fn(i32) -> f32 =
     |wave| (wave - ENEMY_SUPER_WAVE_START) as f32 / 5.0;
 pub const ENEMY_SUPER_SPREAD: f32 = 0.6; // radians
-pub const ENEMY_SUPER_HP_MOD: f32 = 5.0;
+pub const ENEMY_SUPER_HP_MOD: fn(i32) -> f32 = |wave| 5.0 + wave as f32;
 
 pub const ENEMY_SPAWN_RADIUS: f32 = TILES_PER_SCALE as f32 + 2.0; // tiles
-pub const ENEMY_RANGED_CHANCE: f32 = 0.2; // percent
+pub const ENEMY_RANGED_CHANCE: f32 = 0.33; // percent
 
 // Note: wave spawning starts at 1
 pub const ENEMY_WAVE_COUNT: fn(i32) -> i32 = |wave| 5 + 3 * (wave - 1);
 
-pub const ENEMY_WAVE_HP: fn(i32) -> f32 = |wave| 10.0 + 5.0 * (wave - 1) as f32;
+pub const ENEMY_WAVE_HP: fn(i32) -> f32 = |wave| 10.0 + 10.0 * (wave - 1) as f32;
 pub const ENEMY_DAMAGE: f32 = 1.0;
 pub const ENEMY_WAVE_SPEED: fn(i32) -> f32 = |wave| ENEMY_SPEED * (1.0 + 0.015 * (wave - 1) as f32);
 
