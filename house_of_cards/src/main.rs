@@ -13,6 +13,7 @@ mod mouse;
 mod player;
 mod powerup;
 mod timer;
+mod touch_button;
 mod util;
 mod weapon;
 mod world;
@@ -189,7 +190,7 @@ async fn play() {
 
         mq::simulate_mouse_with_touch(game_state.current_state() != game_state::GameState::Alive);
         let touches = mq::touches();
-        
+
         let movement_joystick_result = movement_joystick.update(touches.clone());
         let aim_joystick_result = aim_joystick.update(touches.clone());
 
