@@ -32,8 +32,12 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
 
 - 0.8.x
     - Better contrast for font on powerups
+    - Move powerup icons up
     - Improve look of text on powerup pick?
     - Fix slight issue of hp and xp text being just a little too low
+    - Background sound
+        - Pause when in pause menu
+        - Reset on respawn
 - 0.9.x
     - Make a system that detects if on mobile and differentiate on that
         - For pause menu:
@@ -42,6 +46,7 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
 - 0.10.x
     - Play nice with alt-tab
 - Else
+    - Improve loading resources on reset
     - Tweak
         - XP and score system
         - Scaling system and numbers
@@ -49,7 +54,6 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
     - Improve aim feel (mouse, arrow keys, joystick)
     - Animations for hp and xp bars
         - Similar to camera soft follow
-	- Sound
 - Maybe
     - Draw default joystick if no touch
         - Only draw on mobile!
@@ -90,3 +94,4 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
 - Pixel Art Cards: https://www.reddit.com/r/PixelArt/comments/i1t1gn/pixel_art_playing_card_designs_created_in_aseprite/
 - Math for rotated rectangle hitbox: https://chat.openai.com/share/f0826594-c5e9-4ea6-a1cf-0a010295fbfa
 - Font: https://fonts.google.com/specimen/Assistant
+- Music: https://www.youtube.com/watch?v=ROcups0YaHE

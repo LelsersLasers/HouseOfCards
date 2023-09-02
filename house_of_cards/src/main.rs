@@ -1,3 +1,4 @@
+use macroquad::audio as mq_audio;
 use macroquad::prelude as mq;
 
 mod bullet;
@@ -189,6 +190,12 @@ async fn play() {
     let font = mq::load_ttf_font("resources/Assistant-SemiBold.ttf")
         .await
         .unwrap();
+
+    let music = mq_audio::load_sound("resources/INTERSTELLAR-COMPRESSED.wav")
+        .await
+        .unwrap();
+
+    mq_audio::play_sound(music, mq_audio::PlaySoundParams { looped: true, ..Default::default() });
 
     let mut deck = deck::Deck::new(cards_texture);
 
