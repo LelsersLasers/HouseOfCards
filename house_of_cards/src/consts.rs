@@ -85,7 +85,7 @@ pub const POWERUP_DIPLAY_Y_OFFSET: f32 = 0.065;
 pub const POWERUP_DISPLAY_MAX_HEIGHT: usize = 8;
 pub const POWERUP_OUTLINE_THICKNESS: f32 = 0.0075;
 
-pub const AR: weapon::Weapon = weapon::Weapon::new(5.0, 2.5, 12.0, 1.0, 0.75, 7.5);
+pub const AR: weapon::Weapon = weapon::Weapon::new(5.0, 2.5, 15.0, 1.0, 0.75, 7.5);
 
 pub const BULLET_SIZE: f32 = 0.005; // scale
 pub const BULLET_OUTLINE: f32 = 0.0005; // scale
