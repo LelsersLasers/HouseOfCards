@@ -14,6 +14,8 @@ pub const JOYSTICK_MAX_RADIUS: f32 = 0.15; // scale
 pub const JOYSTICK_BALL_SIZE: f32 = 0.05; // scale
 pub const JOYSTICK_THICKNESS: f32 = 0.01; // scale
 
+pub const PAUSE_BUTTON_SIZE: f32 = 0.2; // width/height
+
 pub const PLAYER_SPEED: f32 = 1.2; // tiles per second
 pub const PLAYER_SIZE: f32 = 0.012; // scale
 pub const PLAYER_MAX_HEALTH: f32 = 10.0;

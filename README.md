@@ -32,6 +32,8 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 	- Other screens?
         - Show settings on pause menu?
     - Other weapons?
+    - Mobile controls work with resizing scale?
+        - Is this needed?
 - Maybe
 	- Improve hitboxes?
 	- Particles?

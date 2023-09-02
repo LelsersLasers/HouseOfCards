@@ -161,6 +161,27 @@ async fn play() {
         ),
     );
 
+    // let mut reload_button = touch_button::TouchButton::new(
+    //     mq::Rect::new(
+    //         mq::screen_width() - consts::RELOAD_BUTTON_SIZE * scale,
+    //         mq::screen_height() - consts::RELOAD_BUTTON_SIZE * scale,
+    //         consts::RELOAD_BUTTON_SIZE * scale,
+    //         consts::RELOAD_BUTTON_SIZE * scale,
+    //     ),
+    // );
+    let mut start_pause_button = touch_button::TouchButton::new(mq::Rect::new(
+        0.0,
+        0.0,
+        consts::PAUSE_BUTTON_SIZE * mq::screen_width(),
+        consts::PAUSE_BUTTON_SIZE * mq::screen_height(),
+    ));
+    let mut end_pause_button = touch_button::TouchButton::new(mq::Rect::new(
+        0.0,
+        0.0,
+        mq::screen_width(),
+        mq::screen_height(),
+    ));
+
     loop {
         mq::clear_background(consts::BACKGROUND_COLOR);
 
@@ -393,7 +414,15 @@ async fn play() {
             }
         }
 
-        if mq::is_key_pressed(mq::KeyCode::Escape) || mq::is_key_pressed(mq::KeyCode::P) {
+        start_pause_button.draw();
+
+        if mq::is_key_pressed(mq::KeyCode::Escape)
+            || mq::is_key_pressed(mq::KeyCode::P)
+            || (game_state.current_state() == game_state::GameState::Paused
+                && end_pause_button.touched(touches.clone()))
+            || (game_state.current_state() == game_state::GameState::Alive
+                && start_pause_button.touched(touches.clone()))
+        {
             game_state.toggle_pause();
         }
         //----------------------------------------------------------------------------//
