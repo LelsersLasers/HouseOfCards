@@ -94,17 +94,11 @@ fn create_touch_controls(scale: f32) -> TouchControls {
 }
 
 async fn create_resources() -> Resources {
-    let cards_texture = mq::load_texture(consts::CARDS_TEXTURE_PATH)
-        .await
-        .unwrap();
+    let cards_texture = mq::load_texture(consts::CARDS_TEXTURE_PATH).await.unwrap();
 
-    let font = mq::load_ttf_font(consts::FONT_PATH)
-        .await
-        .unwrap();
+    let font = mq::load_ttf_font(consts::FONT_PATH).await.unwrap();
 
-    let music = mq_audio::load_sound(consts::MUSIC_PATH)
-        .await
-        .unwrap();
+    let music = mq_audio::load_sound(consts::MUSIC_PATH).await.unwrap();
 
     Resources {
         cards_texture,
@@ -211,7 +205,13 @@ async fn play(resources: Resources) {
     let mut player_bullets: Vec<bullet::Bullet> = Vec::new();
 
     mq_audio::stop_sound(resources.music);
-    mq_audio::play_sound(resources.music, mq_audio::PlaySoundParams { looped: true, volume: 1.0 });
+    mq_audio::play_sound(
+        resources.music,
+        mq_audio::PlaySoundParams {
+            looped: true,
+            volume: 1.0,
+        },
+    );
 
     let mut deck = deck::Deck::new(resources.cards_texture);
 
