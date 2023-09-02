@@ -37,6 +37,13 @@ struct TouchControls {
     fullscreen_button: touch_button::TouchButton,
 }
 
+#[derive(Clone, Copy)]
+struct Resources {
+    cards_texture: mq::Texture2D,
+    font: mq::Font,
+    music: mq_audio::Sound,
+}
+
 fn create_touch_controls(scale: f32) -> TouchControls {
     let joystick_height = consts::JOYSTICK_HEIGHT * mq::screen_height();
     let joystick_y = mq::screen_height() - joystick_height;
@@ -83,6 +90,26 @@ fn create_touch_controls(scale: f32) -> TouchControls {
         reload_button,
         start_pause_button,
         fullscreen_button,
+    }
+}
+
+async fn create_resources() -> Resources {
+    let cards_texture = mq::load_texture(consts::CARDS_TEXTURE_PATH)
+        .await
+        .unwrap();
+
+    let font = mq::load_ttf_font(consts::FONT_PATH)
+        .await
+        .unwrap();
+
+    let music = mq_audio::load_sound(consts::MUSIC_PATH)
+        .await
+        .unwrap();
+
+    Resources {
+        cards_texture,
+        font,
+        music,
     }
 }
 
@@ -159,7 +186,7 @@ fn draw_overlay(
     }
 }
 
-async fn play() {
+async fn play(resources: Resources) {
     let mut game_state = game_state::GameStateManager::new();
 
     let mut player = player::Player::new(consts::AR);
@@ -183,21 +210,9 @@ async fn play() {
 
     let mut player_bullets: Vec<bullet::Bullet> = Vec::new();
 
-    let cards_texture = mq::load_texture("./resources/nord-cards-transparent.png")
-        .await
-        .unwrap();
+    mq_audio::play_sound(resources.music, mq_audio::PlaySoundParams { looped: true, ..Default::default() });
 
-    let font = mq::load_ttf_font("resources/Assistant-SemiBold.ttf")
-        .await
-        .unwrap();
-
-    let music = mq_audio::load_sound("resources/INTERSTELLAR-COMPRESSED.wav")
-        .await
-        .unwrap();
-
-    mq_audio::play_sound(music, mq_audio::PlaySoundParams { looped: true, ..Default::default() });
-
-    let mut deck = deck::Deck::new(cards_texture);
+    let mut deck = deck::Deck::new(resources.cards_texture);
 
     let mut old_width = mq::screen_width();
     let mut old_height = mq::screen_height();
@@ -356,7 +371,7 @@ async fn play() {
         }
         enemy_manager.draw_hp_bars(&camera, scale);
         deck.draw(&player.weapon, scale);
-        player.draw_bars(font, scale);
+        player.draw_bars(resources.font, scale);
         powerups.draw(scale);
         if !mouse_shown {
             mouse_info.draw(scale);
@@ -368,7 +383,7 @@ async fn play() {
             let text = format!("FPS: {:.0}", 1.0 / fps_timer.get_state());
             let font_size = (scale * consts::FPS_FONT_SIZE).round() as u16;
             let font_spacing = scale * consts::FPS_FONT_SPACING;
-            let text_dims = mq::measure_text(&text, Some(font), font_size, 1.0);
+            let text_dims = mq::measure_text(&text, Some(resources.font), font_size, 1.0);
 
             let x = font_spacing;
             let y = text_dims.offset_y + font_spacing;
@@ -378,7 +393,7 @@ async fn play() {
                 x,
                 y,
                 mq::TextParams {
-                    font,
+                    font: resources.font,
                     font_size,
                     color: colors::NORD6,
                     ..Default::default()
@@ -389,7 +404,7 @@ async fn play() {
             let text = format!("Score: {}", score);
             let font_size = (scale * consts::SCORE_FONT_SIZE).round() as u16;
             let font_spacing = scale * consts::SCORE_FONT_SPACING;
-            let text_dims = mq::measure_text(&text, Some(font), font_size, 1.0);
+            let text_dims = mq::measure_text(&text, Some(resources.font), font_size, 1.0);
 
             let x = (mq::screen_width() - text_dims.width) / 2.0;
             let y = text_dims.offset_y + font_spacing;
@@ -399,7 +414,7 @@ async fn play() {
                 x,
                 y,
                 mq::TextParams {
-                    font,
+                    font: resources.font,
                     font_size,
                     color: colors::NORD6,
                     ..Default::default()
@@ -412,7 +427,7 @@ async fn play() {
                 colors::NORD0_BIG_ALPHA,
                 "You died!",
                 "Press R to restart",
-                font,
+                resources.font,
                 LargeFont::Bounce(time_counter),
                 scale,
             );
@@ -428,7 +443,7 @@ async fn play() {
                 colors::NORD0_BIG_ALPHA,
                 "Paused",
                 "Press Esc to unpause",
-                font,
+                resources.font,
                 LargeFont::Static,
                 scale,
             );
@@ -436,7 +451,7 @@ async fn play() {
             powerup::Powerup::draw_outline(scale);
             let all_locations = powerup::PowerupPickLocation::all_locations();
             for (powerup, location) in power_up_choices.iter().zip(all_locations.iter()) {
-                powerup.draw(*location, font, scale);
+                powerup.draw(*location, resources.font, scale);
             }
 
             let mut selected_powerup = None;
@@ -487,7 +502,9 @@ async fn play() {
 async fn main() {
     mq::rand::srand(instant::now() as u64);
 
+    let resources = create_resources().await;
+
     loop {
-        play().await;
+        play(resources).await;
     }
 }

@@ -4,6 +4,10 @@ use crate::{colors, weapon};
 
 pub const WINDOW_START_SIZE: u32 = 800;
 
+pub const CARDS_TEXTURE_PATH: &str = "resources/nord-cards-transparent.png";
+pub const FONT_PATH: &str = "resources/Assistant-SemiBold.ttf";
+pub const MUSIC_PATH: &str = "resources/INTERSTELLAR-COMPRESSED.wav";
+
 pub const BACKGROUND_COLOR: mq::Color = crate::colors::NORD1;
 pub const MOUSE_COLOR: mq::Color = crate::colors::NORD6;
 pub const BACKGROUND_COLORS: [mq::Color; 6] = colors::SURFACE_COLORS;
