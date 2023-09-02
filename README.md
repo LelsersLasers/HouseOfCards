@@ -29,8 +29,6 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
 
 ## TODO
 
-- 0.11.x
-    - Play nice with alt-tab
 - 0.12.x
     - Resources
         - Faster load

@@ -243,6 +243,11 @@ async fn play(resources: Resources) {
         mq::clear_background(consts::BACKGROUND_COLOR);
 
         let delta = mq::get_frame_time();
+        if delta > consts::MAX_DELTA {
+            mq::next_frame().await;
+            continue;
+        }
+
         time_counter += delta;
 
         if let util::Ticked(true) = fps_timer.update(delta) {

@@ -4,6 +4,8 @@ use crate::{colors, weapon};
 
 pub const WINDOW_START_SIZE: u32 = 800;
 
+pub const MAX_DELTA: f32 = 1.0 / 10.0; // seconds
+
 pub const CARDS_TEXTURE_PATH: &str = "resources/nord-cards-transparent.png";
 pub const FONT_PATH: &str = "resources/Assistant-SemiBold.ttf";
 pub const MUSIC_PATH: &str = "resources/INTERSTELLAR-SHORT.wav";
