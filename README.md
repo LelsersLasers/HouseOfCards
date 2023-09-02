@@ -29,29 +29,28 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
 
 ## TODO
 
-- 0.8.x
-    - Less compressed sound file
-- 0.9.x
+- 0.10.x
     - Make a system that detects if on mobile and differentiate on that
         - For pause menu:
             - Display current status on toggles in pause menu
         - Draw default joystick if on mobile and no touch
-- 0.10.x
+- 0.11.x
     - Play nice with alt-tab
-- Else
+- 0.12.x
     - Resources
         - Faster load
         - Async?
             - Avoid black screen on load
             - Load world while loading resources?
+            - Start music as soon as possible
+- 0.13.0
+    - Increase firerate instead of reload speed powerup
+- Else
     - Tweak
         - XP and score system
         - Scaling system and numbers
         - Super enemy numbers and mechanics
     - Improve aim feel (mouse, arrow keys, joystick)
-    - Animations for hp and xp bars
-        - Similar to camera soft follow
-    - Increase firerate instead of reload speed powerup?
 - Maybe
     - Other screens?
         - Show settings on pause menu?

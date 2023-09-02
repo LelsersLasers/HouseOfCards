@@ -10,6 +10,8 @@ pub struct Player {
     pub max_health: f32,
     pub xp: i32,
     pub level: i32,
+    hp_bar_ratio: f32,
+    pub xp_bar_ratio: f32,
 }
 
 impl Player {
@@ -22,6 +24,8 @@ impl Player {
             max_health: consts::PLAYER_MAX_HEALTH,
             xp: 0,
             level: 1,
+            hp_bar_ratio: 1.0,
+            xp_bar_ratio: 0.0,
         }
     }
 
@@ -97,6 +101,8 @@ impl Player {
         } else if movement != mq::Vec2::ZERO {
             self.direction = movement.y.atan2(movement.x);
         }
+        
+        self.update_bar_ratios(delta);
 
         self.weapon.update(delta);
         // uses short-circuiting to only `try_shoot` if the player is requesting to shoot
@@ -108,6 +114,21 @@ impl Player {
                 || auto_shoot)
                 && self.weapon.try_shoot().0,
         )
+    }
+
+    pub fn update_bar_ratios(&mut self, delta: f32) {
+        {
+            let old_ratio = self.hp_bar_ratio;
+            let target_ratio = self.health / self.max_health;
+            let dif = target_ratio - old_ratio;
+            self.hp_bar_ratio += dif * delta * consts::BAR_UPDATE_SPEED;
+        }
+        {
+            let old_ratio = self.xp_bar_ratio;
+            let target_ratio = self.xp as f32 / consts::XP_PER_LEVEL(self.level) as f32;
+            let dif = target_ratio - old_ratio;
+            self.xp_bar_ratio += dif * delta * consts::BAR_UPDATE_SPEED;
+        }
     }
 
     pub fn draw(&self, camera: &camera::Camera, scale: f32) {
@@ -158,10 +179,8 @@ impl Player {
         let font_size = (bar_height * consts::PLAYER_BARS_FONT_RATIO).round() as u16;
 
         // XP bar
-        let xp_ratio = self.xp as f32 / consts::XP_PER_LEVEL(self.level) as f32;
-
         mq::draw_rectangle(x, y, bar_width, bar_height, colors::NORD6_ALPHA);
-        mq::draw_rectangle(x, y, bar_width * xp_ratio, bar_height, colors::NORD8);
+        mq::draw_rectangle(x, y, bar_width * self.xp_bar_ratio, bar_height, colors::NORD8);
         mq::draw_rectangle_lines(x, y, bar_width, bar_height, bar_thickness, colors::NORD6);
 
         // XP text
@@ -187,10 +206,8 @@ impl Player {
 
         // HP bar
         let y = y - bar_height - scale * consts::PLAYER_XP_BAR_OFFSET;
-        let hp_ratio = self.health / self.max_health;
-
         mq::draw_rectangle(x, y, bar_width, bar_height, colors::NORD6_ALPHA);
-        mq::draw_rectangle(x, y, bar_width * hp_ratio, bar_height, colors::NORD14);
+        mq::draw_rectangle(x, y, bar_width * self.hp_bar_ratio, bar_height, colors::NORD14);
         mq::draw_rectangle_lines(x, y, bar_width, bar_height, bar_thickness, colors::NORD6);
 
         // HP text

@@ -336,6 +336,7 @@ async fn play(resources: Resources) {
                 game_state.next(game_state::GameState::PowerupStat);
                 power_up_choices = powerup::Powerup::pick_three(powerup::Powerup::pick_stat);
                 need_click_after = time_counter;
+                player.xp_bar_ratio = 1.0;
             }
             if enemies_killed.super_killed {
                 game_state.next(game_state::GameState::PowerupCard);
@@ -449,6 +450,8 @@ async fn play(resources: Resources) {
                 scale,
             );
         } else if game_state.powerup() {
+            player.update_bar_ratios(delta);
+            
             powerup::Powerup::draw_outline(scale);
             let all_locations = powerup::PowerupPickLocation::all_locations();
             for (powerup, location) in power_up_choices.iter().zip(all_locations.iter()) {
