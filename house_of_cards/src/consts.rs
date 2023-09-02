@@ -10,11 +10,16 @@ pub const BACKGROUND_COLORS: [mq::Color; 6] = colors::SURFACE_COLORS;
 
 pub const TILES_PER_SCALE: u32 = 12;
 
-pub const JOYSTICK_MAX_RADIUS: f32 = 0.15; // scale
+pub const JOYSTICK_MAX_RADIUS: f32 = 0.175; // scale
 pub const JOYSTICK_BALL_SIZE: f32 = 0.05; // scale
 pub const JOYSTICK_THICKNESS: f32 = 0.01; // scale
+pub const JOYSTICK_HEIGHT: f32 = 2.0 / 3.0; // height
 
-pub const PAUSE_BUTTON_SIZE: f32 = 0.2; // width/height
+pub const RELOAD_BUTTON_WIDTH: f32 = 0.35; // scale
+pub const RELOAD_BUTTON_HEIGHT: f32 = 0.23; // scale
+
+pub const PAUSE_BUTTON_WIDTH: f32 = 0.2;
+pub const PAUSE_BUTTON_HEIGHT: f32 = 0.3;
 
 pub const PLAYER_SPEED: f32 = 1.2; // tiles per second
 pub const PLAYER_SIZE: f32 = 0.012; // scale

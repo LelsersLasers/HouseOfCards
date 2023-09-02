@@ -142,40 +142,38 @@ async fn play() {
     let mut mouse_info = mouse::MouseInfo::new();
 
     let scale = mq::screen_width().min(mq::screen_height());
+
+    let joystick_height = consts::JOYSTICK_HEIGHT * mq::screen_height();
+    let joystick_y = mq::screen_height() - joystick_height;
     let mut movement_joystick = joystick::Joystick::new(
         consts::JOYSTICK_MAX_RADIUS * scale,
-        mq::Rect::new(
-            0.0,
-            mq::screen_height() / 2.0,
-            mq::screen_width() / 2.0,
-            mq::screen_height() / 2.0,
-        ),
+        mq::Rect::new(0.0, joystick_y, mq::screen_width() / 2.0, joystick_height),
     );
     let mut aim_joystick = joystick::Joystick::new(
         consts::JOYSTICK_MAX_RADIUS * scale,
         mq::Rect::new(
             mq::screen_width() / 2.0,
-            mq::screen_height() / 2.0,
+            joystick_y,
             mq::screen_width() / 2.0,
-            mq::screen_height() / 2.0,
+            joystick_height,
         ),
     );
 
-    // let mut reload_button = touch_button::TouchButton::new(
-    //     mq::Rect::new(
-    //         mq::screen_width() - consts::RELOAD_BUTTON_SIZE * scale,
-    //         mq::screen_height() - consts::RELOAD_BUTTON_SIZE * scale,
-    //         consts::RELOAD_BUTTON_SIZE * scale,
-    //         consts::RELOAD_BUTTON_SIZE * scale,
-    //     ),
-    // );
+    let reload_button_width = consts::RELOAD_BUTTON_WIDTH * scale;
+    let reload_button_height = consts::RELOAD_BUTTON_HEIGHT * scale;
+    let mut reload_button = touch_button::TouchButton::new(mq::Rect::new(
+        mq::screen_width() - reload_button_width,
+        0.0,
+        reload_button_width,
+        reload_button_height,
+    ));
     let mut start_pause_button = touch_button::TouchButton::new(mq::Rect::new(
         0.0,
         0.0,
-        consts::PAUSE_BUTTON_SIZE * mq::screen_width(),
-        consts::PAUSE_BUTTON_SIZE * mq::screen_height(),
+        consts::PAUSE_BUTTON_WIDTH * mq::screen_width(),
+        consts::PAUSE_BUTTON_HEIGHT * mq::screen_height(),
     ));
-    let mut end_pause_button = touch_button::TouchButton::new(mq::Rect::new(
+    let mut fullscreen_button = touch_button::TouchButton::new(mq::Rect::new(
         0.0,
         0.0,
         mq::screen_width(),
@@ -295,7 +293,9 @@ async fn play() {
                 need_click_after = time_counter;
             }
 
-            if mq::is_key_pressed(mq::KeyCode::R) && !deck.is_full() {
+            if (mq::is_key_pressed(mq::KeyCode::R) || reload_button.touched(touches.clone()))
+                && !deck.is_full()
+            {
                 deck.combine();
                 player.weapon.reload(&powerups);
             }
@@ -372,7 +372,7 @@ async fn play() {
                 scale,
             );
 
-            if mq::is_key_pressed(mq::KeyCode::R) {
+            if mq::is_key_pressed(mq::KeyCode::R) || fullscreen_button.touched(touches.clone()) {
                 mq::next_frame().await;
                 return;
             }
@@ -414,12 +414,10 @@ async fn play() {
             }
         }
 
-        start_pause_button.draw();
-
         if mq::is_key_pressed(mq::KeyCode::Escape)
             || mq::is_key_pressed(mq::KeyCode::P)
             || (game_state.current_state() == game_state::GameState::Paused
-                && end_pause_button.touched(touches.clone()))
+                && fullscreen_button.touched(touches.clone()))
             || (game_state.current_state() == game_state::GameState::Alive
                 && start_pause_button.touched(touches.clone()))
         {

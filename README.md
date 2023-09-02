@@ -17,8 +17,6 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 
 - 0.6.x
 	- Touch controls
-        - Reload
-        - Pause
     - `O` (or some key) to toggle auto shoot
     - `I` (or some key) to toggle auto reload
 - Else
@@ -32,8 +30,6 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 	- Other screens?
         - Show settings on pause menu?
     - Other weapons?
-    - Mobile controls work with resizing scale?
-        - Is this needed?
 - Maybe
 	- Improve hitboxes?
 	- Particles?

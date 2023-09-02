@@ -26,13 +26,4 @@ impl TouchButton {
         }
         false
     }
-    pub fn draw(&self) {
-        mq::draw_rectangle(
-            self.rect.x,
-            self.rect.y,
-            self.rect.w,
-            self.rect.h,
-            mq::Color::new(0.0, 0.0, 0.0, 0.5),
-        );
-    }
 }
