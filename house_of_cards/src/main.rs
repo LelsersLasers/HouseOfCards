@@ -186,9 +186,9 @@ async fn play() {
         .await
         .unwrap();
 
-    let font = mq::load_ttf_font_from_bytes(include_bytes!(
-        "../resources/AnnieUseYourTelescope-Regular.ttf"
-    ))
+    let font = mq::load_ttf_font(
+        "resources/Assistant-SemiBold.ttf"
+    ).await
     .unwrap();
 
     let mut deck = deck::Deck::new(cards_texture);
@@ -444,7 +444,7 @@ async fn play() {
             }
         }
 
-        if mq::is_key_pressed(mq::KeyCode::F) {
+        if mq::is_key_pressed(mq::KeyCode::Q) {
             auto_shoot = !auto_shoot;
         }
         if mq::is_key_pressed(mq::KeyCode::T) {

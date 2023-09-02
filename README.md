@@ -14,7 +14,7 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
 - Reset after death: R
 - Pause: escape or p
 - Choose powerup: 1, 2, 3 or left click
-- Toggle auto shoot: F (off by default)
+- Toggle auto shoot: Q (off by default)
 - Toggle auto reload: T (on by default)
 
 ## Mobile Controls
@@ -29,18 +29,22 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
 
 ## TODO
 
-- 0.7.x
-    - `F` (or some key) to toggle auto shoot
-    - `T` (or some key) to toggle auto reload
-- 0.8.0
+
+- 0.8.x
+    - Text in top right corner
+        - Make score bigger (and center it?)
+        - Make FPS smaller
+    - Better contrast for font on powerups
+    - Improve look of text on powerup pick?
+    - Fix slight issue of hp and xp text being just a little too low
+- 0.9.x
     - Make a system that detects if on mobile and differentiate on that
         - For pause menu:
             - Display current status on toggles in pause menu
         - Draw default joystick if touch
-- Else
+- 0.10.x
     - Play nice with alt-tab
-    - Better font
-        - And make it visible on mobile
+- Else
     - Tweak
         - XP and score system
         - Scaling system and numbers
@@ -86,4 +90,4 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
 
 - Pixel Art Cards: https://www.reddit.com/r/PixelArt/comments/i1t1gn/pixel_art_playing_card_designs_created_in_aseprite/
 - Math for rotated rectangle hitbox: https://chat.openai.com/share/f0826594-c5e9-4ea6-a1cf-0a010295fbfa
-- Font: https://fonts.google.com/specimen/Annie+Use+Your+Telescope
+- Font: https://fonts.google.com/specimen/Assistant

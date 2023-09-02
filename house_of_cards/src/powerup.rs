@@ -287,12 +287,12 @@ impl Powerup {
         match self {
             Powerup::Damage => vec!["+1 Damage"],
             Powerup::Health => vec!["+2 Health"],
-            Powerup::Reload => vec!["+33% Reload Speed"],
+            Powerup::Reload => vec!["+33%", "Reload Speed"],
             Powerup::Speed => vec!["+5% Speed"],
-            Powerup::Diamonds => vec!["Diamonds:", "Pierce +1 Enemies"],
-            Powerup::Hearts => vec!["Hearts:", "+5% chance to heal"],
+            Powerup::Diamonds => vec!["Diamonds:", "Pierce", "+1 Enemies"],
+            Powerup::Hearts => vec!["Hearts:", "+5% chance", "to heal"],
             Powerup::Clubs => vec!["Clubs:", "+0.25s Stun"],
-            Powerup::Spades => vec!["Spades:", "+10% chance to", "double damage"],
+            Powerup::Spades => vec!["Spades:", "+10% chance", "to double", "damage"],
         }
     }
 
@@ -300,7 +300,7 @@ impl Powerup {
         match self {
             Powerup::Damage => vec!["for all cards"],
             Powerup::Health => vec!["gain hp and max hp"],
-            Powerup::Reload => vec!["than current reload speed"],
+            Powerup::Reload => vec!["than current", "reload speed"],
             Powerup::Speed => vec!["from base speed"],
             Powerup::Diamonds => vec!["bullets go through", "an additional enemy"],
             Powerup::Hearts => vec!["1 hp on hit"],
