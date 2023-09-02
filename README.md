@@ -30,12 +30,8 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
 ## TODO
 
 - 0.12.x
-    - Resources
-        - Faster load
-        - Async?
-            - Avoid black screen on load
-            - Load world while loading resources?
-            - Start music as soon as possible
+    - Load screen on web
+        - Display `landscape please` message on mobile?
 - 0.13.0
     - Increase firerate instead of reload speed powerup
 - Else

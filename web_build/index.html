@@ -6,7 +6,8 @@
     <style>
         html,
         body,
-        canvas {
+        canvas,
+        #placeholder {
             margin: 0px;
             padding: 0px;
             width: 100%;
@@ -17,16 +18,70 @@
             z-index: 0;
             outline: none !important;
             border: none !important;
+            font-family: Assistant;
+        }
+
+        #placeholder {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: #ECEFF4;
+        }
+
+        #loading_text {
+            font-size: 3vh;
+            margin: 0;
+        }
+
+        #title_text {
+            font-size: 8vh;
+            margin: 0;
+        }
+
+        @font-face {
+            font-family: Assistant;
+            src: url(resources/Assistant-SemiBold.ttf);
         }
     </style>
 </head>
 
 <body>
-    <canvas id="glcanvas" tabindex='1'></canvas>
+    <canvas hidden id="glcanvas" tabindex='1'></canvas>
+    <div id="placeholder">
+        <h1 id="title_text">House of Cards</h1>
+        <h2 id="loading_text">Loading.</h1>
+    </div>
     <!-- Minified and statically hosted version of https://github.com/not-fl3/macroquad/blob/master/js/mq_js_bundle.js -->
     <script src="https://not-fl3.github.io/miniquad-samples/mq_js_bundle.js"></script>
     
-    <script>load("house_of_cards.wasm");</script> <!-- Your compiled wasm file -->
+    <script>
+        load("house_of_cards.wasm"); // Your compiled wasm file
+
+        const LOAD_TIME = 10;
+        const LOADING_DOTS_PER_SEC = 9 / LOAD_TIME;
+
+        let loading_dots = 1;
+        const loading_dots_interval = setInterval(() => {
+            loading_dots = (loading_dots + 1) % 4;
+            document.getElementById("loading_text").innerHTML = "Loading" + ".".repeat(loading_dots);
+        }, 1000 / LOADING_DOTS_PER_SEC);
+
+
+        setTimeout(() => {
+            const placeholder = document.getElementById("placeholder");
+            placeholder.hidden = true;
+            placeholder.remove();
+
+            const canvas = document.getElementById("glcanvas");
+            canvas.hidden = false;
+
+            const resize_event = new Event("resize");
+            window.dispatchEvent(resize_event);
+            
+            clearInterval(loading_dots_interval);
+        }, LOAD_TIME * 1000);
+    </script>
 </body>
 
 </html>
