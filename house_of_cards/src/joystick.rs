@@ -9,27 +9,47 @@ pub struct JoystickUpdateResult {
     pub active: bool,
 }
 
+#[derive(PartialEq, Eq)]
+pub enum Side {
+    Left,
+    Right,
+}
+
 pub struct Joystick {
     touch_id: Option<u64>,
     current_center: mq::Vec2,
     radius_max: f32,
     start: mq::Rect,
+    side: Side,
     last_result: JoystickUpdateResult,
 }
 
 impl Joystick {
-    pub fn new(radius_max: f32, start: mq::Rect) -> Self {
-        Self {
+    pub fn new(radius_max: f32, start: mq::Rect, side: Side) -> Self {
+        let mut joystick = Self {
             touch_id: None,
             current_center: start.center(),
             radius_max,
             start,
+            side,
             last_result: JoystickUpdateResult {
                 pos: mq::Vec2::ZERO,
                 moved: false,
                 active: false,
             },
-        }
+        };
+        joystick.reset_center();
+
+        joystick
+    }
+
+    fn reset_center(&mut self) {
+        let offset = if self.side == Side::Left {
+            mq::Vec2::new(-self.start.w / 4.0, self.start.h / 6.0)
+        } else {
+            mq::Vec2::new(self.start.w / 4.0, self.start.h / 6.0)
+        };
+        self.current_center = self.start.center() + offset;
     }
 
     pub fn update(&mut self, touches: Vec<mq::Touch>) -> JoystickUpdateResult {
@@ -41,7 +61,7 @@ impl Joystick {
                 if id == touch.id {
                     if touch.phase == mq::TouchPhase::Ended {
                         self.touch_id = None;
-                        self.current_center = self.start.center();
+                        self.reset_center();
                     } else {
                         let offset = touch.position - self.current_center;
                         let offset_norm = offset.normalize_or_zero();
@@ -69,8 +89,8 @@ impl Joystick {
         result
     }
 
-    pub fn draw(&self, scale: f32) {
-        if self.last_result.active {
+    pub fn draw(&self, is_mobile: bool, scale: f32) {
+        if is_mobile {
             let thickness = scale * crate::consts::JOYSTICK_THICKNESS;
             let ball = scale * crate::consts::JOYSTICK_BALL_SIZE;
 

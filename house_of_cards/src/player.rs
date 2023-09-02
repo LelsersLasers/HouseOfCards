@@ -101,7 +101,7 @@ impl Player {
         } else if movement != mq::Vec2::ZERO {
             self.direction = movement.y.atan2(movement.x);
         }
-        
+
         self.update_bar_ratios(delta);
 
         self.weapon.update(delta);
@@ -180,7 +180,13 @@ impl Player {
 
         // XP bar
         mq::draw_rectangle(x, y, bar_width, bar_height, colors::NORD6_ALPHA);
-        mq::draw_rectangle(x, y, bar_width * self.xp_bar_ratio, bar_height, colors::NORD8);
+        mq::draw_rectangle(
+            x,
+            y,
+            bar_width * self.xp_bar_ratio,
+            bar_height,
+            colors::NORD8,
+        );
         mq::draw_rectangle_lines(x, y, bar_width, bar_height, bar_thickness, colors::NORD6);
 
         // XP text
@@ -207,7 +213,13 @@ impl Player {
         // HP bar
         let y = y - bar_height - scale * consts::PLAYER_XP_BAR_OFFSET;
         mq::draw_rectangle(x, y, bar_width, bar_height, colors::NORD6_ALPHA);
-        mq::draw_rectangle(x, y, bar_width * self.hp_bar_ratio, bar_height, colors::NORD14);
+        mq::draw_rectangle(
+            x,
+            y,
+            bar_width * self.hp_bar_ratio,
+            bar_height,
+            colors::NORD14,
+        );
         mq::draw_rectangle_lines(x, y, bar_width, bar_height, bar_thickness, colors::NORD6);
 
         // HP text

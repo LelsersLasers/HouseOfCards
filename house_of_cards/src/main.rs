@@ -51,6 +51,7 @@ fn create_touch_controls(scale: f32) -> TouchControls {
     let movement_joystick = joystick::Joystick::new(
         consts::JOYSTICK_MAX_RADIUS * scale,
         mq::Rect::new(0.0, joystick_y, mq::screen_width() / 2.0, joystick_height),
+        joystick::Side::Left,
     );
     let aim_joystick = joystick::Joystick::new(
         consts::JOYSTICK_MAX_RADIUS * scale,
@@ -60,6 +61,7 @@ fn create_touch_controls(scale: f32) -> TouchControls {
             mq::screen_width() / 2.0,
             joystick_height,
         ),
+        joystick::Side::Right,
     );
 
     let reload_button_width = consts::RELOAD_BUTTON_WIDTH * scale;
@@ -181,6 +183,8 @@ fn draw_overlay(
 }
 
 async fn play(resources: Resources) {
+    let mut is_mobile = false;
+
     let mut game_state = game_state::GameStateManager::new();
 
     let mut player = player::Player::new(consts::AR);
@@ -258,6 +262,8 @@ async fn play(resources: Resources) {
 
         mq::simulate_mouse_with_touch(game_state.current_state() != game_state::GameState::Alive);
         let touches = mq::touches();
+
+        is_mobile = is_mobile || !touches.is_empty();
 
         let movement_joystick_result = touch_controls.movement_joystick.update(touches.clone());
         let aim_joystick_result = touch_controls.aim_joystick.update(touches.clone());
@@ -378,8 +384,8 @@ async fn play(resources: Resources) {
         if !mouse_shown {
             mouse_info.draw(scale);
         }
-        touch_controls.movement_joystick.draw(scale);
-        touch_controls.aim_joystick.draw(scale);
+        touch_controls.movement_joystick.draw(is_mobile, scale);
+        touch_controls.aim_joystick.draw(is_mobile, scale);
 
         {
             let text = format!("FPS: {:.0}", 1.0 / fps_timer.get_state());
@@ -451,7 +457,7 @@ async fn play(resources: Resources) {
             );
         } else if game_state.powerup() {
             player.update_bar_ratios(delta);
-            
+
             powerup::Powerup::draw_outline(scale);
             let all_locations = powerup::PowerupPickLocation::all_locations();
             for (powerup, location) in power_up_choices.iter().zip(all_locations.iter()) {
