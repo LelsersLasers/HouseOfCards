@@ -210,6 +210,7 @@ async fn play(resources: Resources) {
 
     let mut player_bullets: Vec<bullet::Bullet> = Vec::new();
 
+    mq_audio::stop_sound(resources.music);
     mq_audio::play_sound(resources.music, mq_audio::PlaySoundParams { looped: true, volume: 1.0 });
 
     let mut deck = deck::Deck::new(resources.cards_texture);
