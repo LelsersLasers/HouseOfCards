@@ -50,6 +50,8 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
         - Scaling system and numbers
         - Super enemy numbers and mechanics
     - Improve aim feel (mouse, arrow keys, joystick)
+    - Animations for hp and xp bars
+        - Similar to camera soft follow
 	- Sound
 - Maybe
     - Draw default joystick if no touch
