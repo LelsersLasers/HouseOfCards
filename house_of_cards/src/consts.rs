@@ -63,6 +63,8 @@ pub const SCORE_FONT_SPACING: f32 = 0.02; // scale
 
 pub const LARGE_FONT_SIZE: f32 = 0.15; // scale
 pub const SMALL_FONT_SIZE: f32 = 0.04; // scale
+pub const SMALL_FONT_SPACING: f32 = 0.035; // scale
+pub const SMALL_FONT_LARGE_SPACING: f32 = 0.05; // scale
 pub const LARGE_FONT_BOUNCE_MAX: f32 = 0.125; // font size
 pub const LARGE_FONT_BOUNCE_SPEED: f32 = 0.8;
 

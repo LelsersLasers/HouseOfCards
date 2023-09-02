@@ -117,7 +117,7 @@ enum LargeFont {
 fn draw_overlay(
     overlay_color: mq::Color,
     large_text: &str,
-    small_text: &str,
+    small_texts: Vec<&str>,
     font: mq::Font,
     large_font: LargeFont,
     scale: f32,
@@ -162,23 +162,31 @@ fn draw_overlay(
 
     {
         let font_size = (scale * consts::SMALL_FONT_SIZE).round() as u16;
-        let text_dims = mq::measure_text(small_text, Some(font), font_size, 1.0);
+        let mut y = mq::screen_height() / 2.0 + scale * consts::LARGE_FONT_SIZE / 2.0;
+        let text_height = mq::measure_text(small_texts[0], Some(font), font_size, 1.0).height;
+        for (i, small_text) in small_texts.iter().enumerate() {
+            let text_dims = mq::measure_text(small_text, Some(font), font_size, 1.0);
 
-        let x = mq::screen_width() / 2.0 - text_dims.width / 2.0;
-        let y = mq::screen_height() / 2.0 - text_dims.height / 2.0
-            + scale * consts::LARGE_FONT_SIZE / 2.0;
+            let x = mq::screen_width() / 2.0 - text_dims.width / 2.0;
+            y -= text_height / 2.0;
 
-        mq::draw_text_ex(
-            small_text,
-            x,
-            y,
-            mq::TextParams {
-                font,
-                font_size,
-                color: colors::NORD4,
-                ..Default::default()
-            },
-        );
+            mq::draw_text_ex(
+                small_text,
+                x,
+                y,
+                mq::TextParams {
+                    font,
+                    font_size,
+                    color: colors::NORD4,
+                    ..Default::default()
+                },
+            );
+
+            y += text_height / 2.0 + scale * consts::SMALL_FONT_SPACING;
+            if i == 0 {
+                y += scale * consts::SMALL_FONT_LARGE_SPACING;
+            }
+        }
     }
 }
 
@@ -434,7 +442,7 @@ async fn play(resources: Resources) {
             draw_overlay(
                 colors::NORD0_BIG_ALPHA,
                 "You died!",
-                "Press R to restart",
+                vec!["Press R to restart"],
                 resources.font,
                 LargeFont::Bounce(time_counter),
                 scale,
@@ -447,10 +455,25 @@ async fn play(resources: Resources) {
                 return;
             }
         } else if game_state.current_state() == game_state::GameState::Paused {
+            let small_texts = if is_mobile {
+                vec!["Touch the screen to unpause"]
+            } else {
+                let auto_shoot_text = if auto_shoot {
+                    "Auto shoot: on"
+                } else {
+                    "Auto shoot: off"
+                };
+                let auto_reload_text = if auto_reload {
+                    "Auto reload: on"
+                } else {
+                    "Auto reload: off"
+                };
+                vec!["Press Esc to unpause", auto_shoot_text, auto_reload_text]
+            };
             draw_overlay(
                 colors::NORD0_BIG_ALPHA,
                 "Paused",
-                "Press Esc to unpause",
+                small_texts,
                 resources.font,
                 LargeFont::Static,
                 scale,

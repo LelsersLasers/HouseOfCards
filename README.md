@@ -29,11 +29,6 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
 
 ## TODO
 
-- 0.10.x
-    - Make a system that detects if on mobile and differentiate on that
-        - For pause menu:
-            - Display current status on toggles in pause menu
-        - Draw default joystick if on mobile and no touch
 - 0.11.x
     - Play nice with alt-tab
 - 0.12.x
