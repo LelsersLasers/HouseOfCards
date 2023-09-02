@@ -1,6 +1,6 @@
 # House Of Cards
 
-Twin stick shooter using Rust and Macroquad with the theme of cards
+Twin stick shooter using Rust and Macroquad with the theme of cards, works on mobile and desktop without a download!
 
 > Unleash Chaos in this Casual Bullet Hell Rougelike Twin Stick Shooter!
 > -ChatGPT
@@ -67,8 +67,9 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 	- Face => 10 damage
 	- Ace => One shot
 	- Else => number value of card
-- Score
-	- 1 point per enemy killed
+- Score and XP
+	- 1 per enemy killed
+- There is a movement speed penalty while shooting and reloading
 
 ## Power ups
 
