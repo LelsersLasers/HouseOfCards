@@ -169,7 +169,7 @@ impl Player {
         let text_dims = mq::measure_text(&text, Some(font), font_size, 1.0);
         let text_pos = mq::Vec2::new(
             mq::screen_width() / 2.0 - text_dims.width / 2.0,
-            y + bar_height / 2.0 + text_dims.offset_y / 2.0,
+            y + bar_height / 2.0 + text_dims.offset_y / 2.25,
         );
 
         mq::draw_text_ex(
@@ -202,7 +202,7 @@ impl Player {
         let text_dims = mq::measure_text(&text, Some(font), font_size, 1.0);
         let text_pos = mq::Vec2::new(
             mq::screen_width() / 2.0 - text_dims.width / 2.0,
-            y + bar_height / 2.0 + text_dims.offset_y / 2.0,
+            y + bar_height / 2.0 + text_dims.offset_y / 2.5,
         );
 
         mq::draw_text_ex(
