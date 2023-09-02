@@ -42,6 +42,9 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
 - 0.10.x
     - Play nice with alt-tab
 - Else
+    - Faster resource load
+        - Or make it not just a black screen on load
+    - Improve audio quality?
     - Tweak
         - XP and score system
         - Scaling system and numbers
