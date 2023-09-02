@@ -31,6 +31,7 @@ impl Player {
         movement_joystick_result: joystick::JoystickUpdateResult,
         aim_joystick_result: joystick::JoystickUpdateResult,
         powerups: &powerup::Powerups,
+        auto_shoot: bool,
         delta: f32,
     ) -> util::Shot {
         let movement = (if movement_joystick_result.active {
@@ -103,7 +104,8 @@ impl Player {
         util::Shot(
             (mq::is_key_down(mq::KeyCode::Space)
                 || mq::is_mouse_button_down(mq::MouseButton::Left)
-                || aim_joystick_result.active)
+                || aim_joystick_result.active
+                || auto_shoot)
                 && self.weapon.try_shoot().0,
         )
     }

@@ -14,8 +14,8 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 - Reset after death: R
 - Pause: escape or p
 - Choose powerup: 1, 2, 3 or left click
-- Toggle auto shoot: O (off by default)
-- Toggle auto reload: I (on by default)
+- Toggle auto shoot: F (off by default)
+- Toggle auto reload: T (on by default)
 
 ## Mobile Controls
 
@@ -30,8 +30,8 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 ## TODO
 
 - 0.7.x
-    - `O` (or some key) to toggle auto shoot
-    - `I` (or some key) to toggle auto reload
+    - `F` (or some key) to toggle auto shoot
+    - `T` (or some key) to toggle auto reload
 - 0.8.0
     - Make a system that detects if on mobile and differentiate on that
         - For pause menu:

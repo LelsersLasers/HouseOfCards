@@ -198,6 +198,9 @@ async fn play() {
 
     let mut mouse_info = mouse::MouseInfo::new();
 
+    let mut auto_shoot = false;
+    let mut auto_reload = true;
+
     let scale = mq::screen_width().min(mq::screen_height());
 
     let mut touch_controls = create_touch_controls(scale);
@@ -244,6 +247,7 @@ async fn play() {
                 movement_joystick_result,
                 aim_joystick_result,
                 &powerups,
+                auto_shoot,
                 delta,
             );
 
@@ -264,7 +268,7 @@ async fn play() {
                         powerups.diamonds_bullet_hp(),
                     );
                     player_bullets.push(bullet);
-                } else if consts::AUTO_RELOAD {
+                } else if auto_reload {
                     deck.combine();
                     player.weapon.reload(&powerups);
                 }
@@ -438,6 +442,13 @@ async fn play() {
 
                 game_state.back();
             }
+        }
+
+        if mq::is_key_pressed(mq::KeyCode::F) {
+            auto_shoot = !auto_shoot;
+        }
+        if mq::is_key_pressed(mq::KeyCode::T) {
+            auto_reload = !auto_reload;
         }
 
         if mq::is_key_pressed(mq::KeyCode::Escape)

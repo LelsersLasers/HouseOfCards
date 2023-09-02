@@ -133,5 +133,3 @@ pub const AUTO_LOG: fn(f32, f32, f32, f32) -> f32 =
     |x, a, b, c| ((b - a) / (c + 1.0).log10()) * (x + 1.0).log10() + a;
 pub const ENEMY_WAVE_SPAWN_RATE: fn(i32) -> f32 =
     |wave| AUTO_LOG(wave as f32, 1.0 / 3.5, 1.0 / 1.5, 10.0);
-
-pub const AUTO_RELOAD: bool = true;
