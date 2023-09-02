@@ -210,7 +210,7 @@ async fn play(resources: Resources) {
 
     let mut player_bullets: Vec<bullet::Bullet> = Vec::new();
 
-    mq_audio::play_sound(resources.music, mq_audio::PlaySoundParams { looped: true, ..Default::default() });
+    mq_audio::play_sound(resources.music, mq_audio::PlaySoundParams { looped: true, volume: 1.0 });
 
     let mut deck = deck::Deck::new(resources.cards_texture);
 
@@ -491,6 +491,12 @@ async fn play(resources: Resources) {
                 && touch_controls.start_pause_button.touched(touches.clone()))
         {
             game_state.toggle_pause();
+            if game_state.current_state() == game_state::GameState::Paused {
+                mq_audio::set_sound_volume(resources.music, 0.0);
+            } else {
+                // mq_audio::play_sound(resources.music, mq_audio::PlaySoundParams { looped: true, ..Default::default() });
+                mq_audio::set_sound_volume(resources.music, 1.0);
+            }
         }
         //----------------------------------------------------------------------------//
 
