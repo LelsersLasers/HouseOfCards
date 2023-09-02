@@ -16,6 +16,7 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 
 ## Mobile Controls
 
+- Note: might need auto rotate on (game works best in landscape mode)
 - Movement: left screen joystick
 - Aim: right screen joystick
 - Reload: touch deck icons in top right (auto reload enabled)
