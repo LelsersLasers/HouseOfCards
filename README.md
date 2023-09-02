@@ -31,9 +31,6 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
 
 
 - 0.8.x
-    - Text in top right corner
-        - Make score bigger (and center it?)
-        - Make FPS smaller
     - Better contrast for font on powerups
     - Improve look of text on powerup pick?
     - Fix slight issue of hp and xp text being just a little too low

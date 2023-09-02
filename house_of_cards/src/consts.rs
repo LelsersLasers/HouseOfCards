@@ -51,10 +51,13 @@ pub const DISCARD_ROTATION: f32 = 0.1;
 pub const DISCARD_OFFSET: f32 = 0.05;
 pub const DISCARD_TO_DRAW: usize = 5;
 
-pub const FONT_SPACING: f32 = 0.01; // scale
-pub const FONT_SIZE: f32 = 0.04; // scale
+pub const FPS_FONT_SPACING: f32 = 0.01; // scale
+pub const FPS_FONT_SIZE: f32 = 0.025; // scale
+pub const SCORE_FONT_SIZE: f32 = 0.06; // scale
+pub const SCORE_FONT_SPACING: f32 = 0.02; // scale
 
 pub const LARGE_FONT_SIZE: f32 = 0.15; // scale
+pub const SMALL_FONT_SIZE: f32 = 0.04; // scale
 pub const LARGE_FONT_BOUNCE_MAX: f32 = 0.125; // font size
 pub const LARGE_FONT_BOUNCE_SPEED: f32 = 0.8;
 

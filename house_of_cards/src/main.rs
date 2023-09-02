@@ -137,7 +137,7 @@ fn draw_overlay(
     }
 
     {
-        let font_size = (scale * consts::FONT_SIZE).round() as u16;
+        let font_size = (scale * consts::SMALL_FONT_SIZE).round() as u16;
         let text_dims = mq::measure_text(small_text, Some(font), font_size, 1.0);
 
         let x = mq::screen_width() / 2.0 - text_dims.width / 2.0;
@@ -186,10 +186,9 @@ async fn play() {
         .await
         .unwrap();
 
-    let font = mq::load_ttf_font(
-        "resources/Assistant-SemiBold.ttf"
-    ).await
-    .unwrap();
+    let font = mq::load_ttf_font("resources/Assistant-SemiBold.ttf")
+        .await
+        .unwrap();
 
     let mut deck = deck::Deck::new(cards_texture);
 
@@ -358,36 +357,47 @@ async fn play() {
         touch_controls.movement_joystick.draw(scale);
         touch_controls.aim_joystick.draw(scale);
 
-        let texts = [
-            (0.05, format!("FPS: {:.0}", 1.0 / fps_timer.get_state())),
-            // (-0.1, format!("Wave: {}", enemy_manager.wave)),
-            // (
-            //     0.05,
-            //     format!("Enemies alive: {}", enemy_manager.enemies.len()),
-            // ),
-            (0.05, format!("Score: {}", score)),
-        ];
-        let font_size = (scale * consts::FONT_SIZE).round() as u16;
-        let x = scale * consts::FONT_SPACING;
-        let mut y = scale * consts::FONT_SPACING;
-        let color = colors::NORD6;
-        for (extra_spacing, text) in texts.iter() {
-            let text_dims = mq::measure_text(text, Some(font), font_size, 1.0);
-            y += text_dims.offset_y;
+        {
+            let text = format!("FPS: {:.0}", 1.0 / fps_timer.get_state());
+            let font_size = (scale * consts::FPS_FONT_SIZE).round() as u16;
+            let font_spacing = scale * consts::FPS_FONT_SPACING;
+            let text_dims = mq::measure_text(&text, Some(font), font_size, 1.0);
+
+            let x = font_spacing;
+            let y = text_dims.offset_y + font_spacing;
 
             mq::draw_text_ex(
-                text,
+                &text,
                 x,
                 y,
                 mq::TextParams {
                     font,
                     font_size,
-                    color,
+                    color: colors::NORD6,
                     ..Default::default()
                 },
             );
+        }
+        {
+            let text = format!("Score: {}", score);
+            let font_size = (scale * consts::SCORE_FONT_SIZE).round() as u16;
+            let font_spacing = scale * consts::SCORE_FONT_SPACING;
+            let text_dims = mq::measure_text(&text, Some(font), font_size, 1.0);
 
-            y += scale * consts::FONT_SIZE * extra_spacing;
+            let x = (mq::screen_width() - text_dims.width) / 2.0;
+            let y = text_dims.offset_y + font_spacing;
+
+            mq::draw_text_ex(
+                &text,
+                x,
+                y,
+                mq::TextParams {
+                    font,
+                    font_size,
+                    color: colors::NORD6,
+                    ..Default::default()
+                },
+            );
         }
 
         if game_state.current_state() == game_state::GameState::Dead {
