@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 macroquad = "0.3.25"
 instant = "0.1"
+futures = "0.3.28"

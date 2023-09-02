@@ -1,3 +1,4 @@
+use futures::join;
 use macroquad::audio as mq_audio;
 use macroquad::prelude as mq;
 
@@ -96,16 +97,45 @@ fn create_touch_controls(scale: f32) -> TouchControls {
 }
 
 async fn create_resources() -> Resources {
-    let cards_texture = mq::load_texture(consts::CARDS_TEXTURE_PATH).await.unwrap();
+    mq::clear_background(consts::BACKGROUND_COLOR);
+    mq::next_frame().await;
 
-    let font = mq::load_ttf_font(consts::FONT_PATH).await.unwrap();
+    let font_fut = mq::load_ttf_font(consts::FONT_PATH);
+    mq::clear_background(consts::BACKGROUND_COLOR);
+    let (_, font) = join!(mq::next_frame(), font_fut);
+    let font = font.unwrap();
 
-    let music = mq_audio::load_sound(consts::MUSIC_PATH).await.unwrap();
+    let scale = mq::screen_width().min(mq::screen_height());
+    mq::clear_background(consts::BACKGROUND_COLOR);
+    draw_overlay(
+        colors::NORD0_BIG_ALPHA,
+        "House of Cards",
+        vec!["Loading..."],
+        font,
+        LargeFont::Static,
+        scale,
+    );
+    mq::next_frame().await;
+
+    mq::clear_background(consts::BACKGROUND_COLOR);
+    draw_overlay(
+        colors::NORD0_BIG_ALPHA,
+        "House of Cards",
+        vec!["Loading..."],
+        font,
+        LargeFont::Static,
+        scale,
+    );
+
+    let music_fut = mq_audio::load_sound(consts::MUSIC_PATH);
+    let cards_texture_fut = mq::load_texture(consts::CARDS_TEXTURE_PATH);
+
+    let (music, cards_texture, _) = join!(music_fut, cards_texture_fut, mq::next_frame());
 
     Resources {
-        cards_texture,
+        cards_texture: cards_texture.unwrap(),
         font,
-        music,
+        music: music.unwrap(),
     }
 }
 
