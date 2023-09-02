@@ -43,7 +43,7 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
         - Faster load
         - Async?
             - Avoid black screen on load
-        - Improve audio quality?
+            - Load world while loading resources?
     - Tweak
         - XP and score system
         - Scaling system and numbers
