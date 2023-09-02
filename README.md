@@ -2,6 +2,9 @@
 
 Twin stick shooter using Rust and Macroquad with the theme of cards
 
+> Unleash Chaos in this Casual Bullet Hell Rougelike Twin Stick Shooter!
+> -ChatGPT
+
 ## Controls
 
 - Movement: WASD or hold right mouse button
@@ -26,26 +29,30 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 
 ## TODO
 
-- 0.6.x
-	- Touch controls
-        - Resize/move with screen size change
-        - Draw default joystick if no touch
+- 0.7.x
     - `O` (or some key) to toggle auto shoot
     - `I` (or some key) to toggle auto reload
+- 0.8.0
+    - Make a system that detects if on mobile and differentiate on that
+        - For pause menu:
+            - Display current status on toggles in pause menu
+        - Draw default joystick if touch
 - Else
+    - Play nice with alt-tab
+    - Better font
+        - And make it visible on mobile
     - Tweak
         - XP and score system
         - Scaling system and numbers
         - Super enemy numbers and mechanics
-    - Play nice with alt-tab
     - Improve aim feel (mouse, arrow keys, joystick)
-    - Better font
-        - And make it visible on mobile
 	- Sound
-	- Other screens?
+- Maybe
+    - Draw default joystick if no touch
+        - Only draw on mobile!
+    - Other screens?
         - Show settings on pause menu?
     - Other weapons?
-- Maybe
 	- Improve hitboxes?
 	- Particles?
     - Damage numbers?

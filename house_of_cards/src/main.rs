@@ -28,6 +28,63 @@ fn window_conf() -> mq::Conf {
     }
 }
 
+struct TouchControls {
+    movement_joystick: joystick::Joystick,
+    aim_joystick: joystick::Joystick,
+    reload_button: touch_button::TouchButton,
+    start_pause_button: touch_button::TouchButton,
+    fullscreen_button: touch_button::TouchButton,
+}
+
+fn create_touch_controls(scale: f32) -> TouchControls {
+    let joystick_height = consts::JOYSTICK_HEIGHT * mq::screen_height();
+    let joystick_y = mq::screen_height() - joystick_height;
+
+    let movement_joystick = joystick::Joystick::new(
+        consts::JOYSTICK_MAX_RADIUS * scale,
+        mq::Rect::new(0.0, joystick_y, mq::screen_width() / 2.0, joystick_height),
+    );
+    let aim_joystick = joystick::Joystick::new(
+        consts::JOYSTICK_MAX_RADIUS * scale,
+        mq::Rect::new(
+            mq::screen_width() / 2.0,
+            joystick_y,
+            mq::screen_width() / 2.0,
+            joystick_height,
+        ),
+    );
+
+    let reload_button_width = consts::RELOAD_BUTTON_WIDTH * scale;
+    let reload_button_height = consts::RELOAD_BUTTON_HEIGHT * scale;
+    let reload_button = touch_button::TouchButton::new(mq::Rect::new(
+        mq::screen_width() - reload_button_width,
+        0.0,
+        reload_button_width,
+        reload_button_height,
+    ));
+
+    let start_pause_button = touch_button::TouchButton::new(mq::Rect::new(
+        0.0,
+        0.0,
+        consts::PAUSE_BUTTON_WIDTH * mq::screen_width(),
+        consts::PAUSE_BUTTON_HEIGHT * mq::screen_height(),
+    ));
+    let fullscreen_button = touch_button::TouchButton::new(mq::Rect::new(
+        0.0,
+        0.0,
+        mq::screen_width(),
+        mq::screen_height(),
+    ));
+
+    TouchControls {
+        movement_joystick,
+        aim_joystick,
+        reload_button,
+        start_pause_button,
+        fullscreen_button,
+    }
+}
+
 enum LargeFont {
     Bounce(f32), // time_counter
     Static,
@@ -143,42 +200,7 @@ async fn play() {
 
     let scale = mq::screen_width().min(mq::screen_height());
 
-    let joystick_height = consts::JOYSTICK_HEIGHT * mq::screen_height();
-    let joystick_y = mq::screen_height() - joystick_height;
-    let mut movement_joystick = joystick::Joystick::new(
-        consts::JOYSTICK_MAX_RADIUS * scale,
-        mq::Rect::new(0.0, joystick_y, mq::screen_width() / 2.0, joystick_height),
-    );
-    let mut aim_joystick = joystick::Joystick::new(
-        consts::JOYSTICK_MAX_RADIUS * scale,
-        mq::Rect::new(
-            mq::screen_width() / 2.0,
-            joystick_y,
-            mq::screen_width() / 2.0,
-            joystick_height,
-        ),
-    );
-
-    let reload_button_width = consts::RELOAD_BUTTON_WIDTH * scale;
-    let reload_button_height = consts::RELOAD_BUTTON_HEIGHT * scale;
-    let mut reload_button = touch_button::TouchButton::new(mq::Rect::new(
-        mq::screen_width() - reload_button_width,
-        0.0,
-        reload_button_width,
-        reload_button_height,
-    ));
-    let mut start_pause_button = touch_button::TouchButton::new(mq::Rect::new(
-        0.0,
-        0.0,
-        consts::PAUSE_BUTTON_WIDTH * mq::screen_width(),
-        consts::PAUSE_BUTTON_HEIGHT * mq::screen_height(),
-    ));
-    let mut fullscreen_button = touch_button::TouchButton::new(mq::Rect::new(
-        0.0,
-        0.0,
-        mq::screen_width(),
-        mq::screen_height(),
-    ));
+    let mut touch_controls = create_touch_controls(scale);
 
     loop {
         mq::clear_background(consts::BACKGROUND_COLOR);
@@ -203,6 +225,8 @@ async fn play() {
             old_height = mq::screen_height();
 
             should_update_locations_to_build = true;
+
+            touch_controls = create_touch_controls(scale);
         }
 
         mouse_info.update(time_counter, delta);
@@ -210,8 +234,8 @@ async fn play() {
         mq::simulate_mouse_with_touch(game_state.current_state() != game_state::GameState::Alive);
         let touches = mq::touches();
 
-        let movement_joystick_result = movement_joystick.update(touches.clone());
-        let aim_joystick_result = aim_joystick.update(touches.clone());
+        let movement_joystick_result = touch_controls.movement_joystick.update(touches.clone());
+        let aim_joystick_result = touch_controls.aim_joystick.update(touches.clone());
 
         //----------------------------------------------------------------------------//
         if game_state.current_state() == game_state::GameState::Alive {
@@ -293,7 +317,8 @@ async fn play() {
                 need_click_after = time_counter;
             }
 
-            if (mq::is_key_pressed(mq::KeyCode::R) || reload_button.touched(touches.clone()))
+            if (mq::is_key_pressed(mq::KeyCode::R)
+                || touch_controls.reload_button.touched(touches.clone()))
                 && !deck.is_full()
             {
                 deck.combine();
@@ -326,8 +351,8 @@ async fn play() {
         if !mouse_shown {
             mouse_info.draw(scale);
         }
-        movement_joystick.draw(scale);
-        aim_joystick.draw(scale);
+        touch_controls.movement_joystick.draw(scale);
+        touch_controls.aim_joystick.draw(scale);
 
         let texts = [
             (0.05, format!("FPS: {:.0}", 1.0 / fps_timer.get_state())),
@@ -337,7 +362,6 @@ async fn play() {
             //     format!("Enemies alive: {}", enemy_manager.enemies.len()),
             // ),
             (0.05, format!("Score: {}", score)),
-            (0.5, format!("Touches: {:?}", touches.len())),
         ];
         let font_size = (scale * consts::FONT_SIZE).round() as u16;
         let x = scale * consts::FONT_SPACING;
@@ -372,7 +396,9 @@ async fn play() {
                 scale,
             );
 
-            if mq::is_key_pressed(mq::KeyCode::R) || fullscreen_button.touched(touches.clone()) {
+            if mq::is_key_pressed(mq::KeyCode::R)
+                || touch_controls.fullscreen_button.touched(touches.clone())
+            {
                 mq::next_frame().await;
                 return;
             }
@@ -417,9 +443,9 @@ async fn play() {
         if mq::is_key_pressed(mq::KeyCode::Escape)
             || mq::is_key_pressed(mq::KeyCode::P)
             || (game_state.current_state() == game_state::GameState::Paused
-                && fullscreen_button.touched(touches.clone()))
+                && touch_controls.fullscreen_button.touched(touches.clone()))
             || (game_state.current_state() == game_state::GameState::Alive
-                && start_pause_button.touched(touches.clone()))
+                && touch_controls.start_pause_button.touched(touches.clone()))
         {
             game_state.toggle_pause();
         }
