@@ -40,16 +40,12 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
         - Scaling system and numbers
         - Super enemy numbers and mechanics
     - Improve aim feel (mouse, arrow keys, joystick)
-- Maybe
-    - Other screens?
-        - Show settings on pause menu?
-    - Other weapons?
-	- Improve hitboxes?
-	- Particles?
-    - Damage numbers?
-	- Spatial hash for collision detection?
-	- Update world build locations less often?
-    - Art/animations for everything else
+    - Purpose
+        - Trying to get somewhere?
+- itch.io page
+    - Write up a short summary
+    - Add screenshots + icon pic
+    - Finish typing out extra mechanics
 
 ## Extra mechanics
 
