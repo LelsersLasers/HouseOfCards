@@ -266,7 +266,7 @@ impl Powerup {
             Powerup::Damage => colors::NORD11,
             Powerup::Health => colors::NORD14,
             Powerup::Reload => colors::NORD12,
-            Powerup::Speed => colors::NORD13,
+            Powerup::Speed => colors::NORD15,
             Powerup::Diamonds => colors::NORD7,
             Powerup::Hearts => colors::NORD8,
             Powerup::Clubs => colors::NORD9,

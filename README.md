@@ -29,10 +29,8 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
 
 ## TODO
 
-
 - 0.8.x
-    - Better contrast for font on powerups
-    - Improve look of text on powerup pick?
+    - Less compressed sound file
 - 0.9.x
     - Make a system that detects if on mobile and differentiate on that
         - For pause menu:
