@@ -32,12 +32,12 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
 
 - 0.8.x
     - Better contrast for font on powerups
-    - Move powerup icons up
     - Improve look of text on powerup pick?
     - Fix slight issue of hp and xp text being just a little too low
     - Background sound
         - Pause when in pause menu
         - Reset on respawn
+    - Improve loading resources on reset
 - 0.9.x
     - Make a system that detects if on mobile and differentiate on that
         - For pause menu:
@@ -46,7 +46,6 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
 - 0.10.x
     - Play nice with alt-tab
 - Else
-    - Improve loading resources on reset
     - Tweak
         - XP and score system
         - Scaling system and numbers
