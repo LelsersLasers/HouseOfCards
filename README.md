@@ -8,15 +8,27 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
 - Aim: arrow keys or mouse
 - Shoot: left click or space
 - Reload: R
-    - Auto reload is enabled if you run out of cards
 - Reset after death: R
 - Pause: escape or p
 - Choose powerup: 1, 2, 3 or left click
+- Toggle auto shoot: O (off by default)
+- Toggle auto reload: I (on by default)
+
+## Mobile Controls
+
+- Movement: left screen joystick
+- Aim: right screen joystick
+- Reload: touch deck icons in top right (auto reload enabled)
+- Pause: touch top left corner of screen (touch anywhere to unpause)
+- Choose powerup: touch powerup
+- Reset after death: touch screen anywhere
 
 ## TODO
 
 - 0.6.x
 	- Touch controls
+        - Resize/move with screen size change
+        - Draw default joystick if no touch
     - `O` (or some key) to toggle auto shoot
     - `I` (or some key) to toggle auto reload
 - Else
@@ -26,6 +38,8 @@ Twin stick shooter using Rust and Macroquad with the theme of cards
         - Super enemy numbers and mechanics
     - Play nice with alt-tab
     - Improve aim feel (mouse, arrow keys, joystick)
+    - Better font
+        - And make it visible on mobile
 	- Sound
 	- Other screens?
         - Show settings on pause menu?
