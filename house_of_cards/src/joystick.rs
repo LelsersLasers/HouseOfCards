@@ -52,6 +52,11 @@ impl Joystick {
         self.current_center = self.start.center() + offset;
     }
 
+    pub fn reset(&mut self) {
+        self.touch_id = None;
+        self.reset_center();
+    }
+
     pub fn update(&mut self, touches: Vec<mq::Touch>) -> JoystickUpdateResult {
         let mut pos = mq::Vec2::ZERO;
         let mut active = false;

@@ -254,7 +254,7 @@ async fn play(resources: Resources) {
             fps_timer.update_state(delta);
         }
 
-        let mouse_shown = game_state.show_mouse();
+        let mouse_shown = game_state.show_mouse() && !is_mobile;
         mq::show_mouse(mouse_shown);
 
         let scale = mq::screen_width().min(mq::screen_height());
@@ -277,6 +277,9 @@ async fn play(resources: Resources) {
         let touches = mq::touches();
 
         is_mobile = is_mobile || !touches.is_empty();
+        if is_mobile {
+            mouse_info.set_active(false);
+        }
 
         let movement_joystick_result = touch_controls.movement_joystick.update(touches.clone());
         let aim_joystick_result = touch_controls.aim_joystick.update(touches.clone());
@@ -397,8 +400,13 @@ async fn play(resources: Resources) {
         if !mouse_shown {
             mouse_info.draw(scale);
         }
-        touch_controls.movement_joystick.draw(is_mobile, scale);
-        touch_controls.aim_joystick.draw(is_mobile, scale);
+        if game_state.current_state() == game_state::GameState::Alive {
+            touch_controls.movement_joystick.draw(is_mobile, scale);
+            touch_controls.aim_joystick.draw(is_mobile, scale);
+        } else {
+            touch_controls.movement_joystick.reset();
+            touch_controls.aim_joystick.reset();
+        }
 
         {
             let text = format!("FPS: {:.0}", 1.0 / fps_timer.get_state());

@@ -43,7 +43,7 @@ pub const FPS_TEXT_UPDATE_PERIOD: f32 = 1.0 / 10.0; // seconds
 pub const CAMERA_FOLLOW_SPEED: f32 = 0.95;
 pub const BAR_UPDATE_SPEED: f32 = 0.99999;
 
-pub const TIME_TO_MOUSE_IDLE: f32 = 2.5; // seconds
+pub const TIME_TO_MOUSE_IDLE: f32 = 5.0; // seconds
 
 pub const CROSSHAIR_SIZE: f32 = 0.02; // scale
 pub const CROSSHAIR_THICKNESS: f32 = 0.002; // scale
