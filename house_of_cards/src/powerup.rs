@@ -43,7 +43,7 @@ struct CardDrawDimensions {
 pub enum Powerup {
     Damage,
     Health,
-    Reload,
+    FireRate,
     Speed,
     Diamonds,
     Hearts,
@@ -71,7 +71,7 @@ impl Powerup {
         match mq::rand::gen_range(0, 4) {
             0 => Powerup::Damage,
             1 => Powerup::Health,
-            2 => Powerup::Reload,
+            2 => Powerup::FireRate,
             3 => Powerup::Speed,
             _ => unreachable!(),
         }
@@ -265,7 +265,7 @@ impl Powerup {
         match self {
             Powerup::Damage => colors::NORD11,
             Powerup::Health => colors::NORD14,
-            Powerup::Reload => colors::NORD12,
+            Powerup::FireRate => colors::NORD12,
             Powerup::Speed => colors::NORD15,
             Powerup::Diamonds => colors::NORD7,
             Powerup::Hearts => colors::NORD8,
@@ -287,12 +287,12 @@ impl Powerup {
         match self {
             Powerup::Damage => vec!["+1 Damage"],
             Powerup::Health => vec!["+2 Health"],
-            Powerup::Reload => vec!["+33%", "Reload Speed"],
+            Powerup::FireRate => vec!["+5% Fire Rate"],
             Powerup::Speed => vec!["+5% Speed"],
             Powerup::Diamonds => vec!["Diamonds:", "Pierce", "+1 Enemies"],
             Powerup::Hearts => vec!["Hearts:", "+5% chance", "to heal"],
             Powerup::Clubs => vec!["Clubs:", "+0.25s Stun"],
-            Powerup::Spades => vec!["Spades:", "+10% chance", "to double", "damage"],
+            Powerup::Spades => vec!["Spades:", "+20% chance", "to double", "damage"],
         }
     }
 
@@ -300,7 +300,7 @@ impl Powerup {
         match self {
             Powerup::Damage => vec!["for all cards"],
             Powerup::Health => vec!["gain hp and max hp"],
-            Powerup::Reload => vec!["than current", "reload speed"],
+            Powerup::FireRate => vec!["from base firerate"],
             Powerup::Speed => vec!["from base speed"],
             Powerup::Diamonds => vec!["bullets go through", "an additional enemy"],
             Powerup::Hearts => vec!["1 hp on hit"],
@@ -343,8 +343,8 @@ impl Powerups {
     //     self.count(&Powerup::Health) as f32 * consts::HEALTH_ADD
     // }
 
-    pub fn reload_mod(&self) -> f32 {
-        (1.0 - consts::RELOAD_MOD).powi(self.count(&Powerup::Reload) as i32)
+    pub fn fire_rate_mod(&self) -> f32 {
+        self.count(&Powerup::FireRate) as f32 * consts::FIRE_RATE_MOD + 1.0
     }
 
     pub fn speed_mod(&self) -> f32 {

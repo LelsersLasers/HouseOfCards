@@ -104,6 +104,7 @@ impl Player {
 
         self.update_bar_ratios(delta);
 
+        self.weapon.fire_rate = self.weapon.fire_rate_base * powerups.fire_rate_mod();
         self.weapon.update(delta);
         // uses short-circuiting to only `try_shoot` if the player is requesting to shoot
         // `.0` is used to get the `bool` from the `Shot` struct

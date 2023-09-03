@@ -1,7 +1,8 @@
-use crate::{powerup, util};
+use crate::util;
 
 pub struct Weapon {
-    fire_rate: f32,   // shots per second
+    pub fire_rate: f32, // shots per second
+    pub fire_rate_base: f32,
     reload_time: f32, // seconds
     reloading: bool,
     pub range: f32, // tiles
@@ -24,6 +25,7 @@ impl Weapon {
     ) -> Self {
         Self {
             fire_rate,
+            fire_rate_base: fire_rate,
             reload_time,
             reloading: false,
             range,
@@ -42,9 +44,8 @@ impl Weapon {
         }
     }
 
-    pub fn reload(&mut self, powerups: &powerup::Powerups) {
-        let reload_mod = powerups.reload_mod();
-        self.time_until_next_shot = self.reload_time * reload_mod;
+    pub fn reload(&mut self) {
+        self.time_until_next_shot = self.reload_time;
         self.reloading = true;
     }
 

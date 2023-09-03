@@ -29,23 +29,23 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
 
 ## TODO
 
-- 0.12.x
-    - Load screen on web
-        - Display `landscape please` message on mobile?
-- 0.13.0
-    - Increase firerate instead of reload speed powerup
 - Else
     - Tweak
         - XP and score system
         - Scaling system and numbers
         - Super enemy numbers and mechanics
     - Improve aim feel (mouse, arrow keys, joystick)
+        - Issue: mouse is relative to player position (really camera posistion) not world position
+            - Like locked camera in League
     - Purpose
         - Trying to get somewhere?
+        - Trying to protect something?
+        - Should make you move around dynamically
 - itch.io page
     - Write up a short summary
     - Add screenshots + icon pic
     - Finish typing out extra mechanics
+    - Put powerups in a list
 
 ## Extra mechanics
 
@@ -62,12 +62,12 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
 
 - Flat +1 damage to all cards
 - +2 hp and increase max hp by 2
-- 33% faster reload
+- 5% faster fire rate
 - 5% movement speed buff
 - Diamonds pierce one additional enemy
 - Hearts have 5% chance to heal 1 hp (won't increase max hp)
 - Clubs stun for 0.25 seconds
-- Spades have 10% chance to double damage
+- Spades have 20% chance to double damage
 
 ## Credits
 

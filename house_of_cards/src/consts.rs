@@ -10,7 +10,7 @@ pub const CARDS_TEXTURE_PATH: &str = "resources/nord-cards-transparent.png";
 pub const FONT_PATH: &str = "resources/Assistant-SemiBold.ttf";
 pub const MUSIC_PATH: &str = "resources/INTERSTELLAR-SHORT.wav";
 
-pub const BACKGROUND_COLOR: mq::Color = crate::colors::NORD1;
+pub const BACKGROUND_COLOR: mq::Color = crate::colors::CRUST;
 pub const MOUSE_COLOR: mq::Color = crate::colors::NORD6;
 pub const BACKGROUND_COLORS: [mq::Color; 6] = colors::SURFACE_COLORS;
 
@@ -72,12 +72,12 @@ pub const LARGE_FONT_BOUNCE_SPEED: f32 = 0.8;
 
 pub const DAMAGE_ADD: f32 = 1.0;
 pub const HEALTH_ADD: f32 = 2.0;
-pub const RELOAD_MOD: f32 = 0.25;
+pub const FIRE_RATE_MOD: f32 = 0.05;
 pub const SPEED_MOD: f32 = 0.05;
 
 pub const HEARTS_HEAL_CHANCE: f32 = 0.05;
 pub const CLUBS_STUN_TIME: f32 = 0.25; // seconds
-pub const SPADES_DAMAGE_CHANCE: f32 = 0.1;
+pub const SPADES_DAMAGE_CHANCE: f32 = 0.2;
 
 pub const POWERUP_PICK_OUTLINE_WIDTH: f32 = 0.95; // scale
 pub const POWERUP_PICK_OUTLINE_HEIGHT: f32 = 0.95; // scale

@@ -344,7 +344,7 @@ async fn play(resources: Resources) {
                     player_bullets.push(bullet);
                 } else if auto_reload {
                     deck.combine();
-                    player.weapon.reload(&powerups);
+                    player.weapon.reload();
                 }
             }
 
@@ -401,7 +401,7 @@ async fn play(resources: Resources) {
                 && !deck.is_full()
             {
                 deck.combine();
-                player.weapon.reload(&powerups);
+                player.weapon.reload();
             }
 
             if player.health <= 0.0 {
