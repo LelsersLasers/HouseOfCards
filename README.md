@@ -1,9 +1,6 @@
 # House Of Cards
 
-Twin stick shooter using Rust and Macroquad with the theme of cards, works on mobile and desktop without a download!
-
-> Unleash Chaos in this Casual Bullet Hell Rougelike Twin Stick Shooter!
-> -ChatGPT
+Unleash Chaos in this card themed casual bullet hell roguelike twin stick shooter for mobile, desktop, and the web!
 
 ## Controls
 
@@ -44,8 +41,6 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
 - itch.io page
     - Write up a short summary
     - Add screenshots + icon pic
-    - Finish typing out extra mechanics
-    - Put powerups in a list
 
 ## Extra mechanics
 
@@ -58,16 +53,25 @@ Twin stick shooter using Rust and Macroquad with the theme of cards, works on mo
 	- 1 per enemy killed
 - There is a movement speed penalty while shooting and reloading
 
-## Power ups
+### Powerups
 
-- Flat +1 damage to all cards
-- +2 hp and increase max hp by 2
-- 5% faster fire rate
-- 5% movement speed buff
-- Diamonds pierce one additional enemy
-- Hearts have 5% chance to heal 1 hp (won't increase max hp)
-- Clubs stun for 0.25 seconds
-- Spades have 20% chance to double damage
+Powerups can stack and are calculated independently (even for 2 of the same time of powerup).
+You get a stat buff card every level up and a card buff every time you kill a super enemy.
+
+#### Stat Buffs
+
+- Red: Flat +1 damage to all cards
+- Green: +2 hp and increase max hp by 2
+- Orange: 5% faster fire rate
+- Purple: 5% movement speed buff
+
+#### Card Buffs
+
+- Blue 1: Diamonds pierce one additional enemy
+- Blue 2: Hearts have 5% chance to heal 1 hp (won't increase max hp)
+- Blue 3: Clubs stun for 0.25 seconds
+- Blue 4: Spades have 20% chance to double damage
+
 
 ## Credits
 
