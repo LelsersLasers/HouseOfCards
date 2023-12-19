@@ -8,6 +8,7 @@ mod colors;
 mod consts;
 mod deck;
 mod enemy;
+mod hand;
 mod game_state;
 mod hitbox;
 mod joystick;
