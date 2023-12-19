@@ -26,19 +26,25 @@ Unleash Chaos in this card themed casual bullet hell roguelike twin stick shoote
 
 ## TODO
 
-- Else
-    - Tweak
-        - XP and score system
-        - Scaling system and numbers
-        - Super enemy numbers and mechanics
-    - Improve aim feel (mouse, arrow keys, joystick)
-        - Issue: mouse is relative to player position (really camera posistion) not world position
-            - Like locked camera in League
-    - Purpose
-        - Trying to get somewhere?
-        - Trying to protect something?
-        - Should make you move around dynamically
-- itch.io page
+- Rework card system
+    - You have a hand of 5 cards
+    - Instead of a stat buff card card, you get the option of replacing a card in your hand
+        - Random choice of 3 cards
+    - You have 1 active card which is what you are shooting
+- Tweak
+    - XP and score system
+    - Scaling system and numbers
+    - Super enemy numbers and mechanics
+- Improve aim feel (mouse, arrow keys, joystick)
+    - Issue: mouse is relative to player position (really camera posistion) not world position
+        - Like locked camera in League
+- Loading time
+    - Either calculate the loading time for the sound file or ?
+- Purpose?
+    - Trying to get somewhere?
+    - Trying to protect something?
+    - Should make you move around dynamically
+- Update itch.io page
     - Write up a short summary
     - Add screenshots + icon pic
 
