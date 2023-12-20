@@ -28,16 +28,16 @@ Unleash Chaos in this card themed casual bullet hell roguelike twin stick shoote
 
 - Rework card system
     - Jokers need a redesign (right now would never pick them)
-        - 50% chance to 
+        - 50% chance to one shot
     - You have a hand of 5 cards
     - Instead of a stat buff card card, you get the option of replacing a card in your hand
         - Random choice of 3 cards
     - You have 1 active card which is what you are shooting
         - Have their own independent cooldowns (fire rate = 1 / cooldown)
-            - Joker: 10 seconds     (0.1)
-            - Face: 5 second        (0.2)
-            - Ace: 1 second         (1.0)
-            - Else: 0.2 seconds     (5.0)
+            - Joker:    10 seconds  (0.1)
+            - Ace:      5 seconds   (0.2)
+            - Face:     0.5 second  (2.0)
+            - Else:     0.2 seconds (5.0)
 - Tweak
     - XP and score system
     - Scaling system and numbers
