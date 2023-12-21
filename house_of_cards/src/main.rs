@@ -8,8 +8,8 @@ mod colors;
 mod consts;
 mod deck;
 mod enemy;
-mod hand;
 mod game_state;
+mod hand;
 mod hitbox;
 mod joystick;
 mod mouse;
@@ -34,8 +34,8 @@ fn window_conf() -> mq::Conf {
 struct TouchControls {
     movement_joystick: joystick::Joystick,
     aim_joystick: joystick::Joystick,
-    reload_button: touch_button::TouchButton,
     start_pause_button: touch_button::TouchButton,
+    // select_slot_buttons: Vec<touch_button::TouchButton>,
     fullscreen_button: touch_button::TouchButton,
 }
 
@@ -66,15 +66,6 @@ fn create_touch_controls(scale: f32) -> TouchControls {
         joystick::Side::Right,
     );
 
-    let reload_button_width = consts::RELOAD_BUTTON_WIDTH * scale;
-    let reload_button_height = consts::RELOAD_BUTTON_HEIGHT * scale;
-    let reload_button = touch_button::TouchButton::new(mq::Rect::new(
-        mq::screen_width() - reload_button_width,
-        0.0,
-        reload_button_width,
-        reload_button_height,
-    ));
-
     let start_pause_button = touch_button::TouchButton::new(mq::Rect::new(
         0.0,
         0.0,
@@ -91,7 +82,6 @@ fn create_touch_controls(scale: f32) -> TouchControls {
     TouchControls {
         movement_joystick,
         aim_joystick,
-        reload_button,
         start_pause_button,
         fullscreen_button,
     }
@@ -226,7 +216,6 @@ async fn play(resources: Resources) {
 
     let mut game_state = game_state::GameStateManager::new();
 
-    let mut player = player::Player::new(consts::AR);
     let mut score = 0;
 
     let mut powerups = powerup::Powerups::new();
@@ -242,7 +231,7 @@ async fn play(resources: Resources) {
 
     let mut enemy_manager = enemy::EnemyManager::new();
 
-    let mut power_up_choices = powerup::Powerup::pick_three(powerup::Powerup::pick_stat);
+    let mut power_up_choices = powerup::Powerup::pick_three();
     let mut need_click_after = 0.0;
 
     let mut player_bullets: Vec<bullet::Bullet> = Vec::new();
@@ -256,7 +245,9 @@ async fn play(resources: Resources) {
         },
     );
 
-    let mut deck = deck::Deck::new(resources.cards_texture);
+    let mut deck = deck::Deck::new();
+    let hand = hand::Hand::new(&mut deck, resources.cards_texture);
+    let mut player = player::Player::new(hand);
 
     let mut old_width = mq::screen_width();
     let mut old_height = mq::screen_height();
@@ -264,7 +255,6 @@ async fn play(resources: Resources) {
     let mut mouse_info = mouse::MouseInfo::new();
 
     let mut auto_shoot = false;
-    let mut auto_reload = true;
 
     let scale = mq::screen_width().min(mq::screen_height());
 
@@ -321,7 +311,6 @@ async fn play(resources: Resources) {
                 &mut mouse_info,
                 movement_joystick_result,
                 aim_joystick_result,
-                &powerups,
                 auto_shoot,
                 delta,
             );
@@ -332,21 +321,17 @@ async fn play(resources: Resources) {
             }
 
             if let util::Shot(true) = player_shot {
-                let card = deck.draw_card();
-                if let Some(card) = card {
-                    let bullet = bullet::Bullet::new(
-                        player.pos,
-                        player.direction,
-                        player.weapon.bullet_speed,
-                        player.weapon.range,
-                        bullet::BulletDamage::Card(card),
-                        powerups.diamonds_bullet_hp(),
-                    );
-                    player_bullets.push(bullet);
-                } else if auto_reload {
-                    deck.combine();
-                    player.weapon.reload();
-                }
+                let weapon = player.hand.active_weapon();
+                let card = player.hand.active_card();
+                let bullet = bullet::Bullet::new(
+                    player.pos,
+                    player.direction,
+                    weapon.bullet_speed,
+                    weapon.range,
+                    bullet::BulletDamage::Card(card),
+                    powerups.diamonds_bullet_hp(),
+                );
+                player_bullets.push(bullet);
             }
 
             player_bullets
@@ -386,23 +371,14 @@ async fn play(resources: Resources) {
                 player.xp -= consts::XP_PER_LEVEL(player.level);
                 player.level += 1;
 
-                game_state.next(game_state::GameState::PowerupStat);
-                power_up_choices = powerup::Powerup::pick_three(powerup::Powerup::pick_stat);
+                game_state.next(game_state::GameState::ChooseCard);
                 need_click_after = time_counter;
                 player.xp_bar_ratio = 1.0;
             }
             if enemies_killed.super_killed {
                 game_state.next(game_state::GameState::PowerupCard);
-                power_up_choices = powerup::Powerup::pick_three(powerup::Powerup::pick_card);
+                power_up_choices = powerup::Powerup::pick_three();
                 need_click_after = time_counter;
-            }
-
-            if (mq::is_key_pressed(mq::KeyCode::R)
-                || touch_controls.reload_button.touched(touches.clone()))
-                && !deck.is_full()
-            {
-                deck.combine();
-                player.weapon.reload();
             }
 
             if player.health <= 0.0 {
@@ -425,8 +401,8 @@ async fn play(resources: Resources) {
             bullet.draw(&camera, scale);
         }
         enemy_manager.draw_hp_bars(&camera, scale);
-        deck.draw(&player.weapon, scale);
         player.draw_bars(resources.font, scale);
+        player.hand.draw(scale);
         powerups.draw(scale);
         if !mouse_shown {
             mouse_info.draw(scale);
@@ -493,7 +469,7 @@ async fn play(resources: Resources) {
             );
 
             if mq::is_key_pressed(mq::KeyCode::R)
-                || touch_controls.fullscreen_button.touched(touches.clone())
+                || touch_controls.fullscreen_button.touched_selected(touches.clone())
             {
                 mq::next_frame().await;
                 return;
@@ -507,12 +483,7 @@ async fn play(resources: Resources) {
                 } else {
                     "Auto shoot: off"
                 };
-                let auto_reload_text = if auto_reload {
-                    "Auto reload: on"
-                } else {
-                    "Auto reload: off"
-                };
-                vec!["Press Esc to unpause", auto_shoot_text, auto_reload_text]
+                vec!["Press Esc to unpause", auto_shoot_text]
             };
             draw_overlay(
                 colors::NORD0_BIG_ALPHA,
@@ -522,7 +493,7 @@ async fn play(resources: Resources) {
                 LargeFont::Static,
                 scale,
             );
-        } else if game_state.powerup() {
+        } else if game_state.current_state == game_state::GameState::PowerupCard {
             player.update_bar_ratios(delta);
 
             powerup::Powerup::draw_outline(scale);
@@ -543,12 +514,6 @@ async fn play(resources: Resources) {
 
             if let Some(powerup) = selected_powerup {
                 powerups.add(powerup);
-
-                if powerup == powerup::Powerup::Health {
-                    player.health += consts::HEALTH_ADD;
-                    player.max_health += consts::HEALTH_ADD;
-                }
-
                 game_state.back();
             }
         }
@@ -556,16 +521,13 @@ async fn play(resources: Resources) {
         if mq::is_key_pressed(mq::KeyCode::Q) {
             auto_shoot = !auto_shoot;
         }
-        if mq::is_key_pressed(mq::KeyCode::T) {
-            auto_reload = !auto_reload;
-        }
 
         if mq::is_key_pressed(mq::KeyCode::Escape)
             || mq::is_key_pressed(mq::KeyCode::P)
             || (game_state.current_state() == game_state::GameState::Paused
-                && touch_controls.fullscreen_button.touched(touches.clone()))
+                && touch_controls.fullscreen_button.touched_selected(touches.clone()))
             || (game_state.current_state() == game_state::GameState::Alive
-                && touch_controls.start_pause_button.touched(touches.clone()))
+                && touch_controls.start_pause_button.touched_selected(touches.clone()))
         {
             game_state.toggle_pause();
             if game_state.current_state() == game_state::GameState::Paused {

@@ -41,10 +41,6 @@ struct CardDrawDimensions {
 
 #[derive(PartialEq, Eq, Copy, Clone)]
 pub enum Powerup {
-    Damage,
-    Health,
-    FireRate,
-    Speed,
     Diamonds,
     Hearts,
     Clubs,
@@ -52,29 +48,18 @@ pub enum Powerup {
 }
 
 impl Powerup {
-    pub fn pick_three(pick_fn: fn() -> Powerup) -> Vec<Powerup> {
+    pub fn pick_three() -> Vec<Powerup> {
         // three unique random powerups
         let mut powerups = Vec::new();
-        let mut powerup = pick_fn();
+        let mut powerup = Self::pick_card();
         while powerups.len() < 3 {
             if !powerups.contains(&powerup) {
                 powerups.push(powerup);
             }
-            powerup = pick_fn();
+            powerup = Self::pick_card();
         }
 
         powerups
-    }
-
-    pub fn pick_stat() -> Powerup {
-        // random stat powerup
-        match mq::rand::gen_range(0, 4) {
-            0 => Powerup::Damage,
-            1 => Powerup::Health,
-            2 => Powerup::FireRate,
-            3 => Powerup::Speed,
-            _ => unreachable!(),
-        }
     }
 
     pub fn pick_card() -> Powerup {
@@ -263,14 +248,10 @@ impl Powerup {
 
     fn color(&self) -> mq::Color {
         match self {
-            Powerup::Damage => colors::NORD11,
-            Powerup::Health => colors::NORD14,
-            Powerup::FireRate => colors::NORD12,
-            Powerup::Speed => colors::NORD15,
-            Powerup::Diamonds => colors::NORD7,
-            Powerup::Hearts => colors::NORD8,
-            Powerup::Clubs => colors::NORD9,
-            Powerup::Spades => colors::NORD10,
+            Powerup::Diamonds => colors::NORD11,
+            Powerup::Hearts => colors::NORD14,
+            Powerup::Clubs => colors::NORD12,
+            Powerup::Spades => colors::NORD15,
         }
     }
 
@@ -285,10 +266,6 @@ impl Powerup {
 
     fn main_text(&self) -> Vec<&str> {
         match self {
-            Powerup::Damage => vec!["+1 Damage"],
-            Powerup::Health => vec!["+2 Health"],
-            Powerup::FireRate => vec!["+5% Fire Rate"],
-            Powerup::Speed => vec!["+5% Speed"],
             Powerup::Diamonds => vec!["Diamonds:", "Pierce", "+1 Enemies"],
             Powerup::Hearts => vec!["Hearts:", "+5% chance", "to heal"],
             Powerup::Clubs => vec!["Clubs:", "+0.25s Stun"],
@@ -298,10 +275,6 @@ impl Powerup {
 
     fn sub_text(&self) -> Vec<&str> {
         match self {
-            Powerup::Damage => vec!["for all cards"],
-            Powerup::Health => vec!["gain hp and max hp"],
-            Powerup::FireRate => vec!["from base firerate"],
-            Powerup::Speed => vec!["from base speed"],
             Powerup::Diamonds => vec!["bullets go through", "an additional enemy"],
             Powerup::Hearts => vec!["1 hp on hit"],
             Powerup::Clubs => vec!["on hit"],
@@ -333,22 +306,6 @@ impl Powerups {
 
     pub fn count(&self, powerup: &Powerup) -> usize {
         self.powerups.iter().filter(|p| **p == *powerup).count()
-    }
-
-    pub fn damage_add(&self) -> f32 {
-        self.count(&Powerup::Damage) as f32 * consts::DAMAGE_ADD
-    }
-
-    // pub fn health_add(&self) -> f32 {
-    //     self.count(&Powerup::Health) as f32 * consts::HEALTH_ADD
-    // }
-
-    pub fn fire_rate_mod(&self) -> f32 {
-        self.count(&Powerup::FireRate) as f32 * consts::FIRE_RATE_MOD + 1.0
-    }
-
-    pub fn speed_mod(&self) -> f32 {
-        self.count(&Powerup::Speed) as f32 * consts::SPEED_MOD + 1.0
     }
 
     pub fn diamonds_bullet_hp(&self) -> i32 {

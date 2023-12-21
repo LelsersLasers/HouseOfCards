@@ -21,9 +21,6 @@ pub const JOYSTICK_BALL_SIZE: f32 = 0.05; // scale
 pub const JOYSTICK_THICKNESS: f32 = 0.01; // scale
 pub const JOYSTICK_HEIGHT: f32 = 2.0 / 3.0; // height
 
-pub const RELOAD_BUTTON_WIDTH: f32 = 0.35; // scale
-pub const RELOAD_BUTTON_HEIGHT: f32 = 0.23; // scale
-
 pub const PAUSE_BUTTON_WIDTH: f32 = 0.2;
 pub const PAUSE_BUTTON_HEIGHT: f32 = 0.3;
 
@@ -41,22 +38,14 @@ pub const PLAYER_BARS_FONT_RATIO: f32 = 0.85; // percent
 pub const FPS_TEXT_UPDATE_PERIOD: f32 = 1.0 / 10.0; // seconds
 
 pub const CAMERA_FOLLOW_SPEED: f32 = 0.95;
+pub const CAMERA_Y_OFFSET: f32 = 1.0;
+
 pub const BAR_UPDATE_SPEED: f32 = 0.99999;
 
 pub const TIME_TO_MOUSE_IDLE: f32 = 5.0; // seconds
 
 pub const CROSSHAIR_SIZE: f32 = 0.02; // scale
 pub const CROSSHAIR_THICKNESS: f32 = 0.002; // scale
-
-pub const DECK_SPACING_OUTSIDE: f32 = 0.01; // scale
-pub const DECK_SPACING_INSIDE: f32 = 0.01; // scale
-pub const DECK_WIDTH: f32 = 0.12; // scale
-pub const DECK_HEIGHT: f32 = 0.16; // scale
-pub const DECK_THICKNESS: f32 = 0.01; // scale
-
-pub const DISCARD_ROTATION: f32 = 0.1;
-pub const DISCARD_OFFSET: f32 = 0.05;
-pub const DISCARD_TO_DRAW: usize = 5;
 
 pub const FPS_FONT_SPACING: f32 = 0.01; // scale
 pub const FPS_FONT_SIZE: f32 = 0.025; // scale
@@ -69,11 +58,6 @@ pub const SMALL_FONT_SPACING: f32 = 0.035; // scale
 pub const SMALL_FONT_LARGE_SPACING: f32 = 0.05; // scale
 pub const LARGE_FONT_BOUNCE_MAX: f32 = 0.125; // font size
 pub const LARGE_FONT_BOUNCE_SPEED: f32 = 0.8;
-
-pub const DAMAGE_ADD: f32 = 1.0;
-pub const HEALTH_ADD: f32 = 2.0;
-pub const FIRE_RATE_MOD: f32 = 0.05;
-pub const SPEED_MOD: f32 = 0.05;
 
 pub const HEARTS_HEAL_CHANCE: f32 = 0.05;
 pub const CLUBS_STUN_TIME: f32 = 0.25; // seconds
@@ -94,7 +78,16 @@ pub const POWERUP_DIPLAY_Y_OFFSET: f32 = 0.027;
 pub const POWERUP_DISPLAY_MAX_HEIGHT: usize = 8;
 pub const POWERUP_OUTLINE_THICKNESS: f32 = 0.0075;
 
-pub const AR: weapon::Weapon = weapon::Weapon::new(5.0, 2.5, 15.0, 1.0, 0.75, 7.5);
+pub const HAND_BOTTOM_PADDING: f32 = 0.1;
+pub const HAND_TOTAL_MAX_WIDTH: f32 = 0.6;
+pub const HAND_TOTAL_MAX_HEIGHT: f32 = 0.3;
+pub const HAND_SPACING: f32 = 0.2; // relative to card width
+pub const HAND_OUTLINE_THICKNESS: f32 = 0.002;
+
+pub const JOKER_WEAPON: weapon::Weapon = weapon::Weapon::new(0.1, 3.0, 0.9, 0.6, 5.0);
+pub const ACE_WEAPON: weapon::Weapon = weapon::Weapon::new(0.2, 20.0, 0.9, 0.7, 10.0);
+pub const FACE_WEAPON: weapon::Weapon = weapon::Weapon::new(2.0, 15.0, 1.0, 0.75, 7.5);
+pub const ELSE_WEAPON: weapon::Weapon = weapon::Weapon::new(5.0, 15.0, 1.0, 0.75, 7.5);
 
 pub const BULLET_SIZE: f32 = 0.005; // scale
 pub const BULLET_OUTLINE: f32 = 0.0005; // scale

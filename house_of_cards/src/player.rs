@@ -1,11 +1,11 @@
 use macroquad::prelude as mq;
 
-use crate::{camera, colors, consts, hitbox, joystick, mouse, powerup, util, weapon};
+use crate::{camera, colors, consts, hand, hitbox, joystick, mouse, util};
 
 pub struct Player {
     pub pos: mq::Vec2,  // in tiles
     pub direction: f32, // in radians
-    pub weapon: weapon::Weapon,
+    pub hand: hand::Hand,
     pub health: f32,
     pub max_health: f32,
     pub xp: i32,
@@ -15,11 +15,11 @@ pub struct Player {
 }
 
 impl Player {
-    pub fn new(weapon: weapon::Weapon) -> Self {
+    pub fn new(hand: hand::Hand) -> Self {
         Self {
             pos: mq::Vec2::ZERO,
             direction: 0.0,
-            weapon,
+            hand,
             health: consts::PLAYER_MAX_HEALTH,
             max_health: consts::PLAYER_MAX_HEALTH,
             xp: 0,
@@ -34,7 +34,6 @@ impl Player {
         mouse_info: &mut mouse::MouseInfo,
         movement_joystick_result: joystick::JoystickUpdateResult,
         aim_joystick_result: joystick::JoystickUpdateResult,
-        powerups: &powerup::Powerups,
         auto_shoot: bool,
         delta: f32,
     ) -> util::Shot {
@@ -66,8 +65,21 @@ impl Player {
         })
         .normalize_or_zero();
 
-        let speed = consts::PLAYER_SPEED * delta * self.weapon.get_ms_penalty();
-        self.pos += movement * speed * powerups.speed_mod();
+        let hand_keys = [
+            mq::KeyCode::Key1,
+            mq::KeyCode::Key2,
+            mq::KeyCode::Key3,
+            mq::KeyCode::Key4,
+            mq::KeyCode::Key5,
+        ];
+        for (i, key) in hand_keys.iter().enumerate() {
+            if mq::is_key_down(*key) {
+                self.hand.active = i;
+            }
+        }
+
+        let speed = consts::PLAYER_SPEED * delta * self.hand.get_ms_penalty();
+        self.pos += movement * speed;
 
         let aim = (if aim_joystick_result.active {
             aim_joystick_result.pos
@@ -104,8 +116,7 @@ impl Player {
 
         self.update_bar_ratios(delta);
 
-        self.weapon.fire_rate = self.weapon.fire_rate_base * powerups.fire_rate_mod();
-        self.weapon.update(delta);
+        self.hand.update(delta);
         // uses short-circuiting to only `try_shoot` if the player is requesting to shoot
         // `.0` is used to get the `bool` from the `Shot` struct
         util::Shot(
@@ -113,7 +124,7 @@ impl Player {
                 || mq::is_mouse_button_down(mq::MouseButton::Left)
                 || aim_joystick_result.active
                 || auto_shoot)
-                && self.weapon.try_shoot().0,
+                && self.hand.try_shoot().0,
         )
     }
 

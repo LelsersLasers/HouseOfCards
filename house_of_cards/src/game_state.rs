@@ -3,7 +3,7 @@ pub enum GameState {
     Alive,
     Dead,
     Paused,
-    PowerupStat,
+    ChooseCard,
     PowerupCard,
 }
 
@@ -22,7 +22,7 @@ impl GameState {
 }
 
 pub struct GameStateManager {
-    current_state: GameState,
+    pub current_state: GameState,
     last_state: GameState,
 }
 
@@ -35,13 +35,9 @@ impl GameStateManager {
     }
 
     pub fn show_mouse(&self) -> bool {
-        self.powerup() || self.current_state == GameState::Paused
-    }
-
-    pub fn powerup(&self) -> bool {
         matches!(
             self.current_state,
-            GameState::PowerupStat | GameState::PowerupCard
+            GameState::Paused | GameState::ChooseCard | GameState::PowerupCard
         )
     }
 

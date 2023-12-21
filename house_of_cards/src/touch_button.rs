@@ -13,7 +13,7 @@ impl TouchButton {
         }
     }
 
-    pub fn touched(&mut self, touches: Vec<mq::Touch>) -> bool {
+    pub fn touched_selected(&mut self, touches: Vec<mq::Touch>) -> bool {
         for touch in touches {
             if let Some(id) = self.touch_id {
                 if id == touch.id && touch.phase == mq::TouchPhase::Ended {
@@ -22,6 +22,15 @@ impl TouchButton {
                 }
             } else if touch.phase == mq::TouchPhase::Started && self.rect.contains(touch.position) {
                 self.touch_id = Some(touch.id);
+            }
+        }
+        false
+    }
+
+    pub fn touched_down(&mut self, touches: Vec<mq::Touch>) -> bool {
+        for touch in touches {
+            if touch.phase == mq::TouchPhase::Started && self.rect.contains(touch.position) {
+                return true;
             }
         }
         false
