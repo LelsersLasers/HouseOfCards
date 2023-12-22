@@ -2,6 +2,16 @@ use macroquad::prelude as mq;
 
 use crate::{camera, colors, consts, hand, hitbox, joystick, mouse, touch_button, util};
 
+pub struct PlayerInputInfo<'a> {
+    pub mouse_info: &'a mut mouse::MouseInfo,
+    pub movement_joystick_result: joystick::JoystickUpdateResult,
+    pub aim_joystick_result: joystick::JoystickUpdateResult,
+    pub slot_touch_button_result: touch_button::SlotTouchButtonResult,
+    pub auto_shoot: bool,
+    pub scale: f32,
+    pub delta: f32,
+}
+
 pub struct Player {
     pub pos: mq::Vec2,  // in tiles
     pub direction: f32, // in radians
@@ -29,16 +39,17 @@ impl Player {
         }
     }
 
-    pub fn handle_input(
-        &mut self,
-        mouse_info: &mut mouse::MouseInfo,
-        movement_joystick_result: joystick::JoystickUpdateResult,
-        aim_joystick_result: joystick::JoystickUpdateResult,
-        slot_touch_button_result: touch_button::SlotTouchButtonResult,
-        auto_shoot: bool,
-        scale: f32,
-        delta: f32,
-    ) -> util::Shot {
+    pub fn handle_input(&mut self, player_info_info: PlayerInputInfo) -> util::Shot {
+        let PlayerInputInfo {
+            mouse_info,
+            movement_joystick_result,
+            aim_joystick_result,
+            slot_touch_button_result,
+            auto_shoot,
+            scale,
+            delta,
+        } = player_info_info;
+
         let movement = (if movement_joystick_result.active {
             movement_joystick_result.pos
         } else if mq::is_mouse_button_down(mq::MouseButton::Right) {

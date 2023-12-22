@@ -334,15 +334,15 @@ async fn play(resources: Resources) {
 
         //----------------------------------------------------------------------------//
         if game_state.current_state() == game_state::GameState::Alive {
-            let player_shot = player.handle_input(
-                &mut mouse_info,
+            let player_shot = player.handle_input(player::PlayerInputInfo {
+                mouse_info: &mut mouse_info,
                 movement_joystick_result,
                 aim_joystick_result,
                 slot_touch_button_result,
                 auto_shoot,
                 scale,
                 delta,
-            );
+            });
 
             let camera_moved = camera.update(&player, delta);
             if let util::Moved(true) = camera_moved {
