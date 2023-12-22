@@ -143,7 +143,7 @@ impl Powerup {
             && mouse_pos_now.y <= pos.y + height
     }
 
-    pub fn draw(&self, location: PowerupPickLocation, font: mq::Font, scale: f32) {
+    pub fn draw(&self, location: PowerupPickLocation, font: &mq::Font, scale: f32) {
         let CardDrawDimensions { pos, width, height } = Self::card_draw_dimensions(location, scale);
 
         mq::draw_rectangle(pos.x, pos.y, width, height, self.color_light_version());
@@ -179,7 +179,7 @@ impl Powerup {
                     x,
                     y + text_dims.offset_y,
                     mq::TextParams {
-                        font,
+                        font: Some(font),
                         font_size: main_text_font_size,
                         font_scale: 1.0,
                         color: self.color(),
@@ -212,7 +212,7 @@ impl Powerup {
                     x,
                     y + text_dims.offset_y,
                     mq::TextParams {
-                        font,
+                        font: Some(font),
                         font_size: sub_text_font_size,
                         font_scale: 1.0,
                         color: self.color(),

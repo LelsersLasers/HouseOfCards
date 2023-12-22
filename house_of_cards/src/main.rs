@@ -39,7 +39,7 @@ struct TouchControls {
     fullscreen_button: touch_button::TouchButton,
 }
 
-#[derive(Clone, Copy)]
+// #[derive(Clone, Copy)]
 struct Resources {
     cards_texture: mq::Texture2D,
     font: mq::Font,
@@ -122,7 +122,7 @@ async fn create_resources() -> Resources {
         colors::NORD0_BIG_ALPHA,
         "House of Cards",
         vec!["Loading..."],
-        font,
+        &font,
         LargeFont::Static,
         scale,
     );
@@ -133,7 +133,7 @@ async fn create_resources() -> Resources {
         colors::NORD0_BIG_ALPHA,
         "House of Cards",
         vec!["Loading..."],
-        font,
+        &font,
         LargeFont::Static,
         scale,
     );
@@ -159,7 +159,7 @@ fn draw_overlay(
     overlay_color: mq::Color,
     large_text: &str,
     small_texts: Vec<&str>,
-    font: mq::Font,
+    font: &mq::Font,
     large_font: LargeFont,
     scale: f32,
 ) {
@@ -193,7 +193,7 @@ fn draw_overlay(
             x,
             y,
             mq::TextParams {
-                font,
+                font: Some(font),
                 font_size,
                 color: colors::NORD6,
                 ..Default::default()
@@ -216,7 +216,7 @@ fn draw_overlay(
                 x,
                 y,
                 mq::TextParams {
-                    font,
+                    font: Some(font),
                     font_size,
                     color: colors::NORD4,
                     ..Default::default()
@@ -231,7 +231,7 @@ fn draw_overlay(
     }
 }
 
-async fn play(resources: Resources) {
+async fn play(resources: &Resources) {
     let mut is_mobile = false;
 
     let mut game_state = game_state::GameStateManager::new();
@@ -256,9 +256,9 @@ async fn play(resources: Resources) {
 
     let mut player_bullets: Vec<bullet::Bullet> = Vec::new();
 
-    mq_audio::stop_sound(resources.music);
+    mq_audio::stop_sound(&resources.music);
     mq_audio::play_sound(
-        resources.music,
+        &resources.music,
         mq_audio::PlaySoundParams {
             looped: true,
             volume: 1.0,
@@ -266,7 +266,7 @@ async fn play(resources: Resources) {
     );
 
     let mut deck = deck::Deck::new();
-    let hand = hand::Hand::new(&mut deck, resources.cards_texture);
+    let hand = hand::Hand::new(&mut deck);
     let mut player = player::Player::new(hand);
 
     let mut old_width = mq::screen_width();
@@ -430,8 +430,8 @@ async fn play(resources: Resources) {
             bullet.draw(&camera, scale);
         }
         enemy_manager.draw_hp_bars(&camera, scale);
-        player.draw_bars(resources.font, scale);
-        player.hand.draw(scale);
+        player.draw_bars(&resources.font, scale);
+        player.hand.draw(&resources.cards_texture, scale);
         powerups.draw(scale);
 
         if !mouse_shown {
@@ -449,7 +449,7 @@ async fn play(resources: Resources) {
             let text = format!("FPS: {:.0}", 1.0 / fps_timer.get_state());
             let font_size = (scale * consts::FPS_FONT_SIZE).round() as u16;
             let font_spacing = scale * consts::FPS_FONT_SPACING;
-            let text_dims = mq::measure_text(&text, Some(resources.font), font_size, 1.0);
+            let text_dims = mq::measure_text(&text, Some(&resources.font), font_size, 1.0);
 
             let x = font_spacing;
             let y = text_dims.offset_y + font_spacing;
@@ -459,7 +459,7 @@ async fn play(resources: Resources) {
                 x,
                 y,
                 mq::TextParams {
-                    font: resources.font,
+                    font: Some(&resources.font),
                     font_size,
                     color: colors::NORD6,
                     ..Default::default()
@@ -470,7 +470,7 @@ async fn play(resources: Resources) {
             let text = format!("Score: {}", score);
             let font_size = (scale * consts::SCORE_FONT_SIZE).round() as u16;
             let font_spacing = scale * consts::SCORE_FONT_SPACING;
-            let text_dims = mq::measure_text(&text, Some(resources.font), font_size, 1.0);
+            let text_dims = mq::measure_text(&text, Some(&resources.font), font_size, 1.0);
 
             let x = (mq::screen_width() - text_dims.width) / 2.0;
             let y = text_dims.offset_y + font_spacing;
@@ -480,7 +480,7 @@ async fn play(resources: Resources) {
                 x,
                 y,
                 mq::TextParams {
-                    font: resources.font,
+                    font: Some(&resources.font),
                     font_size,
                     color: colors::NORD6,
                     ..Default::default()
@@ -493,7 +493,7 @@ async fn play(resources: Resources) {
                 colors::NORD0_BIG_ALPHA,
                 "You died!",
                 vec!["Press R to restart"],
-                resources.font,
+                &resources.font,
                 LargeFont::Bounce(time_counter),
                 scale,
             );
@@ -521,7 +521,7 @@ async fn play(resources: Resources) {
                 colors::NORD0_BIG_ALPHA,
                 "Paused",
                 small_texts,
-                resources.font,
+                &resources.font,
                 LargeFont::Static,
                 scale,
             );
@@ -531,7 +531,7 @@ async fn play(resources: Resources) {
             powerup::Powerup::draw_outline(scale);
             let all_locations = powerup::PowerupPickLocation::all_locations();
             for (powerup, location) in power_up_choices.iter().zip(all_locations.iter()) {
-                powerup.draw(*location, resources.font, scale);
+                powerup.draw(*location, &resources.font, scale);
             }
 
             let mut selected_powerup = None;
@@ -567,10 +567,10 @@ async fn play(resources: Resources) {
         {
             game_state.toggle_pause();
             if game_state.current_state() == game_state::GameState::Paused {
-                mq_audio::set_sound_volume(resources.music, 0.0);
+                mq_audio::set_sound_volume(&resources.music, 0.0);
             } else {
                 // mq_audio::play_sound(resources.music, mq_audio::PlaySoundParams { looped: true, ..Default::default() });
-                mq_audio::set_sound_volume(resources.music, 1.0);
+                mq_audio::set_sound_volume(&resources.music, 1.0);
             }
         }
         //----------------------------------------------------------------------------//
@@ -586,6 +586,6 @@ async fn main() {
     let resources = create_resources().await;
 
     loop {
-        play(resources).await;
+        play(&resources).await;
     }
 }

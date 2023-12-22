@@ -17,21 +17,16 @@ pub struct HandDrawDimensions {
 pub struct Hand {
     slots: Vec<Slot>,  // len = 5
     pub active: usize, // Index of active card (0-4)
-    cards_texture: mq::Texture2D,
 }
 impl Hand {
-    pub fn new(deck: &mut deck::Deck, cards_texture: mq::Texture2D) -> Self {
+    pub fn new(deck: &mut deck::Deck) -> Self {
         let mut slots = Vec::with_capacity(5);
         for _ in 0..5 {
             let card = deck.draw_card();
             let weapon = card.get_weapon();
             slots.push(Slot { card, weapon });
         }
-        Self {
-            slots,
-            active: 0,
-            cards_texture,
-        }
+        Self { slots, active: 0 }
     }
     pub fn active_weapon(&self) -> &weapon::Weapon {
         &self.slots[self.active].weapon
@@ -83,7 +78,7 @@ impl Hand {
         }
     }
 
-    pub fn draw(&self, scale: f32) {
+    pub fn draw(&self, cards_texture: &mq::Texture2D, scale: f32) {
         let HandDrawDimensions {
             mut x,
             y,
@@ -141,7 +136,7 @@ impl Hand {
 
             let texture_source = card.get_texture_source();
             mq::draw_texture_ex(
-                self.cards_texture,
+                cards_texture,
                 x,
                 y,
                 mq::WHITE,

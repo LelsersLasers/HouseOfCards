@@ -186,7 +186,7 @@ impl Player {
         mq::draw_triangle(top_point, side_point_1, side_point_2, colors::NORD4);
     }
 
-    pub fn draw_bars(&self, font: mq::Font, scale: f32) {
+    pub fn draw_bars(&self, font: &mq::Font, scale: f32) {
         let bar_width = scale * consts::PLAYER_HP_BAR_WIDTH;
         let bar_height = scale * consts::PLAYER_HP_BAR_HEIGHT;
         let bar_thickness = scale * consts::PLAYER_HP_BAR_THICKNESS;
@@ -221,7 +221,7 @@ impl Player {
             text_pos.x,
             text_pos.y,
             mq::TextParams {
-                font,
+                font: Some(font),
                 font_size,
                 font_scale: 1.0,
                 color: colors::NORD0,
@@ -258,7 +258,7 @@ impl Player {
             text_pos.x,
             text_pos.y,
             mq::TextParams {
-                font,
+                font: Some(font),
                 font_size,
                 font_scale: 1.0,
                 color: colors::NORD0,
