@@ -331,8 +331,12 @@ async fn play(resources: &Resources) {
             }
         }
 
-        let movement_joystick_result = touch_controls.movement_joystick.update(&touches, &used_touch_ids);
-        let aim_joystick_result = touch_controls.aim_joystick.update(&touches, &used_touch_ids);
+        let movement_joystick_result = touch_controls
+            .movement_joystick
+            .update(&touches, &used_touch_ids);
+        let aim_joystick_result = touch_controls
+            .aim_joystick
+            .update(&touches, &used_touch_ids);
         //----------------------------------------------------------------------------//
         if game_state.current_state() == game_state::GameState::Alive {
             let player_shot = player.handle_input(player::PlayerInputInfo {
@@ -501,9 +505,7 @@ async fn play(resources: &Resources) {
             );
 
             if mq::is_key_pressed(mq::KeyCode::R)
-                || touch_controls
-                    .fullscreen_button
-                    .touched_selected(&touches)
+                || touch_controls.fullscreen_button.touched_selected(&touches)
             {
                 mq::next_frame().await;
                 return;
@@ -552,8 +554,6 @@ async fn play(resources: &Resources) {
             }
         } else if game_state.current_state == game_state::GameState::ChooseCard {
             player.update_bar_ratios(delta);
-
-
         }
 
         if mq::is_key_pressed(mq::KeyCode::Q) {
@@ -563,13 +563,9 @@ async fn play(resources: &Resources) {
         if mq::is_key_pressed(mq::KeyCode::Escape)
             || mq::is_key_pressed(mq::KeyCode::P)
             || (game_state.current_state() == game_state::GameState::Paused
-                && touch_controls
-                    .fullscreen_button
-                    .touched_selected(&touches))
+                && touch_controls.fullscreen_button.touched_selected(&touches))
             || (game_state.current_state() == game_state::GameState::Alive
-                && touch_controls
-                    .start_pause_button
-                    .touched_selected(&touches))
+                && touch_controls.start_pause_button.touched_selected(&touches))
         {
             game_state.toggle_pause();
             if game_state.current_state() == game_state::GameState::Paused {

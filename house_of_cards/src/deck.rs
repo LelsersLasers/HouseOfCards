@@ -83,11 +83,16 @@ impl Card {
 
     pub fn damage(&self, powerups: Option<&powerup::Powerups>) -> f32 {
         let mut damage = match self {
-            // TODO: new ideas for Joker and Ace
             Self {
                 suit: Suit::Joker,
                 value: _,
-            } => -5.0,
+            } => {
+                if mq::rand::gen_range::<u8>(0, 2) == 0 {
+                    100.0
+                } else {
+                    0.0
+                }
+            }
             Self { suit: _, value } => {
                 if self.is_face() {
                     20.0
