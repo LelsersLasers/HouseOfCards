@@ -6,6 +6,14 @@ struct Slot {
     weapon: weapon::Weapon,
 }
 
+pub struct HandDrawDimensions {
+    pub x: f32,
+    pub y: f32,
+    pub card_width: f32,
+    pub card_height: f32,
+    pub spacing: f32,
+}
+
 pub struct Hand {
     slots: Vec<Slot>,  // len = 5
     pub active: usize, // Index of active card (0-4)
@@ -51,7 +59,7 @@ impl Hand {
         self.slots[self.active].weapon.try_shoot()
     }
 
-    pub fn draw(&self, scale: f32) {
+    pub fn hand_draw_dimensions(scale: f32) -> HandDrawDimensions {
         let max_width = consts::HAND_TOTAL_MAX_WIDTH * scale;
         let max_height = consts::HAND_TOTAL_MAX_HEIGHT * scale;
 
@@ -62,18 +70,36 @@ impl Hand {
 
         let total_width = max_width.min(max_height * ratio);
         let total_height = max_height.min(max_width / ratio);
-        let mut x = (mq::screen_width() - total_width) / 2.0;
+        let x = (mq::screen_width() - total_width) / 2.0;
         let y = mq::screen_height() - total_height - consts::HAND_BOTTOM_PADDING * scale;
-        let width = total_width / (5.0 + consts::HAND_SPACING * 4.0);
+        let card_width = total_width / (5.0 + consts::HAND_SPACING * 4.0);
+
+        HandDrawDimensions {
+            x,
+            y,
+            card_width,
+            card_height: total_height,
+            spacing: consts::HAND_SPACING * card_width,
+        }
+    }
+
+    pub fn draw(&self, scale: f32) {
+        let HandDrawDimensions {
+            mut x,
+            y,
+            card_width,
+            card_height,
+            spacing,
+        } = Self::hand_draw_dimensions(scale);
 
         for (i, slot) in self.slots.iter().enumerate() {
             let card = &slot.card;
             let weapon = &slot.weapon;
 
-            let outline_x = x - consts::HAND_SPACING * width / 2.0;
-            let outline_width = width * (1.0 + consts::HAND_SPACING);
-            let outline_y = y - consts::HAND_SPACING * width / 2.0;
-            let outline_height = total_height + width * consts::HAND_SPACING;
+            let outline_x = x - consts::HAND_SPACING * card_width / 2.0;
+            let outline_width = card_width * (1.0 + consts::HAND_SPACING);
+            let outline_y = y - consts::HAND_SPACING * card_width / 2.0;
+            let outline_height = card_height + card_width * consts::HAND_SPACING;
             let outline_thickness = consts::HAND_OUTLINE_THICKNESS * scale;
 
             let ratio = weapon.time_until_next_shot / (1.0 / weapon.fire_rate);
@@ -120,15 +146,13 @@ impl Hand {
                 y,
                 mq::WHITE,
                 mq::DrawTextureParams {
-                    dest_size: Some(mq::Vec2::new(width, total_height)),
+                    dest_size: Some(mq::Vec2::new(card_width, card_height)),
                     source: Some(texture_source),
                     ..Default::default()
                 },
             );
 
-            x += width + consts::HAND_SPACING * width;
+            x += card_width + spacing;
         }
-
-        // mq::draw_rectangle(x, y, total_width, total_height, colors::NORD11_ALPHA);
     }
 }

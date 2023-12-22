@@ -1,5 +1,10 @@
 use macroquad::prelude as mq;
 
+pub enum SlotTouchButtonResult {
+    Touched(usize),
+    None,
+}
+
 pub struct TouchButton {
     rect: mq::Rect,
     touch_id: Option<u64>,

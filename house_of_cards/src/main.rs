@@ -35,7 +35,7 @@ struct TouchControls {
     movement_joystick: joystick::Joystick,
     aim_joystick: joystick::Joystick,
     start_pause_button: touch_button::TouchButton,
-    // select_slot_buttons: Vec<touch_button::TouchButton>,
+    select_slot_buttons: Vec<touch_button::TouchButton>,
     fullscreen_button: touch_button::TouchButton,
 }
 
@@ -79,10 +79,30 @@ fn create_touch_controls(scale: f32) -> TouchControls {
         mq::screen_height(),
     ));
 
+    let mut select_slot_buttons = Vec::with_capacity(5);
+    let hand::HandDrawDimensions {
+        mut x,
+        y,
+        card_width,
+        card_height,
+        spacing,
+    } = hand::Hand::hand_draw_dimensions(scale);
+
+    for _ in 0..5 {
+        select_slot_buttons.push(touch_button::TouchButton::new(mq::Rect::new(
+            x,
+            y,
+            card_width,
+            card_height,
+        )));
+        x += card_width + spacing;
+    }
+
     TouchControls {
         movement_joystick,
         aim_joystick,
         start_pause_button,
+        select_slot_buttons,
         fullscreen_button,
     }
 }
@@ -305,12 +325,20 @@ async fn play(resources: Resources) {
         let movement_joystick_result = touch_controls.movement_joystick.update(touches.clone());
         let aim_joystick_result = touch_controls.aim_joystick.update(touches.clone());
 
+        let mut slot_touch_button_result = touch_button::SlotTouchButtonResult::None;
+        for (i, slot_button) in touch_controls.select_slot_buttons.iter_mut().enumerate() {
+            if slot_button.touched_down(touches.clone()) {
+                slot_touch_button_result = touch_button::SlotTouchButtonResult::Touched(i);
+            }
+        }
+
         //----------------------------------------------------------------------------//
         if game_state.current_state() == game_state::GameState::Alive {
             let player_shot = player.handle_input(
                 &mut mouse_info,
                 movement_joystick_result,
                 aim_joystick_result,
+                slot_touch_button_result,
                 auto_shoot,
                 delta,
             );
@@ -404,6 +432,7 @@ async fn play(resources: Resources) {
         player.draw_bars(resources.font, scale);
         player.hand.draw(scale);
         powerups.draw(scale);
+
         if !mouse_shown {
             mouse_info.draw(scale);
         }
@@ -469,7 +498,9 @@ async fn play(resources: Resources) {
             );
 
             if mq::is_key_pressed(mq::KeyCode::R)
-                || touch_controls.fullscreen_button.touched_selected(touches.clone())
+                || touch_controls
+                    .fullscreen_button
+                    .touched_selected(touches.clone())
             {
                 mq::next_frame().await;
                 return;
@@ -525,9 +556,13 @@ async fn play(resources: Resources) {
         if mq::is_key_pressed(mq::KeyCode::Escape)
             || mq::is_key_pressed(mq::KeyCode::P)
             || (game_state.current_state() == game_state::GameState::Paused
-                && touch_controls.fullscreen_button.touched_selected(touches.clone()))
+                && touch_controls
+                    .fullscreen_button
+                    .touched_selected(touches.clone()))
             || (game_state.current_state() == game_state::GameState::Alive
-                && touch_controls.start_pause_button.touched_selected(touches.clone()))
+                && touch_controls
+                    .start_pause_button
+                    .touched_selected(touches.clone()))
         {
             game_state.toggle_pause();
             if game_state.current_state() == game_state::GameState::Paused {

@@ -1,6 +1,6 @@
 use macroquad::prelude as mq;
 
-use crate::{camera, colors, consts, hand, hitbox, joystick, mouse, util};
+use crate::{camera, colors, consts, hand, hitbox, joystick, mouse, touch_button, util};
 
 pub struct Player {
     pub pos: mq::Vec2,  // in tiles
@@ -34,6 +34,7 @@ impl Player {
         mouse_info: &mut mouse::MouseInfo,
         movement_joystick_result: joystick::JoystickUpdateResult,
         aim_joystick_result: joystick::JoystickUpdateResult,
+        slot_touch_button_result: touch_button::SlotTouchButtonResult,
         auto_shoot: bool,
         delta: f32,
     ) -> util::Shot {
@@ -76,6 +77,9 @@ impl Player {
             if mq::is_key_down(*key) {
                 self.hand.active = i;
             }
+        }
+        if let touch_button::SlotTouchButtonResult::Touched(i) = slot_touch_button_result {
+            self.hand.active = i;
         }
 
         let speed = consts::PLAYER_SPEED * delta * self.hand.get_ms_penalty();
