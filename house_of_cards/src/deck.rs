@@ -161,6 +161,14 @@ impl Deck {
         }
     }
 
+    pub fn draw_three_cards(&mut self) -> Vec<Card> {
+        let mut cards = Vec::with_capacity(3);
+        for _ in 0..3 {
+            cards.push(self.draw_card());
+        }
+        cards
+    }
+
     fn refresh(&mut self) {
         self.cards = self.all_cards.clone();
         self.shuffle();

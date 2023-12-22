@@ -25,8 +25,6 @@ Unleash Chaos in this card themed casual bullet hell roguelike twin stick shoote
 ## TODO
 
 - 1
-    - Touch select for slot
-        - TODO: test
     - GameState::ChooseCard screen/ui/mechanics
     - Joker/rest of cards damage
     - Start with worse cards

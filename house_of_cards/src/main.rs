@@ -39,7 +39,6 @@ struct TouchControls {
     fullscreen_button: touch_button::TouchButton,
 }
 
-// #[derive(Clone, Copy)]
 struct Resources {
     cards_texture: mq::Texture2D,
     font: mq::Font,
@@ -251,7 +250,12 @@ async fn play(resources: &Resources) {
 
     let mut enemy_manager = enemy::EnemyManager::new();
 
+    let mut deck = deck::Deck::new();
+    let hand = hand::Hand::new(&mut deck);
+    let mut player = player::Player::new(hand);
+
     let mut power_up_choices = powerup::Powerup::pick_three();
+    let mut card_choices = deck.draw_three_cards();
     let mut need_click_after = 0.0;
 
     let mut player_bullets: Vec<bullet::Bullet> = Vec::new();
@@ -264,10 +268,6 @@ async fn play(resources: &Resources) {
             volume: 1.0,
         },
     );
-
-    let mut deck = deck::Deck::new();
-    let hand = hand::Hand::new(&mut deck);
-    let mut player = player::Player::new(hand);
 
     let mut old_width = mq::screen_width();
     let mut old_height = mq::screen_height();
@@ -322,16 +322,17 @@ async fn play(resources: &Resources) {
             mouse_info.set_active(false);
         }
 
-        let movement_joystick_result = touch_controls.movement_joystick.update(touches.clone());
-        let aim_joystick_result = touch_controls.aim_joystick.update(touches.clone());
-
         let mut slot_touch_button_result = touch_button::SlotTouchButtonResult::None;
+        let mut used_touch_ids = Vec::new();
         for (i, slot_button) in touch_controls.select_slot_buttons.iter_mut().enumerate() {
-            if slot_button.touched_down(touches.clone()) {
+            if let Some(id) = slot_button.touched_down(&touches) {
                 slot_touch_button_result = touch_button::SlotTouchButtonResult::Touched(i);
+                used_touch_ids.push(id);
             }
         }
 
+        let movement_joystick_result = touch_controls.movement_joystick.update(&touches, &used_touch_ids);
+        let aim_joystick_result = touch_controls.aim_joystick.update(&touches, &used_touch_ids);
         //----------------------------------------------------------------------------//
         if game_state.current_state() == game_state::GameState::Alive {
             let player_shot = player.handle_input(player::PlayerInputInfo {
@@ -401,6 +402,7 @@ async fn play(resources: &Resources) {
                 player.level += 1;
 
                 game_state.next(game_state::GameState::ChooseCard);
+                card_choices = deck.draw_three_cards();
                 need_click_after = time_counter;
                 player.xp_bar_ratio = 1.0;
             }
@@ -501,7 +503,7 @@ async fn play(resources: &Resources) {
             if mq::is_key_pressed(mq::KeyCode::R)
                 || touch_controls
                     .fullscreen_button
-                    .touched_selected(touches.clone())
+                    .touched_selected(&touches)
             {
                 mq::next_frame().await;
                 return;
@@ -548,6 +550,10 @@ async fn play(resources: &Resources) {
                 powerups.add(powerup);
                 game_state.back();
             }
+        } else if game_state.current_state == game_state::GameState::ChooseCard {
+            player.update_bar_ratios(delta);
+
+
         }
 
         if mq::is_key_pressed(mq::KeyCode::Q) {
@@ -559,17 +565,16 @@ async fn play(resources: &Resources) {
             || (game_state.current_state() == game_state::GameState::Paused
                 && touch_controls
                     .fullscreen_button
-                    .touched_selected(touches.clone()))
+                    .touched_selected(&touches))
             || (game_state.current_state() == game_state::GameState::Alive
                 && touch_controls
                     .start_pause_button
-                    .touched_selected(touches.clone()))
+                    .touched_selected(&touches))
         {
             game_state.toggle_pause();
             if game_state.current_state() == game_state::GameState::Paused {
                 mq_audio::set_sound_volume(&resources.music, 0.0);
             } else {
-                // mq_audio::play_sound(resources.music, mq_audio::PlaySoundParams { looped: true, ..Default::default() });
                 mq_audio::set_sound_volume(&resources.music, 1.0);
             }
         }

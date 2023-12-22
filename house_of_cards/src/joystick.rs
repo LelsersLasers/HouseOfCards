@@ -57,7 +57,7 @@ impl Joystick {
         self.reset_center();
     }
 
-    pub fn update(&mut self, touches: Vec<mq::Touch>) -> JoystickUpdateResult {
+    pub fn update(&mut self, touches: &[mq::Touch], used_touch_ids: &[u64]) -> JoystickUpdateResult {
         let mut pos = mq::Vec2::ZERO;
         let mut active = false;
 
@@ -78,7 +78,7 @@ impl Joystick {
                         break;
                     }
                 }
-            } else if touch.phase == mq::TouchPhase::Started && self.start.contains(touch.position)
+            } else if touch.phase == mq::TouchPhase::Started && self.start.contains(touch.position) && !used_touch_ids.contains(&touch.id)
             {
                 self.touch_id = Some(touch.id);
                 self.current_center = touch.position;
