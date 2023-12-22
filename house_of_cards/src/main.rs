@@ -340,6 +340,7 @@ async fn play(resources: Resources) {
                 aim_joystick_result,
                 slot_touch_button_result,
                 auto_shoot,
+                scale,
                 delta,
             );
 

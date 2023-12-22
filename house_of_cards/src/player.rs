@@ -36,17 +36,13 @@ impl Player {
         aim_joystick_result: joystick::JoystickUpdateResult,
         slot_touch_button_result: touch_button::SlotTouchButtonResult,
         auto_shoot: bool,
+        scale: f32,
         delta: f32,
     ) -> util::Shot {
         let movement = (if movement_joystick_result.active {
             movement_joystick_result.pos
         } else if mq::is_mouse_button_down(mq::MouseButton::Right) {
-            let mouse_pos = mouse_info.get_last_pos();
-            let mouse_pos_relative_to_center =
-                mouse_pos - mq::Vec2::new(mq::screen_width() / 2.0, mq::screen_height() / 2.0);
-            let angle = mouse_pos_relative_to_center
-                .y
-                .atan2(mouse_pos_relative_to_center.x);
+            let angle = mouse_info.angle_from_center(scale);
             mq::Vec2::new(angle.cos(), angle.sin())
         } else {
             let mut movement = mq::Vec2::ZERO;
@@ -108,12 +104,8 @@ impl Player {
         if aim != mq::Vec2::ZERO {
             self.direction = aim.y.atan2(aim.x);
             mouse_info.set_active(false);
-        } else if let Some(mouse_pos) = mouse_info.mouse_pos() {
-            let mouse_pos_relative_to_center =
-                mouse_pos - mq::Vec2::new(mq::screen_width() / 2.0, mq::screen_height() / 2.0);
-            self.direction = mouse_pos_relative_to_center
-                .y
-                .atan2(mouse_pos_relative_to_center.x);
+        } else if mouse_info.active {
+            self.direction = mouse_info.angle_from_center(scale);
         } else if movement != mq::Vec2::ZERO {
             self.direction = movement.y.atan2(movement.x);
         }

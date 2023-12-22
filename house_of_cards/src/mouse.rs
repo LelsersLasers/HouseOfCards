@@ -5,7 +5,7 @@ use crate::consts;
 pub struct MouseInfo {
     last_pos: mq::Vec2,
     time_since_idle: f32,
-    active: bool,
+    pub active: bool,
     show: bool,
     last_click: mq::Vec2,
     mouse_released: bool,
@@ -89,16 +89,20 @@ impl MouseInfo {
         }
     }
 
-    pub fn get_last_pos(&self) -> mq::Vec2 {
-        self.last_pos
+    pub fn angle_from_center(&self, scale: f32) -> f32 {
+        let camera_offset = consts::CAMERA_Y_OFFSET * scale / consts::TILES_PER_SCALE as f32;
+        let center = mq::Vec2::new(
+            mq::screen_width() / 2.0,
+            mq::screen_height() / 2.0 - camera_offset,
+        );
+        let mouse_pos_relative_to_center = self.last_pos - center;
+        mouse_pos_relative_to_center
+            .y
+            .atan2(mouse_pos_relative_to_center.x)
     }
 
-    pub fn mouse_pos(&self) -> Option<mq::Vec2> {
-        if self.active {
-            Some(self.last_pos)
-        } else {
-            None
-        }
+    pub fn get_last_pos(&self) -> mq::Vec2 {
+        self.last_pos
     }
 
     pub fn set_active(&mut self, active: bool) {
