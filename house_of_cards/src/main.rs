@@ -255,6 +255,7 @@ async fn play(resources: &Resources) {
     let mut player = player::Player::new(hand);
 
     let mut power_up_choices = powerup::Powerup::pick_three();
+    
     let mut card_choices = deck.draw_three_cards();
     let mut need_click_after = 0.0;
 
@@ -322,11 +323,10 @@ async fn play(resources: &Resources) {
             mouse_info.set_active(false);
         }
 
-        let mut slot_touch_button_result = touch_button::SlotTouchButtonResult::None;
         let mut used_touch_ids = Vec::new();
         for (i, slot_button) in touch_controls.select_slot_buttons.iter_mut().enumerate() {
             if let Some(id) = slot_button.touched_down(&touches) {
-                slot_touch_button_result = touch_button::SlotTouchButtonResult::Touched(i);
+                player.hand.active = i;
                 used_touch_ids.push(id);
             }
         }
@@ -343,7 +343,6 @@ async fn play(resources: &Resources) {
                 mouse_info: &mut mouse_info,
                 movement_joystick_result,
                 aim_joystick_result,
-                slot_touch_button_result,
                 auto_shoot,
                 scale,
                 delta,
@@ -554,6 +553,8 @@ async fn play(resources: &Resources) {
             }
         } else if game_state.current_state == game_state::GameState::ChooseCard {
             player.update_bar_ratios(delta);
+
+
         }
 
         if mq::is_key_pressed(mq::KeyCode::Q) {
