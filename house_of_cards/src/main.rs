@@ -255,7 +255,7 @@ async fn play(resources: &Resources) {
     let mut player = player::Player::new(hand);
 
     let mut power_up_choices = powerup::Powerup::pick_three();
-    
+
     let mut card_choices = deck.draw_three_cards();
     // let mut selected_card = None;
 
@@ -555,8 +555,6 @@ async fn play(resources: &Resources) {
             }
         } else if game_state.current_state == game_state::GameState::ChooseCard {
             player.update_bar_ratios(delta);
-
-
         }
 
         if mq::is_key_pressed(mq::KeyCode::Q) {

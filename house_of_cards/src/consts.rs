@@ -11,7 +11,6 @@ pub const CARD_PX_WIDTH: f32 = 132.0;
 pub const CARD_PX_HEIGHT: f32 = 180.0;
 pub const CARD_PX_SPACING: f32 = 8.0;
 
-
 pub const FONT_PATH: &str = "resources/Assistant-SemiBold.ttf";
 pub const MUSIC_PATH: &str = "resources/INTERSTELLAR-SHORT.wav";
 

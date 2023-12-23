@@ -27,6 +27,7 @@ Unleash Chaos in this card themed casual bullet hell roguelike twin stick shoote
 - 1
     - GameState::ChooseCard screen/ui/mechanics
     - Joker/rest of cards damage
+    - 5 card hand vs 3 card hand (maybe even 2 card hand?)
 - Rework card system
     - Jokers need a redesign (right now would never pick them)
         - 50% chance to deal 100 damage

@@ -171,6 +171,10 @@ impl Deck {
         cards
     }
 
+    pub fn add_card(&mut self, card: Card) {
+        self.cards.push(card);
+    }
+
     fn refresh(&mut self) {
         self.cards = self.all_cards.clone();
         self.shuffle();

@@ -21,19 +21,28 @@ pub struct Hand {
 impl Hand {
     pub fn new(deck: &mut deck::Deck) -> Self {
         let mut slots = Vec::with_capacity(5);
+        let mut discarded_cards = Vec::new();
+
         while slots.len() < 5 {
             let card = deck.draw_card();
-            if card.is_ace() || card.is_face() || card.suit == deck::Suit::Joker || card.value >= consts::SLOT_MAX_START_VALUE {
+            if card.is_ace()
+                || card.is_face()
+                || card.suit == deck::Suit::Joker
+                || card.value >= consts::SLOT_MAX_START_VALUE
+            {
+                discarded_cards.push(card);
                 continue;
             }
-
 
             let weapon = card.get_weapon();
             slots.push(Slot { card, weapon });
         }
 
+        for card in discarded_cards {
+            deck.add_card(card);
+        }
         deck.shuffle();
-        
+
         Self { slots, active: 0 }
     }
     pub fn active_weapon(&self) -> &weapon::Weapon {
@@ -66,7 +75,8 @@ impl Hand {
         let max_width = consts::HAND_TOTAL_MAX_WIDTH * scale;
         let max_height = consts::HAND_TOTAL_MAX_HEIGHT * scale;
 
-        let total_width = consts::CARD_PX_WIDTH * 5.0 + consts::HAND_SPACING * consts::CARD_PX_WIDTH  * 4.0;
+        let total_width =
+            consts::CARD_PX_WIDTH * 5.0 + consts::HAND_SPACING * consts::CARD_PX_WIDTH * 4.0;
         let ratio = total_width / consts::CARD_PX_HEIGHT;
 
         let total_width = max_width.min(max_height * ratio);
