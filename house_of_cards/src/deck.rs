@@ -15,8 +15,8 @@ pub enum Suit {
 
 #[derive(Clone, Copy)]
 pub struct Card {
-    suit: Suit,
-    value: u8,
+    pub suit: Suit,
+    pub value: u8,
 }
 
 impl Card {
@@ -121,11 +121,11 @@ impl Card {
         }
     }
 
-    fn is_face(&self) -> bool {
+    pub fn is_face(&self) -> bool {
         self.value > 10
     }
 
-    fn is_ace(&self) -> bool {
+    pub fn is_ace(&self) -> bool {
         self.value == 1
     }
 }

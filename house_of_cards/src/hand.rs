@@ -21,11 +21,19 @@ pub struct Hand {
 impl Hand {
     pub fn new(deck: &mut deck::Deck) -> Self {
         let mut slots = Vec::with_capacity(5);
-        for _ in 0..5 {
+        while slots.len() < 5 {
             let card = deck.draw_card();
+            if card.is_ace() || card.is_face() || card.suit == deck::Suit::Joker || card.value >= consts::SLOT_MAX_START_VALUE {
+                continue;
+            }
+
+
             let weapon = card.get_weapon();
             slots.push(Slot { card, weapon });
         }
+
+        deck.shuffle();
+        
         Self { slots, active: 0 }
     }
     pub fn active_weapon(&self) -> &weapon::Weapon {

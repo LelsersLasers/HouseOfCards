@@ -88,6 +88,7 @@ pub const HAND_TOTAL_MAX_WIDTH: f32 = 0.6;
 pub const HAND_TOTAL_MAX_HEIGHT: f32 = 0.3;
 pub const HAND_SPACING: f32 = 0.2; // relative to card width
 pub const HAND_OUTLINE_THICKNESS: f32 = 0.002;
+pub const SLOT_MAX_START_VALUE: u8 = 4;
 
 pub const JOKER_WEAPON: weapon::Weapon = weapon::Weapon::new(0.1, 3.0, 0.9, 0.6, 5.0);
 pub const ACE_WEAPON: weapon::Weapon = weapon::Weapon::new(0.2, 20.0, 0.9, 0.7, 10.0);
