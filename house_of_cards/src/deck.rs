@@ -47,14 +47,11 @@ impl Card {
         };
 
         let start = mq::Vec2::splat(24.0);
-        let card_width = 132.0;
-        let card_height = 180.0;
-        let card_spacing = 8.0;
 
-        let x = start.x + idx_x as f32 * (card_width + card_spacing);
-        let y = start.y + idx_y as f32 * (card_height + card_spacing);
+        let x = start.x + idx_x as f32 * (consts::CARD_PX_WIDTH + consts::CARD_PX_SPACING);
+        let y = start.y + idx_y as f32 * (consts::CARD_PX_HEIGHT + consts::CARD_PX_SPACING);
 
-        mq::Rect::new(x, y, card_width, card_height)
+        mq::Rect::new(x, y, consts::CARD_PX_WIDTH, consts::CARD_PX_HEIGHT)
     }
 
     pub fn is_red(&self) -> bool {

@@ -58,10 +58,8 @@ impl Hand {
         let max_width = consts::HAND_TOTAL_MAX_WIDTH * scale;
         let max_height = consts::HAND_TOTAL_MAX_HEIGHT * scale;
 
-        let card_width = 132.0;
-        let card_height = 180.0;
-        let total_width = card_width * 5.0 + consts::HAND_SPACING * card_width * 4.0;
-        let ratio = total_width / card_height;
+        let total_width = consts::CARD_PX_WIDTH * 5.0 + consts::HAND_SPACING * consts::CARD_PX_WIDTH  * 4.0;
+        let ratio = total_width / consts::CARD_PX_HEIGHT;
 
         let total_width = max_width.min(max_height * ratio);
         let total_height = max_height.min(max_width / ratio);

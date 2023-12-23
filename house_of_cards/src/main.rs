@@ -257,6 +257,8 @@ async fn play(resources: &Resources) {
     let mut power_up_choices = powerup::Powerup::pick_three();
     
     let mut card_choices = deck.draw_three_cards();
+    // let mut selected_card = None;
+
     let mut need_click_after = 0.0;
 
     let mut player_bullets: Vec<bullet::Bullet> = Vec::new();
