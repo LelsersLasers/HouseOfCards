@@ -167,3 +167,27 @@ impl Hand {
         }
     }
 }
+
+
+pub fn draw_card_choices(card_choices: &[deck::Card], scale: f32) {
+    let max_width = consts::CARD_CHOICE_MAX_WIDTH * scale;
+    let max_height = consts::HAND_TOTAL_MAX_HEIGHT * scale;
+
+    let total_width =
+        consts::CARD_PX_WIDTH * 5.0 + consts::CARD_CHOICE_SPACING * consts::CARD_PX_WIDTH * 4.0;
+    let ratio = total_width / consts::CARD_PX_HEIGHT;
+
+    let total_width = max_width.min(max_height * ratio);
+    let total_height = max_height.min(max_width / ratio);
+    let x = (mq::screen_width() - total_width) / 2.0;
+    let y = consts::CARD_CHOICE_TOP_PADDING * scale;
+    let card_width = total_width / (5.0 + consts::CARD_CHOICE_SPACING * 4.0);
+
+    HandDrawDimensions {
+        x,
+        y,
+        card_width,
+        card_height: total_height,
+        spacing: consts::HAND_SPACING * card_width,
+    };
+}

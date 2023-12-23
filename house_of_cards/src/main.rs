@@ -555,6 +555,8 @@ async fn play(resources: &Resources) {
             }
         } else if game_state.current_state == game_state::GameState::ChooseCard {
             player.update_bar_ratios(delta);
+
+            
         }
 
         if mq::is_key_pressed(mq::KeyCode::Q) {
