@@ -395,10 +395,7 @@ async fn play(resources: &Resources) {
                             heal_amount,
                         } = bullet.hit_result(&powerups);
 
-                        if !(enemy.enemy_type == enemy::EnemyType::Super && damage == f32::INFINITY)
-                        {
-                            enemy.health -= damage;
-                        }
+                        enemy.health -= damage;
                         enemy.enemy_stunned.time_remaining += stun_time;
 
                         player.health += heal_amount;

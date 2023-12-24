@@ -30,7 +30,6 @@ Survive the chaos in this card themed casual bullet hell roguelike twin stick sh
 ## TODO
 
 - Main
-    - Fix ace/joker one shot
     - Update player bars in death
     - UI updates
     - New enemy mechanic
