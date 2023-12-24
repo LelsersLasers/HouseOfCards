@@ -416,7 +416,7 @@ async fn play(resources: &Resources) {
                 player.xp -= consts::XP_PER_LEVEL(player.level);
                 player.level += 1;
 
-                game_state.next(game_state::GameState::PowerupCard);
+                game_state.next(game_state::GameState::ChooseCard);
                 card_choices = deck.draw_three_cards();
                 need_click_after = time_counter;
                 player.xp_bar_ratio = 1.0;
