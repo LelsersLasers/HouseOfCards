@@ -67,6 +67,11 @@ impl Hand {
         }
     }
 
+    pub fn set_card(&mut self, card: deck::Card) {
+        let weapon = card.get_weapon();
+        self.slots[self.active] = Slot { card, weapon };
+    }
+
     pub fn try_shoot(&mut self) -> util::Shot {
         self.slots[self.active].weapon.try_shoot()
     }

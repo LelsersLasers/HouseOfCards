@@ -583,6 +583,15 @@ async fn play(resources: &Resources) {
                 selected_card_choice,
                 scale,
             );
+
+            if mq::is_key_pressed(mq::KeyCode::Enter) {
+                // || swap pressed
+                player.hand.set_card(card_choices[selected_card_choice]);
+                game_state.back();
+            } else if mq::is_key_pressed(mq::KeyCode::Backspace) || mq::is_key_pressed(mq::KeyCode::Delete) {
+                // || discard pressed
+                game_state.back();
+            }
         }
 
         if mq::is_key_pressed(mq::KeyCode::Q) {
