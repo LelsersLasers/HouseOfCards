@@ -94,6 +94,7 @@ pub const CARD_CHOICE_MAX_WIDTH: f32 = 0.9;
 pub const CARD_CHOICE_MAX_HEIGHT: f32 = 0.6;
 pub const CARD_CHOICE_OUTLINE_THICKNESS: f32 = 0.005;
 pub const CARD_CHOICE_SPACING: f32 = 0.1; // relative to card width
+pub const CARD_CHOICE_FONT_SIZE: f32 = 0.04; // scale
 
 pub const JOKER_WEAPON: weapon::Weapon = weapon::Weapon::new(0.1, 3.0, 0.9, 0.6, 5.0);
 pub const ACE_WEAPON: weapon::Weapon = weapon::Weapon::new(0.2, 20.0, 0.9, 0.7, 10.0);

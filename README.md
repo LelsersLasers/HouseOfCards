@@ -46,6 +46,8 @@ Unleash Chaos in this card themed casual bullet hell roguelike twin stick shoote
                 - 20 damage
             - Else:     0.2 seconds (5.0)
                 - Number damage
+- UI
+    - Card suit icon on powerup squares
 - New enemy mechanic
     - 1 of every ~10 enemies tries to predict player movement instead of slowly walking at the player
 - Tweak

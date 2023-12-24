@@ -169,26 +169,30 @@ impl Hand {
     }
 }
 
-
-pub fn draw_card_choices(card_choices: &[deck::Card], cards_texture: &mq::Texture2D, selected: usize, scale: f32) {
-    let max_width = consts::CARD_CHOICE_MAX_WIDTH * scale;
-    let max_height = consts::CARD_CHOICE_MAX_HEIGHT * scale;
+pub fn draw_card_choices(
+    card_choices: &[deck::Card],
+    cards_texture: &mq::Texture2D,
+    font: &mq::Font,
+    selected: usize,
+    scale: f32,
+) {
+    let max_width = consts::CARD_CHOICE_MAX_WIDTH * mq::screen_width();
+    let max_height = consts::CARD_CHOICE_MAX_HEIGHT * mq::screen_height();
 
     let total_width =
-        consts::CARD_PX_WIDTH * 3.0 + consts::CARD_CHOICE_SPACING * consts::CARD_PX_WIDTH * 2.0;
+        consts::CARD_PX_WIDTH * 4.0 + consts::CARD_CHOICE_SPACING * consts::CARD_PX_WIDTH * 3.0;
     let ratio = total_width / consts::CARD_PX_HEIGHT;
 
     let total_width = max_width.min(max_height * ratio);
     let total_height = max_height.min(max_width / ratio);
     let mut x = (mq::screen_width() - total_width) / 2.0;
     let y = consts::CARD_CHOICE_TOP_PADDING * scale;
-    let card_width = total_width / (3.0 + consts::CARD_CHOICE_SPACING * 2.0);
+    let card_width = total_width / (4.0 + consts::CARD_CHOICE_SPACING * 3.0);
 
     let outline_width = card_width * (1.0 + consts::CARD_CHOICE_SPACING);
     let outline_y = y - consts::CARD_CHOICE_SPACING * card_width / 2.0;
     let outline_height = total_height + card_width * consts::CARD_CHOICE_SPACING;
     let outline_thickness = consts::CARD_CHOICE_OUTLINE_THICKNESS * scale;
-
 
     for (i, card) in card_choices.iter().enumerate() {
         let outline_x = x - consts::CARD_CHOICE_SPACING * card_width / 2.0;
@@ -227,4 +231,65 @@ pub fn draw_card_choices(card_choices: &[deck::Card], cards_texture: &mq::Textur
         x += card_width + consts::CARD_CHOICE_SPACING * card_width;
     }
 
+    let button_height = (total_height - consts::CARD_CHOICE_SPACING * card_width) / 2.0;
+    let y2 = y + total_height - button_height;
+    mq::draw_rectangle(x, y, card_width, button_height, colors::NORD14_BIG_ALPHA);
+    mq::draw_rectangle_lines(
+        x,
+        y,
+        card_width,
+        button_height,
+        outline_thickness * 2.0,
+        colors::NORD14,
+    );
+
+    let text = "Swap";
+    let font_size = (consts::CARD_CHOICE_FONT_SIZE * scale) as u16;
+    let text_dims = mq::measure_text(text, Some(font), font_size, 1.0);
+    let text_pos = mq::Vec2::new(
+        x + card_width / 2.0 - text_dims.width / 2.0,
+        y + button_height / 2.0 + text_dims.offset_y / 2.25,
+    );
+    mq::draw_text_ex(
+        text,
+        text_pos.x,
+        text_pos.y,
+        mq::TextParams {
+            font: Some(font),
+            font_size,
+            font_scale: 1.0,
+            color: colors::NORD14,
+            ..mq::TextParams::default()
+        },
+    );
+
+    mq::draw_rectangle(x, y2, card_width, button_height, colors::NORD11_BIG_ALPHA);
+    mq::draw_rectangle_lines(
+        x,
+        y2,
+        card_width,
+        button_height,
+        outline_thickness * 2.0,
+        colors::NORD11,
+    );
+
+    let text = "Discard All";
+    let font_size = (consts::CARD_CHOICE_FONT_SIZE * scale) as u16;
+    let text_dims = mq::measure_text(text, Some(font), font_size, 1.0);
+    let text_pos = mq::Vec2::new(
+        x + card_width / 2.0 - text_dims.width / 2.0,
+        y2 + button_height / 2.0 + text_dims.offset_y / 2.25,
+    );
+    mq::draw_text_ex(
+        text,
+        text_pos.x,
+        text_pos.y,
+        mq::TextParams {
+            font: Some(font),
+            font_size,
+            font_scale: 1.0,
+            color: colors::NORD11,
+            ..mq::TextParams::default()
+        },
+    );
 }
