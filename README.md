@@ -50,7 +50,6 @@ Unleash Chaos in this card themed casual bullet hell roguelike twin stick shoote
                 - Number damage
 - UI
     - Card suit icon on powerup squares
-    - Vertically center ChooseCard text
     - Make PowerupPick rectangles the same size as the ChooseCard cards
     - Use `mq::Rect`s for the PowerupPick interactions
 - New enemy mechanic

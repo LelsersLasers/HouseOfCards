@@ -89,9 +89,8 @@ pub const HAND_SPACING: f32 = 0.2; // relative to card width
 pub const HAND_OUTLINE_THICKNESS: f32 = 0.002;
 pub const SLOT_MAX_START_VALUE: u8 = 4;
 
-pub const CARD_CHOICE_TOP_PADDING: f32 = 0.1;
 pub const CARD_CHOICE_MAX_WIDTH: f32 = 0.9;
-pub const CARD_CHOICE_MAX_HEIGHT: f32 = 0.6;
+pub const CARD_CHOICE_MAX_PERCENT_HEIGHT: f32 = 0.9;
 pub const CARD_CHOICE_OUTLINE_THICKNESS: f32 = 0.005;
 pub const CARD_CHOICE_SPACING: f32 = 0.1; // relative to card width
 pub const CARD_CHOICE_FONT_SIZE: f32 = 0.04; // scale

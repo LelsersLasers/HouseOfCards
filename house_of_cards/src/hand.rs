@@ -99,7 +99,7 @@ impl Hand {
         }
     }
 
-    pub fn draw(&self, cards_texture: &mq::Texture2D, scale: f32) {
+    pub fn draw(&self, cards_texture: &mq::Texture2D, scale: f32) -> f32 {
         let HandDrawDimensions {
             mut x,
             y,
@@ -171,6 +171,8 @@ impl Hand {
 
             x += card_width + spacing;
         }
+
+        y
     }
 }
 
@@ -196,10 +198,14 @@ pub fn draw_card_choices(
     cards_texture: &mq::Texture2D,
     font: &mq::Font,
     selected: usize,
+    score_text_bottom_y: f32,
+    hand_top_y: f32,
     scale: f32,
 ) -> CardChoicesButtonRects {
     let max_width = consts::CARD_CHOICE_MAX_WIDTH * mq::screen_width();
-    let max_height = consts::CARD_CHOICE_MAX_HEIGHT * mq::screen_height();
+
+    let y_gap = hand_top_y - score_text_bottom_y;
+    let max_height = consts::CARD_CHOICE_MAX_PERCENT_HEIGHT * (y_gap);
 
     let total_width =
         consts::CARD_PX_WIDTH * 4.0 + consts::CARD_CHOICE_SPACING * consts::CARD_PX_WIDTH * 3.0;
@@ -207,8 +213,8 @@ pub fn draw_card_choices(
 
     let total_width = max_width.min(max_height * ratio);
     let total_height = max_height.min(max_width / ratio);
-    let mut x = (mq::screen_width() - total_width) / 2.0;
-    let y = consts::CARD_CHOICE_TOP_PADDING * scale;
+    let mut x = (mq::screen_width() - total_width) / 2.0;    
+    let y = score_text_bottom_y + (y_gap - total_height) / 2.0;
     let card_width = total_width / (4.0 + consts::CARD_CHOICE_SPACING * 3.0);
 
     let outline_width = card_width * (1.0 + consts::CARD_CHOICE_SPACING);

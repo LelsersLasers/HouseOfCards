@@ -451,7 +451,7 @@ async fn play(resources: &Resources) {
         }
         enemy_manager.draw_hp_bars(&camera, scale);
         player.draw_bars(&resources.font, scale);
-        player.hand.draw(&resources.cards_texture, scale);
+        let hand_top_y = player.hand.draw(&resources.cards_texture, scale);
         powerups.draw(scale);
 
         if !mouse_shown {
@@ -486,7 +486,7 @@ async fn play(resources: &Resources) {
                 },
             );
         }
-        {
+        let score_text_bottom_y = {
             let text = format!("Score: {}", score);
             let font_size = (scale * consts::SCORE_FONT_SIZE).round() as u16;
             let font_spacing = scale * consts::SCORE_FONT_SPACING;
@@ -506,7 +506,9 @@ async fn play(resources: &Resources) {
                     ..Default::default()
                 },
             );
-        }
+
+            y - text_dims.offset_y + text_dims.height
+        };
 
         if game_state.current_state() == game_state::GameState::Dead {
             draw_overlay(
@@ -574,6 +576,8 @@ async fn play(resources: &Resources) {
                 &resources.cards_texture,
                 &resources.font,
                 selected_card_choice,
+                score_text_bottom_y,
+                hand_top_y,
                 scale,
             );
 
@@ -609,7 +613,6 @@ async fn play(resources: &Resources) {
                     true,
                 )
             {
-                // || discard pressed
                 game_state.back();
             }
         }
