@@ -569,6 +569,13 @@ async fn play(resources: &Resources) {
         } else if game_state.current_state == game_state::GameState::ChooseCard {
             player.update_bar_ratios(delta);
 
+            let keys = [mq::KeyCode::Key8, mq::KeyCode::Key9, mq::KeyCode::Key0];
+            for (i, key) in keys.iter().enumerate() {
+                if mq::is_key_pressed(*key) {
+                    selected_card_choice = i;
+                }
+            }
+
             hand::draw_card_choices(
                 &card_choices,
                 &resources.cards_texture,
