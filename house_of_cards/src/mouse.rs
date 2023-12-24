@@ -66,7 +66,7 @@ impl MouseInfo {
         // crosshair
         if self.show || self.active {
             let crosshair_size = scale * consts::CROSSHAIR_SIZE;
-            let crosshair_thickness = scale * consts::CROSSHAIR_THICKNESS;
+            let crosshair_thickness = (scale * consts::CROSSHAIR_THICKNESS).max(1.0);
 
             let crosshair_x = self.last_pos.x;
             let crosshair_y = self.last_pos.y;
