@@ -29,6 +29,7 @@ Unleash Chaos in this card themed casual bullet hell roguelike twin stick shoote
     - Joker/rest of cards damage
     - 5 card hand vs 3 card hand (maybe even 2 card hand?)
     - New enemy mechanic
+    - Fix level up + super enemy death on same time
     - BALANCING
 - Rework card system
     - Jokers need a redesign (right now would never pick them)
@@ -49,7 +50,6 @@ Unleash Chaos in this card themed casual bullet hell roguelike twin stick shoote
             - Else:     0.2 seconds (5.0)
                 - Number damage
 - UI
-    - Card suit icon on powerup squares
     - Make PowerupPick rectangles the same size as the ChooseCard cards
     - Use `mq::Rect`s for the PowerupPick interactions
 - New enemy mechanic

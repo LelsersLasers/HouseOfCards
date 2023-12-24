@@ -452,7 +452,7 @@ async fn play(resources: &Resources) {
         enemy_manager.draw_hp_bars(&camera, scale);
         player.draw_bars(&resources.font, scale);
         let hand_top_y = player.hand.draw(&resources.cards_texture, scale);
-        powerups.draw(scale);
+        powerups.draw(&resources.cards_texture, scale);
 
         if !mouse_shown {
             mouse_info.draw(scale);

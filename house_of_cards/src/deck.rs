@@ -13,6 +13,26 @@ pub enum Suit {
     Back,
 }
 
+impl Suit {
+    pub fn get_suit_icon_source(&self) -> mq::Rect {
+        let idx_y = match *self {
+            Suit::Hearts => 0,
+            Suit::Spades => 1,
+            Suit::Diamonds => 2,
+            Suit::Clubs => 3,
+            Suit::Joker | Suit::Back => unreachable!(),
+        };
+
+        let card_x = consts::CARD_PX_START.x + consts::CARD_PX_WIDTH + consts::CARD_PX_SPACING;
+        let card_y = consts::CARD_PX_START.y + idx_y as f32 * (consts::CARD_PX_HEIGHT + consts::CARD_PX_SPACING);
+
+        let x = card_x + (consts::CARD_PX_WIDTH - consts::SUIT_PX_SIZE) / 2.0;
+        let y = card_y + consts::SUIT_PX_TOP;
+
+        mq::Rect::new(x, y, consts::SUIT_PX_SIZE, consts::SUIT_PX_SIZE)
+    }
+}
+
 #[derive(Clone, Copy)]
 pub struct Card {
     pub suit: Suit,
@@ -23,10 +43,6 @@ impl Card {
     pub fn new(suit: Suit, value: u8) -> Self {
         Self { suit, value }
     }
-
-    // pub fn get_suit_icon_source(&self) -> mq::Rect {
-        
-    // }
 
     pub fn get_texture_source(&self) -> mq::Rect {
         let (idx_x, idx_y) = match self {

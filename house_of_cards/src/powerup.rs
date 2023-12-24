@@ -1,6 +1,6 @@
 use macroquad::prelude as mq;
 
-use crate::{colors, consts, mouse};
+use crate::{colors, consts, mouse, deck};
 
 #[derive(Clone, Copy)]
 pub enum PowerupPickLocation {
@@ -224,7 +224,7 @@ impl Powerup {
         }
     }
 
-    pub fn draw_small(&self, id: usize, scale: f32) {
+    pub fn draw_small(&self, id: usize, cards_texture: &mq::Texture2D, scale: f32) {
         let id_y = id % consts::POWERUP_DISPLAY_MAX_HEIGHT;
         let id_x = id / consts::POWERUP_DISPLAY_MAX_HEIGHT;
 
@@ -236,6 +236,21 @@ impl Powerup {
         let y = spacing + id_y as f32 * (size + spacing) + y_offset;
 
         mq::draw_rectangle(x, y, size, size, self.color_light_version());
+
+        let texture_source = self.suit().get_suit_icon_source();
+
+        mq::draw_texture_ex(
+            cards_texture,
+            x,
+            y,
+            mq::WHITE,
+            mq::DrawTextureParams {
+                dest_size: Some(mq::Vec2::splat(size)),
+                source: Some(texture_source),
+                ..Default::default()
+            },
+        );
+
         mq::draw_rectangle_lines(
             x,
             y,
@@ -244,6 +259,15 @@ impl Powerup {
             consts::POWERUP_OUTLINE_THICKNESS * scale,
             self.color(),
         );
+    }
+
+    fn suit(&self) -> deck::Suit {
+        match self {
+            Powerup::Diamonds => deck::Suit::Diamonds,
+            Powerup::Hearts => deck::Suit::Hearts,
+            Powerup::Clubs => deck::Suit::Clubs,
+            Powerup::Spades => deck::Suit::Spades,
+        }
     }
 
     fn color(&self) -> mq::Color {
@@ -294,9 +318,9 @@ impl Powerups {
         }
     }
 
-    pub fn draw(&self, scale: f32) {
+    pub fn draw(&self, cards_texture: &mq::Texture2D, scale: f32) {
         for (i, powerup) in self.powerups.iter().enumerate() {
-            powerup.draw_small(i, scale);
+            powerup.draw_small(i, cards_texture, scale);
         }
     }
 
