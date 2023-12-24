@@ -30,6 +30,8 @@ Survive the chaos in this card themed casual bullet hell roguelike twin stick sh
 ## TODO
 
 - Main
+- Fix ace/joker one shot
+- Update player bars in death
     - UI updates
     - New enemy mechanic
     - Fix level up + super enemy death on same time
@@ -40,6 +42,7 @@ Survive the chaos in this card themed casual bullet hell roguelike twin stick sh
     - Use `mq::Rect`s for the PowerupPick interactions
 - New enemy mechanic
     - 1 of every ~10 enemies tries to predict player movement instead of slowly walking at the player
+- Balance suit buffs (clubs/hearts op)
 - Tweak
     - XP and score system
     - Scaling system and numbers
