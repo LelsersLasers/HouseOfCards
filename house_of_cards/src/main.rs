@@ -325,9 +325,19 @@ async fn play(resources: &Resources) {
             mouse_info.set_active(false);
         }
 
+
+        let hand_keys = [
+            mq::KeyCode::Key1,
+            mq::KeyCode::Key2,
+            mq::KeyCode::Key3,
+            mq::KeyCode::Key4,
+            mq::KeyCode::Key5,
+        ];
         let mut used_touch_ids = Vec::new();
-        for (i, slot_button) in touch_controls.select_slot_buttons.iter_mut().enumerate() {
-            if let Some(id) = slot_button.touched_down(&touches) {
+        for (i, (key, slot_button)) in hand_keys.iter().zip(touch_controls.select_slot_buttons.iter_mut()).enumerate() {
+            if mq::is_key_pressed(*key) {
+                player.hand.active = i;
+            } else if let Some(id) = slot_button.touched_down(&touches) {
                 player.hand.active = i;
                 used_touch_ids.push(id);
             }

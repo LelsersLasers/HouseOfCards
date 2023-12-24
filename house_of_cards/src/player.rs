@@ -71,19 +71,6 @@ impl Player {
         })
         .normalize_or_zero();
 
-        let hand_keys = [
-            mq::KeyCode::Key1,
-            mq::KeyCode::Key2,
-            mq::KeyCode::Key3,
-            mq::KeyCode::Key4,
-            mq::KeyCode::Key5,
-        ];
-        for (i, key) in hand_keys.iter().enumerate() {
-            if mq::is_key_down(*key) {
-                self.hand.active = i;
-            }
-        }
-
         let speed = consts::PLAYER_SPEED * delta * self.hand.get_ms_penalty();
         self.pos += movement * speed;
 
