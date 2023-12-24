@@ -566,7 +566,7 @@ async fn play(resources: &Resources) {
         } else if game_state.current_state == game_state::GameState::ChooseCard {
             player.update_bar_ratios(delta);
 
-            
+            hand::draw_card_choices(&card_choices, &resources.cards_texture, 0, scale);
         }
 
         if mq::is_key_pressed(mq::KeyCode::Q) {

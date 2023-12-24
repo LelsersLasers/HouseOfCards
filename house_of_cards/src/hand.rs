@@ -103,15 +103,16 @@ impl Hand {
             spacing,
         } = Self::hand_draw_dimensions(scale);
 
+        let outline_width = card_width * (1.0 + consts::HAND_SPACING);
+        let outline_y = y - consts::HAND_SPACING * card_width / 2.0;
+        let outline_height = card_height + card_width * consts::HAND_SPACING;
+        let outline_thickness = consts::HAND_OUTLINE_THICKNESS * scale;
+
         for (i, slot) in self.slots.iter().enumerate() {
             let card = &slot.card;
             let weapon = &slot.weapon;
 
             let outline_x = x - consts::HAND_SPACING * card_width / 2.0;
-            let outline_width = card_width * (1.0 + consts::HAND_SPACING);
-            let outline_y = y - consts::HAND_SPACING * card_width / 2.0;
-            let outline_height = card_height + card_width * consts::HAND_SPACING;
-            let outline_thickness = consts::HAND_OUTLINE_THICKNESS * scale;
 
             let ratio = weapon.time_until_next_shot / (1.0 / weapon.fire_rate);
             let inner_height = ratio * outline_height;
@@ -169,25 +170,61 @@ impl Hand {
 }
 
 
-pub fn draw_card_choices(card_choices: &[deck::Card], scale: f32) {
+pub fn draw_card_choices(card_choices: &[deck::Card], cards_texture: &mq::Texture2D, selected: usize, scale: f32) {
     let max_width = consts::CARD_CHOICE_MAX_WIDTH * scale;
-    let max_height = consts::HAND_TOTAL_MAX_HEIGHT * scale;
+    let max_height = consts::CARD_CHOICE_MAX_HEIGHT * scale;
 
     let total_width =
-        consts::CARD_PX_WIDTH * 5.0 + consts::CARD_CHOICE_SPACING * consts::CARD_PX_WIDTH * 4.0;
+        consts::CARD_PX_WIDTH * 3.0 + consts::CARD_CHOICE_SPACING * consts::CARD_PX_WIDTH * 2.0;
     let ratio = total_width / consts::CARD_PX_HEIGHT;
 
     let total_width = max_width.min(max_height * ratio);
     let total_height = max_height.min(max_width / ratio);
-    let x = (mq::screen_width() - total_width) / 2.0;
+    let mut x = (mq::screen_width() - total_width) / 2.0;
     let y = consts::CARD_CHOICE_TOP_PADDING * scale;
-    let card_width = total_width / (5.0 + consts::CARD_CHOICE_SPACING * 4.0);
+    let card_width = total_width / (3.0 + consts::CARD_CHOICE_SPACING * 2.0);
 
-    HandDrawDimensions {
-        x,
-        y,
-        card_width,
-        card_height: total_height,
-        spacing: consts::HAND_SPACING * card_width,
-    };
+    let outline_width = card_width * (1.0 + consts::CARD_CHOICE_SPACING);
+    let outline_y = y - consts::CARD_CHOICE_SPACING * card_width / 2.0;
+    let outline_height = total_height + card_width * consts::CARD_CHOICE_SPACING;
+    let outline_thickness = consts::CARD_CHOICE_OUTLINE_THICKNESS * scale;
+
+
+    for (i, card) in card_choices.iter().enumerate() {
+        let outline_x = x - consts::CARD_CHOICE_SPACING * card_width / 2.0;
+
+        if i == selected {
+            mq::draw_rectangle(
+                outline_x,
+                outline_y,
+                outline_width,
+                outline_height,
+                colors::NORD4_BIG_ALPHA,
+            );
+            mq::draw_rectangle_lines(
+                outline_x,
+                outline_y,
+                outline_width,
+                outline_height,
+                outline_thickness,
+                colors::NORD5,
+            );
+        }
+
+        let texture_source = card.get_texture_source();
+        mq::draw_texture_ex(
+            cards_texture,
+            x,
+            y,
+            mq::WHITE,
+            mq::DrawTextureParams {
+                dest_size: Some(mq::Vec2::new(card_width, total_height)),
+                source: Some(texture_source),
+                ..Default::default()
+            },
+        );
+
+        x += card_width + consts::CARD_CHOICE_SPACING * card_width;
+    }
+
 }
