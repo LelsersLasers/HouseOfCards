@@ -22,8 +22,10 @@ impl Suit {
             Suit::Joker => unreachable!(),
         };
 
-        let card_x = consts::CARD_PX_START.x + consts::SUIT_ACE_IDX_X as f32 * (consts::CARD_PX_WIDTH + consts::CARD_PX_SPACING);
-        let card_y = consts::CARD_PX_START.y + idx_y as f32 * (consts::CARD_PX_HEIGHT + consts::CARD_PX_SPACING);
+        let card_x = consts::CARD_PX_START.x
+            + consts::SUIT_ACE_IDX_X as f32 * (consts::CARD_PX_WIDTH + consts::CARD_PX_SPACING);
+        let card_y = consts::CARD_PX_START.y
+            + idx_y as f32 * (consts::CARD_PX_HEIGHT + consts::CARD_PX_SPACING);
 
         let x = card_x + (consts::CARD_PX_WIDTH - consts::SUIT_PX_SIZE) / 2.0;
         let y = card_y + consts::SUIT_PX_TOP;
@@ -65,8 +67,10 @@ impl Card {
             }
         };
 
-        let x = consts::CARD_PX_START.x + idx_x as f32 * (consts::CARD_PX_WIDTH + consts::CARD_PX_SPACING);
-        let y = consts::CARD_PX_START.y + idx_y as f32 * (consts::CARD_PX_HEIGHT + consts::CARD_PX_SPACING);
+        let x = consts::CARD_PX_START.x
+            + idx_x as f32 * (consts::CARD_PX_WIDTH + consts::CARD_PX_SPACING);
+        let y = consts::CARD_PX_START.y
+            + idx_y as f32 * (consts::CARD_PX_HEIGHT + consts::CARD_PX_SPACING);
 
         mq::Rect::new(x, y, consts::CARD_PX_WIDTH, consts::CARD_PX_HEIGHT)
     }

@@ -110,10 +110,18 @@ pub struct Enemy {
     pub enemy_type: EnemyType,
     enemy_attack: EnemyAttack,
     pub enemy_stunned: EnemyStunned,
+    pub id: usize,
 }
 
 impl Enemy {
-    pub fn new(pos: mq::Vec2, health: f32, damage: f32, speed: f32, enemy_type: EnemyType) -> Self {
+    pub fn new(
+        pos: mq::Vec2,
+        health: f32,
+        damage: f32,
+        speed: f32,
+        enemy_type: EnemyType,
+        id: usize,
+    ) -> Self {
         Self {
             pos,
             health,
@@ -124,6 +132,7 @@ impl Enemy {
             enemy_type,
             enemy_attack: EnemyAttack::new(),
             enemy_stunned: EnemyStunned::new(),
+            id,
         }
     }
 
@@ -182,7 +191,6 @@ impl Enemy {
                 EnemyType::Super => {
                     if distance_to_player < range && self.enemy_attack.time_until_next_attack <= 0.0
                     {
-                        // println!("FR: {}", consts::ENEMY_SUPER_WAVE_FIRE_RATE(wave));
                         self.enemy_attack.time_until_next_attack =
                             1.0 / consts::ENEMY_SUPER_WAVE_FIRE_RATE(wave);
 
@@ -319,6 +327,7 @@ pub struct EnemyManager {
     spawn_timer: timer::Timer<()>,
     enemy_bullets: Vec<bullet::Bullet>,
     should_spawn_super: bool,
+    next_enemy_id: usize,
 }
 
 impl EnemyManager {
@@ -330,6 +339,7 @@ impl EnemyManager {
             spawn_timer: timer::Timer::new(1.0 / consts::ENEMY_WAVE_SPAWN_RATE(0)),
             enemy_bullets: Vec::new(),
             should_spawn_super: false,
+            next_enemy_id: 0,
         }
     }
 
@@ -449,7 +459,9 @@ impl EnemyManager {
             consts::ENEMY_DAMAGE,
             consts::ENEMY_WAVE_SPEED(self.wave),
             enemy_type,
+            self.next_enemy_id,
         );
+        self.next_enemy_id += 1;
 
         self.enemies_until_next_wave -= 1;
         self.enemies.push(enemy);

@@ -177,7 +177,6 @@ impl Powerups {
     }
 }
 
-
 pub fn draw_powerup_choices(
     powerup_choices: &[Powerup],
     font: &mq::Font,
@@ -196,15 +195,20 @@ pub fn draw_powerup_choices(
 
     let total_width = max_width.min(max_height * ratio);
     let total_height = max_height.min(max_width / ratio);
-    let mut x = (mq::screen_width() - total_width) / 2.0;    
+    let mut x = (mq::screen_width() - total_width) / 2.0;
     let y = score_text_bottom_y + (y_gap - total_height) / 2.0;
     let card_width = total_width / (3.0 + consts::CARD_CHOICE_SPACING * 2.0);
 
     let mut powerup_button_rects = Vec::with_capacity(powerup_choices.len());
 
     for powerup in powerup_choices {
-
-        mq::draw_rectangle(x, y, card_width, total_height, powerup.color_light_version());
+        mq::draw_rectangle(
+            x,
+            y,
+            card_width,
+            total_height,
+            powerup.color_light_version(),
+        );
         mq::draw_rectangle_lines(
             x,
             y,

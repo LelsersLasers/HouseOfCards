@@ -30,7 +30,6 @@ Survive the chaos in this card themed casual bullet hell roguelike twin stick sh
 ## TODO
 
 - Main
-    - Fix diamonad pierce double hitting same enemy
     - New enemy mechanic
     - Fix level up + super enemy death on same time
     - BALANCING

@@ -82,8 +82,8 @@ impl Hand {
 
         let card_count = consts::HAND_CARD_COUNT as f32;
         let spacing_count = card_count - 1.0;
-        let total_width =
-            consts::CARD_PX_WIDTH * card_count + consts::HAND_SPACING * consts::CARD_PX_WIDTH * spacing_count;
+        let total_width = consts::CARD_PX_WIDTH * card_count
+            + consts::HAND_SPACING * consts::CARD_PX_WIDTH * spacing_count;
         let ratio = total_width / consts::CARD_PX_HEIGHT;
 
         let total_width = max_width.min(max_height * ratio);
@@ -204,7 +204,7 @@ pub fn draw_card_choices(
 
     let total_width = max_width.min(max_height * ratio);
     let total_height = max_height.min(max_width / ratio);
-    let mut x = (mq::screen_width() - total_width) / 2.0;    
+    let mut x = (mq::screen_width() - total_width) / 2.0;
     let y = score_text_bottom_y + (y_gap - total_height) / 2.0;
     let card_width = total_width / (4.0 + consts::CARD_CHOICE_SPACING * 3.0);
 

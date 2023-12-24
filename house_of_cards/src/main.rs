@@ -388,7 +388,9 @@ async fn play(resources: &Resources) {
 
             for bullet in player_bullets.iter_mut() {
                 for enemy in enemy_manager.enemies.iter_mut() {
-                    if hitbox::rectangle_circle_collide(enemy, bullet) {
+                    if bullet.not_already_hit(enemy.id)
+                        && hitbox::rectangle_circle_collide(enemy, bullet)
+                    {
                         let bullet::BulletHitResult {
                             damage,
                             stun_time,
@@ -401,7 +403,7 @@ async fn play(resources: &Resources) {
                         player.health += heal_amount;
                         player.health = player.health.min(player.max_health);
 
-                        bullet.hit();
+                        bullet.hit(enemy.id);
                     }
                 }
             }

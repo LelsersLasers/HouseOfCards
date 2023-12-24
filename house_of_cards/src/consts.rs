@@ -13,7 +13,7 @@ pub const CARD_PX_SPACING: f32 = 8.0;
 pub const CARD_PX_START: mq::Vec2 = mq::vec2(24.0, 24.0);
 pub const SUIT_PX_TOP: f32 = 60.0; // actually 68 but 60 gives padding
 pub const SUIT_PX_SIZE: f32 = 60.0; // actually 44 but 48 gives padding
-pub const SUIT_ACE_IDX_X: usize = 13; 
+pub const SUIT_ACE_IDX_X: usize = 13;
 
 pub const FONT_PATH: &str = "resources/Assistant-SemiBold.ttf";
 pub const MUSIC_PATH: &str = "resources/INTERSTELLAR-SHORT.wav";
@@ -95,10 +95,10 @@ pub const CARD_CHOICE_OUTLINE_THICKNESS: f32 = 0.005;
 pub const CARD_CHOICE_SPACING: f32 = 0.1; // relative to card width
 pub const CARD_CHOICE_FONT_SIZE: f32 = 0.04; // scale
 
-pub const JOKER_WEAPON: weapon::Weapon = weapon::Weapon::new(1.0 / 8.0,  15.0, 0.8, 0.6, 5.0);
-pub const ACE_WEAPON: weapon::Weapon =   weapon::Weapon::new(1.0 / 20.0,  20.0, 0.8, 0.7, 10.0);
-pub const FACE_WEAPON: weapon::Weapon =  weapon::Weapon::new(1.0 / 0.5, 15.0, 1.0, 0.75, 7.5);
-pub const ELSE_WEAPON: weapon::Weapon =  weapon::Weapon::new(1.0 / 0.2,  15.0, 1.0, 0.75, 7.5);
+pub const JOKER_WEAPON: weapon::Weapon = weapon::Weapon::new(1.0 / 8.0, 15.0, 0.8, 0.6, 5.0);
+pub const ACE_WEAPON: weapon::Weapon = weapon::Weapon::new(1.0 / 20.0, 20.0, 0.8, 0.7, 10.0);
+pub const FACE_WEAPON: weapon::Weapon = weapon::Weapon::new(1.0 / 0.5, 15.0, 1.0, 0.75, 7.5);
+pub const ELSE_WEAPON: weapon::Weapon = weapon::Weapon::new(1.0 / 0.2, 15.0, 1.0, 0.75, 7.5);
 
 pub const BULLET_SIZE: f32 = 0.005; // scale
 pub const BULLET_OUTLINE: f32 = 0.0005; // scale

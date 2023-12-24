@@ -21,6 +21,7 @@ pub struct Bullet {
     distance_to_travel: f32, // in tiles
     pub bullet_damage: BulletDamage,
     hp: i32,
+    hit_enemies: Vec<usize>,
 }
 
 impl Bullet {
@@ -40,6 +41,7 @@ impl Bullet {
             distance_to_travel,
             bullet_damage,
             hp,
+            hit_enemies: Vec::with_capacity(hp as usize - 1),
         }
     }
 
@@ -47,8 +49,15 @@ impl Bullet {
         self.hp > 0
     }
 
-    pub fn hit(&mut self) {
+    pub fn not_already_hit(&self, enemy_id: usize) -> bool {
+        !self.hit_enemies.contains(&enemy_id)
+    }
+
+    pub fn hit(&mut self, enemy_id: usize) {
         self.hp -= 1;
+        if self.hp > 0 {
+            self.hit_enemies.push(enemy_id);
+        }
     }
 
     pub fn remove(&mut self) {
