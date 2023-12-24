@@ -26,29 +26,10 @@ Unleash Chaos in this card themed casual bullet hell roguelike twin stick shoote
 
 - 1
     - UI updates
-    - Joker/rest of cards damage
     - 5 card hand vs 3 card hand (maybe even 2 card hand?)
     - New enemy mechanic
     - Fix level up + super enemy death on same time
     - BALANCING
-- Rework card system
-    - Jokers need a redesign (right now would never pick them)
-        - 50% chance to deal 100 damage
-        - Shorter range
-    - You have a hand of 5 cards
-    - Instead of a stat buff card card, you get the option of replacing a card in your hand
-        - Random choice of 3 cards or discard
-        - Start with worse cards overall
-    - You have 1 active card which is what you are shooting
-        - Have their own independent cooldowns (fire rate = 1 / cooldown)
-            - Joker:    10 seconds  (0.1)
-                - 50% chance deal 100 damage
-            - Ace:      5 seconds   (0.2)
-                - One shot
-            - Face:     0.5 second  (2.0)
-                - 20 damage
-            - Else:     0.2 seconds (5.0)
-                - Number damage
 - UI
     - Make PowerupPick rectangles the same size as the ChooseCard cards
     - Use `mq::Rect`s for the PowerupPick interactions
@@ -74,25 +55,18 @@ Unleash Chaos in this card themed casual bullet hell roguelike twin stick shoote
 ## Extra mechanics
 
 - Damage
-	- Joker => -5 damage
-	- Face => 10 damage
-	- Ace => One shot
-	- Else => number value of card
+	- Joker => 50% chance to one shot (8 sec)
+	- Ace => one shot (20 sec)
+	- Face => 20 damage (0.5 sec)
+	- Else => number value of card (0.2 sec)
 - Score and XP
 	- 1 per enemy killed
-- There is a movement speed penalty while shooting and reloading
+- There is a movement speed penalty while shooting
 
 ### Powerups
 
 Powerups can stack and are calculated independently (even for 2 of the same time of powerup).
-You get a stat buff card every level up and a card buff every time you kill a super enemy.
-
-#### Stat Buffs
-
-- Red: Flat +1 damage to all cards
-- Green: +2 hp and increase max hp by 2
-- Orange: 5% faster fire rate
-- Purple: 5% movement speed buff
+You get a choice of a new card every level up and a card buff every time you kill a super enemy.
 
 #### Card Buffs
 

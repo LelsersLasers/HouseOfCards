@@ -103,7 +103,7 @@ impl Card {
                 value: _,
             } => {
                 if mq::rand::gen_range::<u8>(0, 2) == 0 {
-                    100.0
+                    f32::INFINITY
                 } else {
                     0.0
                 }
