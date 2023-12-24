@@ -550,7 +550,7 @@ async fn play(resources: &Resources) {
             }
 
             let mut selected_powerup = None;
-            let keys = [mq::KeyCode::Key1, mq::KeyCode::Key2, mq::KeyCode::Key3];
+            let keys = [mq::KeyCode::Key8, mq::KeyCode::Key9, mq::KeyCode::Key0];
             for (i, (key, powerup)) in keys.iter().zip(power_up_choices.iter()).enumerate() {
                 if mq::is_key_pressed(*key)
                     || powerup.clicked_on(all_locations[i], need_click_after, &mouse_info, scale)
