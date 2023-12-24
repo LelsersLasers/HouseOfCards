@@ -23,7 +23,7 @@ impl Suit {
             Suit::Joker | Suit::Back => unreachable!(),
         };
 
-        let card_x = consts::CARD_PX_START.x + consts::CARD_PX_WIDTH + consts::CARD_PX_SPACING;
+        let card_x = consts::CARD_PX_START.x + consts::SUIT_ACE_IDX_X as f32 * (consts::CARD_PX_WIDTH + consts::CARD_PX_SPACING);
         let card_y = consts::CARD_PX_START.y + idx_y as f32 * (consts::CARD_PX_HEIGHT + consts::CARD_PX_SPACING);
 
         let x = card_x + (consts::CARD_PX_WIDTH - consts::SUIT_PX_SIZE) / 2.0;
@@ -59,7 +59,7 @@ impl Card {
                     _ => unreachable!(),
                 };
                 if self.is_ace() {
-                    (13, suit_idx)
+                    (consts::SUIT_ACE_IDX_X, suit_idx)
                 } else {
                     (*value as usize - 1, suit_idx)
                 }

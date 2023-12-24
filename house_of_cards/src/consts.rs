@@ -11,8 +11,9 @@ pub const CARD_PX_WIDTH: f32 = 132.0;
 pub const CARD_PX_HEIGHT: f32 = 180.0;
 pub const CARD_PX_SPACING: f32 = 8.0;
 pub const CARD_PX_START: mq::Vec2 = mq::vec2(24.0, 24.0);
-pub const SUIT_PX_TOP: f32 = 20.0; // actually 24, but 20 gives padding
-pub const SUIT_PX_SIZE: f32 = 28.0; // actually 20, but 24 gives padding
+pub const SUIT_PX_TOP: f32 = 60.0; // actually 68 but 60 gives padding
+pub const SUIT_PX_SIZE: f32 = 60.0; // actually 44 but 48 gives padding
+pub const SUIT_ACE_IDX_X: usize = 13; 
 
 pub const FONT_PATH: &str = "resources/Assistant-SemiBold.ttf";
 pub const MUSIC_PATH: &str = "resources/INTERSTELLAR-SHORT.wav";
@@ -90,7 +91,7 @@ pub const HAND_BOTTOM_PADDING: f32 = 0.1;
 pub const HAND_TOTAL_MAX_WIDTH: f32 = 0.6;
 pub const HAND_TOTAL_MAX_HEIGHT: f32 = 0.2;
 pub const HAND_SPACING: f32 = 0.2; // relative to card width
-pub const HAND_OUTLINE_THICKNESS: f32 = 0.002;
+pub const HAND_OUTLINE_THICKNESS: f32 = 0.0025;
 pub const SLOT_MAX_START_VALUE: u8 = 4;
 
 pub const CARD_CHOICE_MAX_WIDTH: f32 = 0.9;
