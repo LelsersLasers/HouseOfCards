@@ -569,14 +569,7 @@ async fn play(resources: &Resources) {
         } else if game_state.current_state == game_state::GameState::ChooseCard {
             player.update_bar_ratios(delta);
 
-            let keys = [mq::KeyCode::Key8, mq::KeyCode::Key9, mq::KeyCode::Key0];
-            for (i, key) in keys.iter().enumerate() {
-                if mq::is_key_pressed(*key) {
-                    selected_card_choice = i;
-                }
-            }
-
-            hand::draw_card_choices(
+            let card_choices_button_rects = hand::draw_card_choices(
                 &card_choices,
                 &resources.cards_texture,
                 &resources.font,
@@ -584,11 +577,38 @@ async fn play(resources: &Resources) {
                 scale,
             );
 
-            if mq::is_key_pressed(mq::KeyCode::Enter) {
-                // || swap pressed
+            let keys = [mq::KeyCode::Key8, mq::KeyCode::Key9, mq::KeyCode::Key0];
+            for (i, (key, rect)) in keys
+                .iter()
+                .zip(card_choices_button_rects.cards.iter())
+                .enumerate()
+            {
+                if mq::is_key_pressed(*key)
+                    || hand::clicked_on(*rect, need_click_after, &mouse_info, false)
+                {
+                    selected_card_choice = i;
+                }
+            }
+
+            if mq::is_key_pressed(mq::KeyCode::Enter)
+                || hand::clicked_on(
+                    card_choices_button_rects.swap_button,
+                    need_click_after,
+                    &mouse_info,
+                    true,
+                )
+            {
                 player.hand.set_card(card_choices[selected_card_choice]);
                 game_state.back();
-            } else if mq::is_key_pressed(mq::KeyCode::Backspace) || mq::is_key_pressed(mq::KeyCode::Delete) {
+            } else if mq::is_key_pressed(mq::KeyCode::Backspace)
+                || mq::is_key_pressed(mq::KeyCode::Delete)
+                || hand::clicked_on(
+                    card_choices_button_rects.discard_button,
+                    need_click_after,
+                    &mouse_info,
+                    true,
+                )
+            {
                 // || discard pressed
                 game_state.back();
             }

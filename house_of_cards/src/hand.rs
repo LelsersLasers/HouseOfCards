@@ -1,4 +1,4 @@
-use crate::{colors, consts, deck, util, weapon};
+use crate::{colors, consts, deck, mouse, util, weapon};
 use macroquad::prelude as mq;
 
 struct Slot {
@@ -174,13 +174,30 @@ impl Hand {
     }
 }
 
+pub fn clicked_on(rect: mq::Rect, need_click_after: f32, mouse_info: &mouse::MouseInfo, on_release: bool) -> bool {
+    if need_click_after > mouse_info.last_click_time() {
+        return false;
+    }
+
+    let mouse_pos_click = mouse_info.get_last_click();
+    let mouse_pos_now = mouse_info.get_last_pos();
+
+    (mouse_info.mouse_released() || !on_release) && rect.contains(mouse_pos_click) && rect.contains(mouse_pos_now)
+}
+
+pub struct CardChoicesButtonRects {
+    pub cards: Vec<mq::Rect>,
+    pub swap_button: mq::Rect,
+    pub discard_button: mq::Rect,
+}
+
 pub fn draw_card_choices(
     card_choices: &[deck::Card],
     cards_texture: &mq::Texture2D,
     font: &mq::Font,
     selected: usize,
     scale: f32,
-) {
+) -> CardChoicesButtonRects {
     let max_width = consts::CARD_CHOICE_MAX_WIDTH * mq::screen_width();
     let max_height = consts::CARD_CHOICE_MAX_HEIGHT * mq::screen_height();
 
@@ -198,6 +215,8 @@ pub fn draw_card_choices(
     let outline_y = y - consts::CARD_CHOICE_SPACING * card_width / 2.0;
     let outline_height = total_height + card_width * consts::CARD_CHOICE_SPACING;
     let outline_thickness = consts::CARD_CHOICE_OUTLINE_THICKNESS * scale;
+
+    let mut cards_button_rects = Vec::with_capacity(card_choices.len());
 
     for (i, card) in card_choices.iter().enumerate() {
         let outline_x = x - consts::CARD_CHOICE_SPACING * card_width / 2.0;
@@ -233,6 +252,8 @@ pub fn draw_card_choices(
             },
         );
 
+        cards_button_rects.push(mq::Rect::new(x, y, card_width, total_height));
+
         x += card_width + consts::CARD_CHOICE_SPACING * card_width;
     }
 
@@ -247,6 +268,8 @@ pub fn draw_card_choices(
         outline_thickness * 2.0,
         colors::NORD14,
     );
+
+    let swap_button_rect = mq::Rect::new(x, y, card_width, button_height);
 
     let text = "Swap";
     let font_size = (consts::CARD_CHOICE_FONT_SIZE * scale) as u16;
@@ -278,6 +301,8 @@ pub fn draw_card_choices(
         colors::NORD11,
     );
 
+    let discard_button_rect = mq::Rect::new(x, y2, card_width, button_height);
+
     let text = "Discard All";
     let font_size = (consts::CARD_CHOICE_FONT_SIZE * scale) as u16;
     let text_dims = mq::measure_text(text, Some(font), font_size, 1.0);
@@ -297,4 +322,10 @@ pub fn draw_card_choices(
             ..mq::TextParams::default()
         },
     );
+
+    CardChoicesButtonRects {
+        cards: cards_button_rects,
+        swap_button: swap_button_rect,
+        discard_button: discard_button_rect,
+    }
 }
