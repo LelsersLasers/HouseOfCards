@@ -24,6 +24,10 @@ impl Card {
         Self { suit, value }
     }
 
+    // pub fn get_suit_icon_source(&self) -> mq::Rect {
+        
+    // }
+
     pub fn get_texture_source(&self) -> mq::Rect {
         let (idx_x, idx_y) = match self {
             Self {
@@ -46,10 +50,8 @@ impl Card {
             }
         };
 
-        let start = mq::Vec2::splat(24.0);
-
-        let x = start.x + idx_x as f32 * (consts::CARD_PX_WIDTH + consts::CARD_PX_SPACING);
-        let y = start.y + idx_y as f32 * (consts::CARD_PX_HEIGHT + consts::CARD_PX_SPACING);
+        let x = consts::CARD_PX_START.x + idx_x as f32 * (consts::CARD_PX_WIDTH + consts::CARD_PX_SPACING);
+        let y = consts::CARD_PX_START.y + idx_y as f32 * (consts::CARD_PX_HEIGHT + consts::CARD_PX_SPACING);
 
         mq::Rect::new(x, y, consts::CARD_PX_WIDTH, consts::CARD_PX_HEIGHT)
     }
