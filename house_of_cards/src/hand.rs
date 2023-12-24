@@ -15,15 +15,15 @@ pub struct HandDrawDimensions {
 }
 
 pub struct Hand {
-    slots: Vec<Slot>,  // len = 5
-    pub active: usize, // Index of active card (0-4)
+    slots: Vec<Slot>,  // len = consts::HAND_CARD_COUNT
+    pub active: usize, // Index of active card (0-consts::HAND_CARD_COUNT-1)
 }
 impl Hand {
     pub fn new(deck: &mut deck::Deck) -> Self {
-        let mut slots = Vec::with_capacity(5);
+        let mut slots = Vec::with_capacity(consts::HAND_CARD_COUNT);
         let mut discarded_cards = Vec::new();
 
-        while slots.len() < 5 {
+        while slots.len() < consts::HAND_CARD_COUNT {
             let card = deck.draw_card();
             if card.is_ace()
                 || card.is_face()
@@ -80,15 +80,17 @@ impl Hand {
         let max_width = consts::HAND_TOTAL_MAX_WIDTH * scale;
         let max_height = consts::HAND_TOTAL_MAX_HEIGHT * scale;
 
+        let card_count = consts::HAND_CARD_COUNT as f32;
+        let spacing_count = card_count - 1.0;
         let total_width =
-            consts::CARD_PX_WIDTH * 5.0 + consts::HAND_SPACING * consts::CARD_PX_WIDTH * 4.0;
+            consts::CARD_PX_WIDTH * card_count + consts::HAND_SPACING * consts::CARD_PX_WIDTH * spacing_count;
         let ratio = total_width / consts::CARD_PX_HEIGHT;
 
         let total_width = max_width.min(max_height * ratio);
         let total_height = max_height.min(max_width / ratio);
         let x = (mq::screen_width() - total_width) / 2.0;
         let y = mq::screen_height() - total_height - consts::HAND_BOTTOM_PADDING * scale;
-        let card_width = total_width / (5.0 + consts::HAND_SPACING * 4.0);
+        let card_width = total_width / (card_count + consts::HAND_SPACING * spacing_count);
 
         HandDrawDimensions {
             x,

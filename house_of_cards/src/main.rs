@@ -78,7 +78,7 @@ fn create_touch_controls(scale: f32) -> TouchControls {
         mq::screen_height(),
     ));
 
-    let mut select_slot_buttons = Vec::with_capacity(5);
+    let mut select_slot_buttons = Vec::with_capacity(consts::HAND_CARD_COUNT);
     let hand::HandDrawDimensions {
         mut x,
         y,
@@ -87,7 +87,7 @@ fn create_touch_controls(scale: f32) -> TouchControls {
         spacing,
     } = hand::Hand::hand_draw_dimensions(scale);
 
-    for _ in 0..5 {
+    for _ in 0..consts::HAND_CARD_COUNT {
         select_slot_buttons.push(touch_button::TouchButton::new(mq::Rect::new(
             x,
             y,
@@ -329,8 +329,8 @@ async fn play(resources: &Resources) {
             mq::KeyCode::Key1,
             mq::KeyCode::Key2,
             mq::KeyCode::Key3,
-            mq::KeyCode::Key4,
-            mq::KeyCode::Key5,
+            // mq::KeyCode::Key4,
+            // mq::KeyCode::Key5,
         ];
         let mut used_touch_ids = Vec::new();
         for (i, (key, slot_button)) in hand_keys
