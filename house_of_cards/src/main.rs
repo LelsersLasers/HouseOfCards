@@ -254,7 +254,7 @@ async fn play(resources: &Resources) {
     let hand = hand::Hand::new(&mut deck);
     let mut player = player::Player::new(hand);
 
-    let mut power_up_choices = powerup::Powerup::pick_three();
+    let mut powerup_choices = powerup::Powerup::pick_three();
 
     let mut card_choices = deck.draw_three_cards();
     let mut selected_card_choice = 0;
@@ -416,14 +416,14 @@ async fn play(resources: &Resources) {
                 player.xp -= consts::XP_PER_LEVEL(player.level);
                 player.level += 1;
 
-                game_state.next(game_state::GameState::ChooseCard);
+                game_state.next(game_state::GameState::PowerupCard);
                 card_choices = deck.draw_three_cards();
                 need_click_after = time_counter;
                 player.xp_bar_ratio = 1.0;
             }
             if enemies_killed.super_killed {
                 game_state.next(game_state::GameState::PowerupCard);
-                power_up_choices = powerup::Powerup::pick_three();
+                powerup_choices = powerup::Powerup::pick_three();
                 need_click_after = time_counter;
             }
 
@@ -509,7 +509,7 @@ async fn play(resources: &Resources) {
 
         if game_state.current_state() == game_state::GameState::Dead {
             player.update_bar_ratios(delta);
-            
+
             draw_overlay(
                 colors::NORD0_BIG_ALPHA,
                 "You died!",
@@ -547,19 +547,21 @@ async fn play(resources: &Resources) {
         } else if game_state.current_state == game_state::GameState::PowerupCard {
             player.update_bar_ratios(delta);
 
-            powerup::Powerup::draw_outline(scale);
-            let all_locations = powerup::PowerupPickLocation::all_locations();
-            for (powerup, location) in power_up_choices.iter().zip(all_locations.iter()) {
-                powerup.draw(*location, &resources.font, scale);
-            }
+            let powerup_rects = powerup::draw_powerup_choices(
+                &powerup_choices,
+                &resources.font,
+                score_text_bottom_y,
+                hand_top_y,
+                scale,
+            );
 
             let mut selected_powerup = None;
             let keys = [mq::KeyCode::Key8, mq::KeyCode::Key9, mq::KeyCode::Key0];
-            for (i, (key, powerup)) in keys.iter().zip(power_up_choices.iter()).enumerate() {
+            for (i, (key, rect)) in keys.iter().zip(powerup_rects.iter()).enumerate() {
                 if mq::is_key_pressed(*key)
-                    || powerup.clicked_on(all_locations[i], need_click_after, &mouse_info, scale)
+                    || util::clicked_on(*rect, need_click_after, &mouse_info, true)
                 {
-                    selected_powerup = Some(power_up_choices[i]);
+                    selected_powerup = Some(powerup_choices[i]);
                 }
             }
 
@@ -587,14 +589,14 @@ async fn play(resources: &Resources) {
                 .enumerate()
             {
                 if mq::is_key_pressed(*key)
-                    || hand::clicked_on(*rect, need_click_after, &mouse_info, false)
+                    || util::clicked_on(*rect, need_click_after, &mouse_info, false)
                 {
                     selected_card_choice = i;
                 }
             }
 
             if mq::is_key_pressed(mq::KeyCode::Enter)
-                || hand::clicked_on(
+                || util::clicked_on(
                     card_choices_button_rects.swap_button,
                     need_click_after,
                     &mouse_info,
@@ -605,7 +607,7 @@ async fn play(resources: &Resources) {
                 game_state.back();
             } else if mq::is_key_pressed(mq::KeyCode::Backspace)
                 || mq::is_key_pressed(mq::KeyCode::Delete)
-                || hand::clicked_on(
+                || util::clicked_on(
                     card_choices_button_rects.discard_button,
                     need_click_after,
                     &mouse_info,

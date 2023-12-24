@@ -1,4 +1,4 @@
-use crate::{colors, consts, deck, mouse, util, weapon};
+use crate::{colors, consts, deck, util, weapon};
 use macroquad::prelude as mq;
 
 struct Slot {
@@ -176,17 +176,6 @@ impl Hand {
 
         y
     }
-}
-
-pub fn clicked_on(rect: mq::Rect, need_click_after: f32, mouse_info: &mouse::MouseInfo, on_release: bool) -> bool {
-    if need_click_after > mouse_info.last_click_time() {
-        return false;
-    }
-
-    let mouse_pos_click = mouse_info.get_last_click();
-    let mouse_pos_now = mouse_info.get_last_pos();
-
-    (mouse_info.mouse_released() || !on_release) && rect.contains(mouse_pos_click) && rect.contains(mouse_pos_now)
 }
 
 pub struct CardChoicesButtonRects {

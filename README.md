@@ -30,14 +30,10 @@ Survive the chaos in this card themed casual bullet hell roguelike twin stick sh
 ## TODO
 
 - Main
-    - UI updates
     - New enemy mechanic
     - Fix level up + super enemy death on same time
     - BALANCING
     - 3 card hand vs 2 card hand (vs 5 card hand)
-- UI
-    - Make PowerupPick rectangles the same size as the ChooseCard cards
-    - Use `mq::Rect`s for the PowerupPick interactions
 - New enemy mechanic
     - 1 of every ~10 enemies tries to predict player movement instead of slowly walking at the player
 - Balance suit buffs (clubs/hearts op)
