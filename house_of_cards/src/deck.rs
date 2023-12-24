@@ -10,7 +10,6 @@ pub enum Suit {
     Clubs,
     Diamonds,
     Joker,
-    Back,
 }
 
 impl Suit {
@@ -20,7 +19,7 @@ impl Suit {
             Suit::Spades => 1,
             Suit::Diamonds => 2,
             Suit::Clubs => 3,
-            Suit::Joker | Suit::Back => unreachable!(),
+            Suit::Joker => unreachable!(),
         };
 
         let card_x = consts::CARD_PX_START.x + consts::SUIT_ACE_IDX_X as f32 * (consts::CARD_PX_WIDTH + consts::CARD_PX_SPACING);
@@ -47,9 +46,9 @@ impl Card {
     pub fn get_texture_source(&self) -> mq::Rect {
         let (idx_x, idx_y) = match self {
             Self {
-                suit: Suit::Joker | Suit::Back,
+                suit: Suit::Joker,
                 value,
-            } => (0, (self.suit == Suit::Joker) as usize * 2 + *value as usize),
+            } => (0, 2 + *value as usize),
             Self { suit, value } => {
                 let suit_idx = match suit {
                     Suit::Hearts => 0,
@@ -76,7 +75,7 @@ impl Card {
         match self.suit {
             Suit::Hearts | Suit::Diamonds => true,
             Suit::Spades | Suit::Clubs => false,
-            Suit::Joker | Suit::Back => self.value == 0,
+            Suit::Joker => self.value == 0,
         }
     }
 
