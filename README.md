@@ -30,7 +30,6 @@ Survive the chaos in this card themed casual bullet hell roguelike twin stick sh
 ## TODO
 
 - Main
-    - Update player bars in death
     - UI updates
     - New enemy mechanic
     - Fix level up + super enemy death on same time

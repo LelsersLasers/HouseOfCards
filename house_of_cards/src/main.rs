@@ -508,6 +508,8 @@ async fn play(resources: &Resources) {
         };
 
         if game_state.current_state() == game_state::GameState::Dead {
+            player.update_bar_ratios(delta);
+            
             draw_overlay(
                 colors::NORD0_BIG_ALPHA,
                 "You died!",
