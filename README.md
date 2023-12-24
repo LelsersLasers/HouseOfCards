@@ -1,15 +1,18 @@
 # House Of Cards
 
-Unleash Chaos in this card themed casual bullet hell roguelike twin stick shooter for mobile, desktop, and the web!
+Survive the chaos in this card themed casual bullet hell roguelike twin stick shooter for mobile, desktop, and the web!
 
 ## Controls
 
 - Movement: WASD or hold right mouse button
 - Aim: arrow keys or mouse
 - Shoot: left click or space
+- Switch between active cards: 1, 2, or 3
 - Reset after death: R
 - Pause: escape or p
-- Choose powerup: 1, 2, 3 or left click
+- Choose powerup/card: 8, 9, 0 or click on powerup/card
+- Swap: Enter (or click button)
+- Discard all: backspace/delete or click button
 - Toggle auto shoot: Q (off by default)
 
 ## Mobile Controls
@@ -17,14 +20,16 @@ Unleash Chaos in this card themed casual bullet hell roguelike twin stick shoote
 - Note: might need auto rotate on (game works best in landscape mode)
 - Movement: left screen joystick
 - Aim: right screen joystick
-- Reload: touch deck icons in top right (auto reload enabled)
+- Switch between active cards: touch card
 - Pause: touch top left corner of screen (touch anywhere to unpause)
-- Choose powerup: touch powerup
+- Choose powerup/card: touch powerup/card
+- Swap: touch swap button
+- Discard all: touch discard all button
 - Reset after death: touch screen anywhere
 
 ## TODO
 
-- 1
+- Main
     - UI updates
     - New enemy mechanic
     - Fix level up + super enemy death on same time
