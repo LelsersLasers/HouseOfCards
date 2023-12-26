@@ -23,14 +23,14 @@ impl GameState {
 
 pub struct GameStateManager {
     pub current_state: GameState,
-    last_state: GameState,
+    last_states: Vec<GameState>,
 }
 
 impl GameStateManager {
     pub fn new() -> Self {
         Self {
             current_state: GameState::new(),
-            last_state: GameState::new(),
+            last_states: Vec::new(),
         }
     }
 
@@ -42,12 +42,12 @@ impl GameStateManager {
     }
 
     pub fn next(&mut self, next_state: GameState) {
-        self.last_state = self.current_state;
+        self.last_states.push(self.current_state);
         self.current_state = next_state;
     }
 
     pub fn back(&mut self) {
-        std::mem::swap(&mut self.current_state, &mut self.last_state);
+        self.current_state = self.last_states.pop().unwrap_or(GameState::Alive);
     }
 
     pub fn toggle_pause(&mut self) {

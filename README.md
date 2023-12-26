@@ -30,9 +30,7 @@ Survive the chaos in this card themed casual bullet hell roguelike twin stick sh
 ## TODO
 
 - Main
-    - Fix level up + super enemy death on same time
     - BALANCING
-    - Fix mouse aim bug (again????????)
     - 3 card hand vs 2 card hand
 - Balance suit buffs (clubs/hearts op)
 - Tweak
