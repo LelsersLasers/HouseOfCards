@@ -27,29 +27,6 @@ Survive the chaos in this card themed casual bullet hell roguelike twin stick sh
 - Discard all: touch discard all button
 - Reset after death: touch screen anywhere
 
-## TODO
-
-- Main
-    - BALANCING
-    - 3 card hand vs 2 card hand
-- Balance suit buffs (clubs/hearts op)
-- Tweak
-    - XP and score system
-    - Scaling system and numbers
-    - Super enemy numbers and mechanics
-- Improve aim feel (mouse, arrow keys, joystick)
-    - Issue: mouse is relative to player position (really camera posistion) not world position
-        - Like locked camera in League
-- Loading time
-    - Either calculate the loading time for the sound file or ?
-- Purpose?
-    - Trying to get somewhere?
-    - Trying to protect something?
-    - Should make you move around dynamically
-- Update itch.io page
-    - Write up a short summary
-    - Add screenshots + icon pic
-
 ## Extra mechanics
 
 - Damage
@@ -73,10 +50,31 @@ You get a choice of a new card every level up and a card buff every time you kil
 - Blue 3: Clubs stun for 0.1 seconds
 - Blue 4: Spades have 33% chance to double damage
 
-
 ## Credits
 
 - Pixel Art Cards: https://www.reddit.com/r/PixelArt/comments/i1t1gn/pixel_art_playing_card_designs_created_in_aseprite/
 - Math for rotated rectangle hitbox: https://chat.openai.com/share/f0826594-c5e9-4ea6-a1cf-0a010295fbfa
 - Font: https://fonts.google.com/specimen/Assistant
 - Music: https://www.youtube.com/watch?v=ROcups0YaHE
+
+## TODO
+
+- Main
+    - BALANCING
+        - Super enemies fire rate gets too high
+        - Enemies start too slow then get too fast?
+    - 3 card hand vs 2 card hand
+- Balance suit buffs (clubs/hearts op)
+- Tweak
+    - XP and score system
+    - Scaling system and numbers
+    - Super enemy numbers and mechanics
+- Improve aim feel (mouse, arrow keys, joystick)
+    - Issue: mouse is relative to player position (really camera posistion) not world position
+        - Like locked camera in League
+- Loading time/screen on web
+    - Either calculate the loading time for the sound file or ?
+- Purpose?
+    - Trying to get somewhere?
+    - Trying to protect something?
+    - Should make you move around dynamically
