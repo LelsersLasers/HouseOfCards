@@ -30,7 +30,6 @@ Survive the chaos in this card themed casual bullet hell roguelike twin stick sh
 ## TODO
 
 - Main
-    - Make diamond suit buffs only apply to diamonds
     - New enemy mechanic
     - Fix level up + super enemy death on same time
     - BALANCING

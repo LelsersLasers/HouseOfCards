@@ -371,13 +371,17 @@ async fn play(resources: &Resources) {
             if let util::Shot(true) = player_shot {
                 let weapon = player.hand.active_weapon();
                 let card = player.hand.active_card();
+                let hp = match card.suit {
+                    deck::Suit::Diamonds => powerups.diamonds_bullet_hp(),
+                    _ => 1
+                };
                 let bullet = bullet::Bullet::new(
                     player.pos,
                     player.direction,
                     weapon.bullet_speed,
                     weapon.range,
                     bullet::BulletDamage::Card(card),
-                    powerups.diamonds_bullet_hp(),
+                    hp,
                 );
                 player_bullets.push(bullet);
             }
