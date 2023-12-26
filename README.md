@@ -69,9 +69,9 @@ You get a choice of a new card every level up and a card buff every time you kil
 #### Card Buffs
 
 - Blue 1: Diamonds pierce one additional enemy
-- Blue 2: Hearts have 5% chance to heal 1 hp (won't increase max hp)
-- Blue 3: Clubs stun for 0.25 seconds
-- Blue 4: Spades have 20% chance to double damage
+- Blue 2: Hearts have 2% chance to heal 1 hp (won't increase max hp)
+- Blue 3: Clubs stun for 0.1 seconds
+- Blue 4: Spades have 33% chance to double damage
 
 
 ## Credits

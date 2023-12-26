@@ -67,9 +67,9 @@ pub const SMALL_FONT_LARGE_SPACING: f32 = 0.05; // scale
 pub const LARGE_FONT_BOUNCE_MAX: f32 = 0.125; // font size
 pub const LARGE_FONT_BOUNCE_SPEED: f32 = 0.8;
 
-pub const HEARTS_HEAL_CHANCE: f32 = 0.05;
-pub const CLUBS_STUN_TIME: f32 = 0.25; // seconds
-pub const SPADES_DAMAGE_CHANCE: f32 = 0.2;
+pub const HEARTS_HEAL_CHANCE: f32 = 0.02;
+pub const CLUBS_STUN_TIME: f32 = 0.1; // seconds
+pub const SPADES_DAMAGE_CHANCE: f32 = 0.33;
 
 pub const POWERUP_PICK_FONT_LARGE: f32 = 0.043; // scale
 pub const POWERUP_PICK_FONT_SMALL: f32 = 0.03; // scale

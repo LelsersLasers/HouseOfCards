@@ -103,9 +103,9 @@ impl Powerup {
     fn main_text(&self) -> Vec<&str> {
         match self {
             Powerup::Diamonds => vec!["Diamonds:", "Pierce", "+1 Enemies"],
-            Powerup::Hearts => vec!["Hearts:", "+5% chance", "to heal"],
-            Powerup::Clubs => vec!["Clubs:", "+0.25s Stun"],
-            Powerup::Spades => vec!["Spades:", "+20% chance", "to double", "damage"],
+            Powerup::Hearts => vec!["Hearts:", "+2% chance", "to heal"],
+            Powerup::Clubs => vec!["Clubs:", "+0.1s Stun"],
+            Powerup::Spades => vec!["Spades:", "+33% chance", "to double", "damage"],
         }
     }
 
