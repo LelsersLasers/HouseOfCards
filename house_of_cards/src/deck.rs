@@ -113,7 +113,7 @@ impl Card {
             }
             Self { suit: _, value } => {
                 if self.is_face() {
-                    20.0
+                    *value as f32 * 2.0
                 } else if self.is_ace() {
                     f32::INFINITY
                 } else {

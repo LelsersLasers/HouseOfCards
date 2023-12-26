@@ -55,7 +55,7 @@ Survive the chaos in this card themed casual bullet hell roguelike twin stick sh
 - Damage
 	- Joker => 50% chance to one shot (8 sec)
 	- Ace => one shot (20 sec)
-	- Face => 20 damage (0.5 sec)
+	- Face => 2 * the "number" value of the card (0.5 sec)
 	- Else => number value of card (0.2 sec)
 - Score and XP
 	- 1 per enemy killed
