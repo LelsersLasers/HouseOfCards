@@ -110,8 +110,9 @@ pub const ENEMY_STUNNED_THICKNESS: f32 = 0.005; // scale
 pub const ENEMY_MELEE_RANGE: f32 = 0.5; // tiles
 pub const ENEMY_MELEE_CHARGE_TIME: f32 = 0.5; // seconds
 pub const ENEMY_MELEE_RELOAD_TIME: f32 = 1.0; // seconds
-pub const ENEMY_MOVEMENT_PREDICT_CHANCE: f32 = 0.1; // percent
-pub const ENEMY_MOVEMENT_PREDICT_LEAD_TIME: f32 = 1.0; // seconds
+pub const ENEMY_MOVEMENT_PREDICT_CHANCE: f32 = 0.33; // percent
+pub const ENEMY_MOVEMENT_PREDICT_LEAD_TIME_MIN: f32 = 0.5; // seconds
+pub const ENEMY_MOVEMENT_PREDICT_LEAD_TIME_MAX: f32 = 2.0; // seconds
 
 pub const ENEMY_RANGED_RANGE: f32 = 4.0; // tiles
 pub const ENEMY_RANGED_CHARGE_TIME: f32 = 0.75; // seconds

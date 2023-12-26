@@ -102,7 +102,7 @@ enum EnemyShotType {
 
 enum EnemyMovementType {
     Chase,
-    Predict, // only possible for melee
+    Predict(f32), // lead time
 }
 
 pub struct Enemy {
@@ -131,7 +131,11 @@ impl Enemy {
         let enemy_movement = if enemy_type.is_melee()
             && mq::rand::gen_range(0.0, 1.0) < consts::ENEMY_MOVEMENT_PREDICT_CHANCE
         {
-            EnemyMovementType::Predict
+            let lead_time = mq::rand::gen_range(
+                consts::ENEMY_MOVEMENT_PREDICT_LEAD_TIME_MIN,
+                consts::ENEMY_MOVEMENT_PREDICT_LEAD_TIME_MAX,
+            );
+            EnemyMovementType::Predict(lead_time)
         } else {
             EnemyMovementType::Chase
         };
@@ -159,11 +163,8 @@ impl Enemy {
 
         let player_target_pos = match self.enemy_movement {
             EnemyMovementType::Chase => player.pos,
-            EnemyMovementType::Predict => {
-                player.pos
-                    + player.movement
-                        * consts::PLAYER_SPEED
-                        * consts::ENEMY_MOVEMENT_PREDICT_LEAD_TIME
+            EnemyMovementType::Predict(lead_time) => {
+                player.pos + player.movement * consts::PLAYER_SPEED * lead_time
             }
         };
 

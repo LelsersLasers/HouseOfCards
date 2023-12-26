@@ -30,13 +30,10 @@ Survive the chaos in this card themed casual bullet hell roguelike twin stick sh
 ## TODO
 
 - Main
-    - New enemy mechanic
     - Fix level up + super enemy death on same time
     - BALANCING
+    - Fix mouse aim bug (again????????)
     - 3 card hand vs 2 card hand
-- New enemy mechanic
-    - 1 of every ~3 melee enemies tries to predict player movement instead of slowly walking at the player
-    - Various levels of prediction from ~0.5 seconds to ~2 seconds
 - Balance suit buffs (clubs/hearts op)
 - Tweak
     - XP and score system
