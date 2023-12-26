@@ -129,7 +129,7 @@ pub const ENEMY_SUPER_RANGE: f32 = 5.0;
 pub const ENEMY_SUPER_MIN_RANGE: f32 = 1.0;
 pub const ENEMY_SUPER_WAVE_START: i32 = 2;
 pub const ENEMY_SUPER_WAVE_FIRE_RATE: fn(i32) -> f32 =
-    |wave| (wave - ENEMY_SUPER_WAVE_START) as f32 / 5.0;
+    |wave| (wave - ENEMY_SUPER_WAVE_START) as f32 / 6.0;
 pub const ENEMY_SUPER_SPREAD: f32 = 0.6; // radians
 pub const ENEMY_SUPER_HP_MOD: fn(i32) -> f32 = |wave| 5.0 + wave as f32;
 
@@ -139,7 +139,7 @@ pub const ENEMY_RANGED_CHANCE: f32 = 0.33; // percent
 // Note: wave spawning starts at 1
 pub const ENEMY_WAVE_COUNT: fn(i32) -> i32 = |wave| 5 + 3 * (wave - 1);
 
-pub const ENEMY_WAVE_HP: fn(i32) -> f32 = |wave| 10.0 + 10.0 * (wave - 1) as f32;
+pub const ENEMY_WAVE_HP: fn(i32) -> f32 = |wave| 10.0 + 12.0 * (wave - 1) as f32;
 pub const ENEMY_DAMAGE: f32 = 1.0;
 pub const ENEMY_WAVE_SPEED: fn(i32) -> f32 = |wave| ENEMY_SPEED * (1.0 + 0.015 * (wave - 1) as f32);
 
@@ -151,4 +151,4 @@ pub const XP_PER_LEVEL: fn(i32) -> i32 = |level| 2 * level.pow(2);
 pub const AUTO_LOG: fn(f32, f32, f32, f32) -> f32 =
     |x, a, b, c| ((b - a) / (c + 1.0).log10()) * (x + 1.0).log10() + a;
 pub const ENEMY_WAVE_SPAWN_RATE: fn(i32) -> f32 =
-    |wave| AUTO_LOG(wave as f32, 1.0 / 5.0, 1.0 / 2.0, 10.0);
+    |wave| AUTO_LOG(wave as f32, 1.0 / 4.0, 1.0, 12.0);
