@@ -373,7 +373,7 @@ async fn play(resources: &Resources) {
                 let card = player.hand.active_card();
                 let hp = match card.suit {
                     deck::Suit::Diamonds => powerups.diamonds_bullet_hp(),
-                    _ => 1
+                    _ => 1,
                 };
                 let bullet = bullet::Bullet::new(
                     player.pos,

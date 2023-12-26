@@ -21,6 +21,7 @@ pub struct Player {
     pub level: i32,
     hp_bar_ratio: f32,
     pub xp_bar_ratio: f32,
+    pub movement: mq::Vec2,
 }
 
 impl Player {
@@ -35,6 +36,7 @@ impl Player {
             level: 1,
             hp_bar_ratio: 1.0,
             xp_bar_ratio: 0.0,
+            movement: mq::Vec2::ZERO,
         }
     }
 
@@ -73,6 +75,7 @@ impl Player {
 
         let speed = consts::PLAYER_SPEED * delta * self.hand.get_ms_penalty();
         self.pos += movement * speed;
+        self.movement = movement;
 
         let aim = (if aim_joystick_result.active {
             aim_joystick_result.pos

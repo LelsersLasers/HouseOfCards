@@ -100,6 +100,11 @@ enum EnemyShotType {
     Spread,
 }
 
+enum EnemyMovementType {
+    Chase,
+    Predict, // only possible for melee
+}
+
 pub struct Enemy {
     pos: mq::Vec2, // tiles
     pub health: f32,
@@ -110,6 +115,7 @@ pub struct Enemy {
     pub enemy_type: EnemyType,
     enemy_attack: EnemyAttack,
     pub enemy_stunned: EnemyStunned,
+    enemy_movement: EnemyMovementType,
     pub id: usize,
 }
 
@@ -122,6 +128,14 @@ impl Enemy {
         enemy_type: EnemyType,
         id: usize,
     ) -> Self {
+        let enemy_movement = if enemy_type.is_melee()
+            && mq::rand::gen_range(0.0, 1.0) < consts::ENEMY_MOVEMENT_PREDICT_CHANCE
+        {
+            EnemyMovementType::Predict
+        } else {
+            EnemyMovementType::Chase
+        };
+
         Self {
             pos,
             health,
@@ -132,6 +146,7 @@ impl Enemy {
             enemy_type,
             enemy_attack: EnemyAttack::new(),
             enemy_stunned: EnemyStunned::new(),
+            enemy_movement,
             id,
         }
     }
@@ -142,10 +157,21 @@ impl Enemy {
             return EnemyShotType::None;
         }
 
+        let player_target_pos = match self.enemy_movement {
+            EnemyMovementType::Chase => player.pos,
+            EnemyMovementType::Predict => {
+                player.pos
+                    + player.movement
+                        * consts::PLAYER_SPEED
+                        * consts::ENEMY_MOVEMENT_PREDICT_LEAD_TIME
+            }
+        };
+
+        let vec_to_target = player_target_pos - self.pos;
         let vec_to_player = player.pos - self.pos;
         let distance_to_player = vec_to_player.length();
 
-        self.direction = vec_to_player.y.atan2(vec_to_player.x);
+        self.direction = vec_to_target.y.atan2(vec_to_target.x);
         let mut movement =
             mq::Vec2::new(self.direction.cos(), self.direction.sin()) * self.speed * delta;
 
@@ -420,8 +446,6 @@ impl EnemyManager {
                 && self.wave > consts::ENEMY_SUPER_WAVE_START
             {
                 self.should_spawn_super = true;
-                // println!("Wave {}", self.wave);
-                // println!("Fire rate {}", consts::ENEMY_SUPER_WAVE_FIRE_RATE(self.wave));
             }
 
             self.spawn_enemy(player);
