@@ -8,8 +8,8 @@ mod colors;
 mod consts;
 mod deck;
 mod enemy;
-mod hand;
 mod game_state;
+mod hand;
 mod hitbox;
 mod joystick;
 mod mouse;
@@ -34,12 +34,11 @@ fn window_conf() -> mq::Conf {
 struct TouchControls {
     movement_joystick: joystick::Joystick,
     aim_joystick: joystick::Joystick,
-    reload_button: touch_button::TouchButton,
     start_pause_button: touch_button::TouchButton,
+    select_slot_buttons: Vec<touch_button::TouchButton>,
     fullscreen_button: touch_button::TouchButton,
 }
 
-#[derive(Clone, Copy)]
 struct Resources {
     cards_texture: mq::Texture2D,
     font: mq::Font,
@@ -66,15 +65,6 @@ fn create_touch_controls(scale: f32) -> TouchControls {
         joystick::Side::Right,
     );
 
-    let reload_button_width = consts::RELOAD_BUTTON_WIDTH * scale;
-    let reload_button_height = consts::RELOAD_BUTTON_HEIGHT * scale;
-    let reload_button = touch_button::TouchButton::new(mq::Rect::new(
-        mq::screen_width() - reload_button_width,
-        0.0,
-        reload_button_width,
-        reload_button_height,
-    ));
-
     let start_pause_button = touch_button::TouchButton::new(mq::Rect::new(
         0.0,
         0.0,
@@ -88,11 +78,30 @@ fn create_touch_controls(scale: f32) -> TouchControls {
         mq::screen_height(),
     ));
 
+    let mut select_slot_buttons = Vec::with_capacity(consts::HAND_CARD_COUNT);
+    let hand::HandDrawDimensions {
+        mut x,
+        y,
+        card_width,
+        card_height,
+        spacing,
+    } = hand::Hand::hand_draw_dimensions(scale);
+
+    for _ in 0..consts::HAND_CARD_COUNT {
+        select_slot_buttons.push(touch_button::TouchButton::new(mq::Rect::new(
+            x,
+            y,
+            card_width,
+            card_height,
+        )));
+        x += card_width + spacing;
+    }
+
     TouchControls {
         movement_joystick,
         aim_joystick,
-        reload_button,
         start_pause_button,
+        select_slot_buttons,
         fullscreen_button,
     }
 }
@@ -112,7 +121,7 @@ async fn create_resources() -> Resources {
         colors::NORD0_BIG_ALPHA,
         "House of Cards",
         vec!["Loading..."],
-        font,
+        &font,
         LargeFont::Static,
         scale,
     );
@@ -123,7 +132,7 @@ async fn create_resources() -> Resources {
         colors::NORD0_BIG_ALPHA,
         "House of Cards",
         vec!["Loading..."],
-        font,
+        &font,
         LargeFont::Static,
         scale,
     );
@@ -149,7 +158,7 @@ fn draw_overlay(
     overlay_color: mq::Color,
     large_text: &str,
     small_texts: Vec<&str>,
-    font: mq::Font,
+    font: &mq::Font,
     large_font: LargeFont,
     scale: f32,
 ) {
@@ -183,7 +192,7 @@ fn draw_overlay(
             x,
             y,
             mq::TextParams {
-                font,
+                font: Some(font),
                 font_size,
                 color: colors::NORD6,
                 ..Default::default()
@@ -206,7 +215,7 @@ fn draw_overlay(
                 x,
                 y,
                 mq::TextParams {
-                    font,
+                    font: Some(font),
                     font_size,
                     color: colors::NORD4,
                     ..Default::default()
@@ -221,12 +230,11 @@ fn draw_overlay(
     }
 }
 
-async fn play(resources: Resources) {
+async fn play(resources: &Resources) {
     let mut is_mobile = false;
 
     let mut game_state = game_state::GameStateManager::new();
 
-    let mut player = player::Player::new(consts::AR);
     let mut score = 0;
 
     let mut powerups = powerup::Powerups::new();
@@ -242,21 +250,27 @@ async fn play(resources: Resources) {
 
     let mut enemy_manager = enemy::EnemyManager::new();
 
-    let mut power_up_choices = powerup::Powerup::pick_three(powerup::Powerup::pick_stat);
+    let mut deck = deck::Deck::new();
+    let hand = hand::Hand::new(&mut deck);
+    let mut player = player::Player::new(hand);
+
+    let mut powerup_choices = powerup::Powerup::pick_three();
+
+    let mut card_choices = deck.draw_three_cards();
+    let mut selected_card_choice = 0;
+
     let mut need_click_after = 0.0;
 
     let mut player_bullets: Vec<bullet::Bullet> = Vec::new();
 
-    mq_audio::stop_sound(resources.music);
+    mq_audio::stop_sound(&resources.music);
     mq_audio::play_sound(
-        resources.music,
+        &resources.music,
         mq_audio::PlaySoundParams {
             looped: true,
             volume: 1.0,
         },
     );
-
-    let mut deck = deck::Deck::new(resources.cards_texture);
 
     let mut old_width = mq::screen_width();
     let mut old_height = mq::screen_height();
@@ -264,7 +278,6 @@ async fn play(resources: Resources) {
     let mut mouse_info = mouse::MouseInfo::new();
 
     let mut auto_shoot = false;
-    let mut auto_reload = true;
 
     let scale = mq::screen_width().min(mq::screen_height());
 
@@ -312,19 +325,43 @@ async fn play(resources: Resources) {
             mouse_info.set_active(false);
         }
 
-        let movement_joystick_result = touch_controls.movement_joystick.update(touches.clone());
-        let aim_joystick_result = touch_controls.aim_joystick.update(touches.clone());
+        let hand_keys = [
+            mq::KeyCode::Key1,
+            mq::KeyCode::Key2,
+            mq::KeyCode::Key3,
+            // mq::KeyCode::Key4,
+            // mq::KeyCode::Key5,
+        ];
+        let mut used_touch_ids = Vec::new();
+        for (i, (key, slot_button)) in hand_keys
+            .iter()
+            .zip(touch_controls.select_slot_buttons.iter_mut())
+            .enumerate()
+        {
+            if mq::is_key_pressed(*key) {
+                player.hand.active = i;
+            } else if let Some(id) = slot_button.touched_down(&touches) {
+                player.hand.active = i;
+                used_touch_ids.push(id);
+            }
+        }
 
+        let movement_joystick_result = touch_controls
+            .movement_joystick
+            .update(&touches, &used_touch_ids);
+        let aim_joystick_result = touch_controls
+            .aim_joystick
+            .update(&touches, &used_touch_ids);
         //----------------------------------------------------------------------------//
         if game_state.current_state() == game_state::GameState::Alive {
-            let player_shot = player.handle_input(
-                &mut mouse_info,
+            let player_shot = player.handle_input(player::PlayerInputInfo {
+                mouse_info: &mut mouse_info,
                 movement_joystick_result,
                 aim_joystick_result,
-                &powerups,
                 auto_shoot,
+                scale,
                 delta,
-            );
+            });
 
             let camera_moved = camera.update(&player, delta);
             if let util::Moved(true) = camera_moved {
@@ -332,21 +369,21 @@ async fn play(resources: Resources) {
             }
 
             if let util::Shot(true) = player_shot {
-                let card = deck.draw_card();
-                if let Some(card) = card {
-                    let bullet = bullet::Bullet::new(
-                        player.pos,
-                        player.direction,
-                        player.weapon.bullet_speed,
-                        player.weapon.range,
-                        bullet::BulletDamage::Card(card),
-                        powerups.diamonds_bullet_hp(),
-                    );
-                    player_bullets.push(bullet);
-                } else if auto_reload {
-                    deck.combine();
-                    player.weapon.reload();
-                }
+                let weapon = player.hand.active_weapon();
+                let card = player.hand.active_card();
+                let hp = match card.suit {
+                    deck::Suit::Diamonds => powerups.diamonds_bullet_hp(),
+                    _ => 1,
+                };
+                let bullet = bullet::Bullet::new(
+                    player.pos,
+                    player.direction,
+                    weapon.bullet_speed,
+                    weapon.range,
+                    bullet::BulletDamage::Card(card),
+                    hp,
+                );
+                player_bullets.push(bullet);
             }
 
             player_bullets
@@ -355,23 +392,22 @@ async fn play(resources: Resources) {
 
             for bullet in player_bullets.iter_mut() {
                 for enemy in enemy_manager.enemies.iter_mut() {
-                    if hitbox::rectangle_circle_collide(enemy, bullet) {
+                    if bullet.not_already_hit(enemy.id)
+                        && hitbox::rectangle_circle_collide(enemy, bullet)
+                    {
                         let bullet::BulletHitResult {
                             damage,
                             stun_time,
                             heal_amount,
                         } = bullet.hit_result(&powerups);
 
-                        if !(enemy.enemy_type == enemy::EnemyType::Super && damage == f32::INFINITY)
-                        {
-                            enemy.health -= damage;
-                        }
+                        enemy.health -= damage;
                         enemy.enemy_stunned.time_remaining += stun_time;
 
                         player.health += heal_amount;
                         player.health = player.health.min(player.max_health);
 
-                        bullet.hit();
+                        bullet.hit(enemy.id);
                     }
                 }
             }
@@ -386,23 +422,15 @@ async fn play(resources: Resources) {
                 player.xp -= consts::XP_PER_LEVEL(player.level);
                 player.level += 1;
 
-                game_state.next(game_state::GameState::PowerupStat);
-                power_up_choices = powerup::Powerup::pick_three(powerup::Powerup::pick_stat);
+                game_state.next(game_state::GameState::ChooseCard);
+                card_choices = deck.draw_three_cards();
                 need_click_after = time_counter;
                 player.xp_bar_ratio = 1.0;
             }
             if enemies_killed.super_killed {
                 game_state.next(game_state::GameState::PowerupCard);
-                power_up_choices = powerup::Powerup::pick_three(powerup::Powerup::pick_card);
+                powerup_choices = powerup::Powerup::pick_three();
                 need_click_after = time_counter;
-            }
-
-            if (mq::is_key_pressed(mq::KeyCode::R)
-                || touch_controls.reload_button.touched(touches.clone()))
-                && !deck.is_full()
-            {
-                deck.combine();
-                player.weapon.reload();
             }
 
             if player.health <= 0.0 {
@@ -425,9 +453,10 @@ async fn play(resources: Resources) {
             bullet.draw(&camera, scale);
         }
         enemy_manager.draw_hp_bars(&camera, scale);
-        deck.draw(&player.weapon, scale);
-        player.draw_bars(resources.font, scale);
-        powerups.draw(scale);
+        player.draw_bars(&resources.font, scale);
+        let hand_top_y = player.hand.draw(&resources.cards_texture, scale);
+        powerups.draw(&resources.cards_texture, scale);
+
         if !mouse_shown {
             mouse_info.draw(scale);
         }
@@ -443,7 +472,7 @@ async fn play(resources: Resources) {
             let text = format!("FPS: {:.0}", 1.0 / fps_timer.get_state());
             let font_size = (scale * consts::FPS_FONT_SIZE).round() as u16;
             let font_spacing = scale * consts::FPS_FONT_SPACING;
-            let text_dims = mq::measure_text(&text, Some(resources.font), font_size, 1.0);
+            let text_dims = mq::measure_text(&text, Some(&resources.font), font_size, 1.0);
 
             let x = font_spacing;
             let y = text_dims.offset_y + font_spacing;
@@ -453,18 +482,18 @@ async fn play(resources: Resources) {
                 x,
                 y,
                 mq::TextParams {
-                    font: resources.font,
+                    font: Some(&resources.font),
                     font_size,
                     color: colors::NORD6,
                     ..Default::default()
                 },
             );
         }
-        {
+        let score_text_bottom_y = {
             let text = format!("Score: {}", score);
             let font_size = (scale * consts::SCORE_FONT_SIZE).round() as u16;
             let font_spacing = scale * consts::SCORE_FONT_SPACING;
-            let text_dims = mq::measure_text(&text, Some(resources.font), font_size, 1.0);
+            let text_dims = mq::measure_text(&text, Some(&resources.font), font_size, 1.0);
 
             let x = (mq::screen_width() - text_dims.width) / 2.0;
             let y = text_dims.offset_y + font_spacing;
@@ -474,26 +503,30 @@ async fn play(resources: Resources) {
                 x,
                 y,
                 mq::TextParams {
-                    font: resources.font,
+                    font: Some(&resources.font),
                     font_size,
                     color: colors::NORD6,
                     ..Default::default()
                 },
             );
-        }
+
+            y - text_dims.offset_y + text_dims.height
+        };
 
         if game_state.current_state() == game_state::GameState::Dead {
+            player.update_bar_ratios(delta);
+
             draw_overlay(
                 colors::NORD0_BIG_ALPHA,
                 "You died!",
                 vec!["Press R to restart"],
-                resources.font,
+                &resources.font,
                 LargeFont::Bounce(time_counter),
                 scale,
             );
 
             if mq::is_key_pressed(mq::KeyCode::R)
-                || touch_controls.fullscreen_button.touched(touches.clone())
+                || touch_controls.fullscreen_button.touched_selected(&touches)
             {
                 mq::next_frame().await;
                 return;
@@ -507,48 +540,86 @@ async fn play(resources: Resources) {
                 } else {
                     "Auto shoot: off"
                 };
-                let auto_reload_text = if auto_reload {
-                    "Auto reload: on"
-                } else {
-                    "Auto reload: off"
-                };
-                vec!["Press Esc to unpause", auto_shoot_text, auto_reload_text]
+                vec!["Press Esc to unpause", auto_shoot_text]
             };
             draw_overlay(
                 colors::NORD0_BIG_ALPHA,
                 "Paused",
                 small_texts,
-                resources.font,
+                &resources.font,
                 LargeFont::Static,
                 scale,
             );
-        } else if game_state.powerup() {
+        } else if game_state.current_state == game_state::GameState::PowerupCard {
             player.update_bar_ratios(delta);
 
-            powerup::Powerup::draw_outline(scale);
-            let all_locations = powerup::PowerupPickLocation::all_locations();
-            for (powerup, location) in power_up_choices.iter().zip(all_locations.iter()) {
-                powerup.draw(*location, resources.font, scale);
-            }
+            let powerup_rects = powerup::draw_powerup_choices(
+                &powerup_choices,
+                &resources.font,
+                score_text_bottom_y,
+                hand_top_y,
+                scale,
+            );
 
             let mut selected_powerup = None;
-            let keys = [mq::KeyCode::Key1, mq::KeyCode::Key2, mq::KeyCode::Key3];
-            for (i, (key, powerup)) in keys.iter().zip(power_up_choices.iter()).enumerate() {
+            let keys = [mq::KeyCode::Key8, mq::KeyCode::Key9, mq::KeyCode::Key0];
+            for (i, (key, rect)) in keys.iter().zip(powerup_rects.iter()).enumerate() {
                 if mq::is_key_pressed(*key)
-                    || powerup.clicked_on(all_locations[i], need_click_after, &mouse_info, scale)
+                    || util::clicked_on(*rect, need_click_after, &mouse_info, true)
                 {
-                    selected_powerup = Some(power_up_choices[i]);
+                    selected_powerup = Some(powerup_choices[i]);
                 }
             }
 
             if let Some(powerup) = selected_powerup {
                 powerups.add(powerup);
+                game_state.back();
+            }
+        } else if game_state.current_state == game_state::GameState::ChooseCard {
+            player.update_bar_ratios(delta);
 
-                if powerup == powerup::Powerup::Health {
-                    player.health += consts::HEALTH_ADD;
-                    player.max_health += consts::HEALTH_ADD;
+            let card_choices_button_rects = hand::draw_card_choices(
+                &card_choices,
+                &resources.cards_texture,
+                &resources.font,
+                selected_card_choice,
+                score_text_bottom_y,
+                hand_top_y,
+                scale,
+            );
+
+            let keys = [mq::KeyCode::Key8, mq::KeyCode::Key9, mq::KeyCode::Key0];
+            for (i, (key, rect)) in keys
+                .iter()
+                .zip(card_choices_button_rects.cards.iter())
+                .enumerate()
+            {
+                if mq::is_key_pressed(*key)
+                    || util::clicked_on(*rect, need_click_after, &mouse_info, false)
+                {
+                    selected_card_choice = i;
                 }
+            }
 
+            if mq::is_key_pressed(mq::KeyCode::Enter)
+                || util::clicked_on(
+                    card_choices_button_rects.swap_button,
+                    need_click_after,
+                    &mouse_info,
+                    true,
+                )
+            {
+                player.hand.set_card(card_choices[selected_card_choice]);
+                game_state.back();
+            } else if mq::is_key_pressed(mq::KeyCode::Backspace)
+                || mq::is_key_pressed(mq::KeyCode::Delete)
+                || util::clicked_on(
+                    card_choices_button_rects.discard_button,
+                    need_click_after,
+                    &mouse_info,
+                    true,
+                )
+            {
                 game_state.back();
             }
         }
@@ -556,23 +627,19 @@ async fn play(resources: Resources) {
         if mq::is_key_pressed(mq::KeyCode::Q) {
             auto_shoot = !auto_shoot;
         }
-        if mq::is_key_pressed(mq::KeyCode::T) {
-            auto_reload = !auto_reload;
-        }
 
         if mq::is_key_pressed(mq::KeyCode::Escape)
             || mq::is_key_pressed(mq::KeyCode::P)
             || (game_state.current_state() == game_state::GameState::Paused
-                && touch_controls.fullscreen_button.touched(touches.clone()))
+                && touch_controls.fullscreen_button.touched_selected(&touches))
             || (game_state.current_state() == game_state::GameState::Alive
-                && touch_controls.start_pause_button.touched(touches.clone()))
+                && touch_controls.start_pause_button.touched_selected(&touches))
         {
             game_state.toggle_pause();
             if game_state.current_state() == game_state::GameState::Paused {
-                mq_audio::set_sound_volume(resources.music, 0.0);
+                mq_audio::set_sound_volume(&resources.music, 0.0);
             } else {
-                // mq_audio::play_sound(resources.music, mq_audio::PlaySoundParams { looped: true, ..Default::default() });
-                mq_audio::set_sound_volume(resources.music, 1.0);
+                mq_audio::set_sound_volume(&resources.music, 1.0);
             }
         }
         //----------------------------------------------------------------------------//
@@ -588,6 +655,6 @@ async fn main() {
     let resources = create_resources().await;
 
     loop {
-        play(resources).await;
+        play(&resources).await;
     }
 }

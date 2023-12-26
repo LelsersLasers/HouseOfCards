@@ -3,7 +3,7 @@ pub enum GameState {
     Alive,
     Dead,
     Paused,
-    PowerupStat,
+    ChooseCard,
     PowerupCard,
 }
 
@@ -22,36 +22,32 @@ impl GameState {
 }
 
 pub struct GameStateManager {
-    current_state: GameState,
-    last_state: GameState,
+    pub current_state: GameState,
+    last_states: Vec<GameState>,
 }
 
 impl GameStateManager {
     pub fn new() -> Self {
         Self {
             current_state: GameState::new(),
-            last_state: GameState::new(),
+            last_states: Vec::new(),
         }
     }
 
     pub fn show_mouse(&self) -> bool {
-        self.powerup() || self.current_state == GameState::Paused
-    }
-
-    pub fn powerup(&self) -> bool {
         matches!(
             self.current_state,
-            GameState::PowerupStat | GameState::PowerupCard
+            GameState::Paused | GameState::ChooseCard | GameState::PowerupCard
         )
     }
 
     pub fn next(&mut self, next_state: GameState) {
-        self.last_state = self.current_state;
+        self.last_states.push(self.current_state);
         self.current_state = next_state;
     }
 
     pub fn back(&mut self) {
-        std::mem::swap(&mut self.current_state, &mut self.last_state);
+        self.current_state = self.last_states.pop().unwrap_or(GameState::Alive);
     }
 
     pub fn toggle_pause(&mut self) {

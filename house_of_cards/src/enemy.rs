@@ -100,6 +100,11 @@ enum EnemyShotType {
     Spread,
 }
 
+enum EnemyMovementType {
+    Chase,
+    Predict(f32), // lead time
+}
+
 pub struct Enemy {
     pos: mq::Vec2, // tiles
     pub health: f32,
@@ -110,10 +115,31 @@ pub struct Enemy {
     pub enemy_type: EnemyType,
     enemy_attack: EnemyAttack,
     pub enemy_stunned: EnemyStunned,
+    enemy_movement: EnemyMovementType,
+    pub id: usize,
 }
 
 impl Enemy {
-    pub fn new(pos: mq::Vec2, health: f32, damage: f32, speed: f32, enemy_type: EnemyType) -> Self {
+    pub fn new(
+        pos: mq::Vec2,
+        health: f32,
+        damage: f32,
+        speed: f32,
+        enemy_type: EnemyType,
+        id: usize,
+    ) -> Self {
+        let enemy_movement = if enemy_type.is_melee()
+            && mq::rand::gen_range(0.0, 1.0) < consts::ENEMY_MOVEMENT_PREDICT_CHANCE
+        {
+            let lead_time = mq::rand::gen_range(
+                consts::ENEMY_MOVEMENT_PREDICT_LEAD_TIME_MIN,
+                consts::ENEMY_MOVEMENT_PREDICT_LEAD_TIME_MAX,
+            );
+            EnemyMovementType::Predict(lead_time)
+        } else {
+            EnemyMovementType::Chase
+        };
+
         Self {
             pos,
             health,
@@ -124,6 +150,8 @@ impl Enemy {
             enemy_type,
             enemy_attack: EnemyAttack::new(),
             enemy_stunned: EnemyStunned::new(),
+            enemy_movement,
+            id,
         }
     }
 
@@ -133,10 +161,18 @@ impl Enemy {
             return EnemyShotType::None;
         }
 
+        let player_target_pos = match self.enemy_movement {
+            EnemyMovementType::Chase => player.pos,
+            EnemyMovementType::Predict(lead_time) => {
+                player.pos + player.movement * consts::PLAYER_SPEED * lead_time
+            }
+        };
+
+        let vec_to_target = player_target_pos - self.pos;
         let vec_to_player = player.pos - self.pos;
         let distance_to_player = vec_to_player.length();
 
-        self.direction = vec_to_player.y.atan2(vec_to_player.x);
+        self.direction = vec_to_target.y.atan2(vec_to_target.x);
         let mut movement =
             mq::Vec2::new(self.direction.cos(), self.direction.sin()) * self.speed * delta;
 
@@ -182,7 +218,6 @@ impl Enemy {
                 EnemyType::Super => {
                     if distance_to_player < range && self.enemy_attack.time_until_next_attack <= 0.0
                     {
-                        // println!("FR: {}", consts::ENEMY_SUPER_WAVE_FIRE_RATE(wave));
                         self.enemy_attack.time_until_next_attack =
                             1.0 / consts::ENEMY_SUPER_WAVE_FIRE_RATE(wave);
 
@@ -319,6 +354,7 @@ pub struct EnemyManager {
     spawn_timer: timer::Timer<()>,
     enemy_bullets: Vec<bullet::Bullet>,
     should_spawn_super: bool,
+    next_enemy_id: usize,
 }
 
 impl EnemyManager {
@@ -330,6 +366,7 @@ impl EnemyManager {
             spawn_timer: timer::Timer::new(1.0 / consts::ENEMY_WAVE_SPAWN_RATE(0)),
             enemy_bullets: Vec::new(),
             should_spawn_super: false,
+            next_enemy_id: 0,
         }
     }
 
@@ -410,8 +447,6 @@ impl EnemyManager {
                 && self.wave > consts::ENEMY_SUPER_WAVE_START
             {
                 self.should_spawn_super = true;
-                // println!("Wave {}", self.wave);
-                // println!("Fire rate {}", consts::ENEMY_SUPER_WAVE_FIRE_RATE(self.wave));
             }
 
             self.spawn_enemy(player);
@@ -449,7 +484,9 @@ impl EnemyManager {
             consts::ENEMY_DAMAGE,
             consts::ENEMY_WAVE_SPEED(self.wave),
             enemy_type,
+            self.next_enemy_id,
         );
+        self.next_enemy_id += 1;
 
         self.enemies_until_next_wave -= 1;
         self.enemies.push(enemy);

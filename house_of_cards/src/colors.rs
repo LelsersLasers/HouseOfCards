@@ -21,10 +21,6 @@ use macroquad::prelude::Color;
 // nord14 #A3BE8C
 // nord15 #B48EAD
 
-// dracula0 #282a36
-// dracula1 #44475a
-// dracula2 #6272a4
-
 // Surface2	#626880	rgb(98, 104, 128)	hsl(228, 13%, 44%)
 // Surface1	#51576d	rgb(81, 87, 109)	hsl(227, 15%, 37%)
 // Surface0	#414559	rgb(65, 69, 89)	hsl(230, 16%, 30%)
@@ -57,10 +53,8 @@ pub const NORD14_ALPHA: mq::Color = mq::Color::new(0.639, 0.745, 0.549, 0.9);
 pub const NORD0_BIG_ALPHA: mq::Color = mq::Color::new(0.180, 0.204, 0.251, 0.5);
 pub const NORD4_BIG_ALPHA: mq::Color = mq::Color::new(0.847, 0.871, 0.914, 0.5);
 pub const NORD6_BIG_ALPHA: mq::Color = mq::Color::new(0.925, 0.937, 0.969, 0.5);
-
-// pub const DRACULA0: mq::Color = mq::Color::new(0.157, 0.165, 0.212, 1.0);
-// pub const DRACULA1: mq::Color = mq::Color::new(0.267, 0.286, 0.400, 1.0);
-// pub const DRACULA2: mq::Color = mq::Color::new(0.384, 0.408, 0.545, 1.0);
+pub const NORD11_BIG_ALPHA: mq::Color = mq::Color::new(0.749, 0.380, 0.416, 0.5);
+pub const NORD14_BIG_ALPHA: mq::Color = mq::Color::new(0.639, 0.745, 0.549, 0.5);
 
 pub const SURFACE2: mq::Color = mq::color_u8!(98, 104, 128, 255);
 pub const SURFACE1: mq::Color = mq::color_u8!(81, 87, 109, 255);
@@ -73,7 +67,5 @@ pub const NORD_COLORS: [mq::Color; 16] = [
     NORD0, NORD1, NORD2, NORD3, NORD4, NORD5, NORD6, NORD7, NORD8, NORD9, NORD10, NORD11, NORD12,
     NORD13, NORD14, NORD15,
 ];
-
-// pub const DRACULA_COLORS: [mq::Color; 3] = [DRACULA0, DRACULA1, DRACULA2];
 
 pub const SURFACE_COLORS: [mq::Color; 6] = [SURFACE2, SURFACE1, SURFACE0, BASE, MANTLE, CRUST];

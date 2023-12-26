@@ -18,7 +18,7 @@ impl Camera {
 
         let old_pos = self.pos;
 
-        let target = player.pos;
+        let target = player.pos - mq::Vec2::new(0.0, -consts::CAMERA_Y_OFFSET);
         let dif = target - self.pos;
         let movement = dif * delta * consts::CAMERA_FOLLOW_SPEED;
 

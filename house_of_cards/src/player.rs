@@ -1,52 +1,59 @@
 use macroquad::prelude as mq;
 
-use crate::{camera, colors, consts, hitbox, joystick, mouse, powerup, util, weapon};
+use crate::{camera, colors, consts, hand, hitbox, joystick, mouse, util};
+
+pub struct PlayerInputInfo<'a> {
+    pub mouse_info: &'a mut mouse::MouseInfo,
+    pub movement_joystick_result: joystick::JoystickUpdateResult,
+    pub aim_joystick_result: joystick::JoystickUpdateResult,
+    pub auto_shoot: bool,
+    pub scale: f32,
+    pub delta: f32,
+}
 
 pub struct Player {
     pub pos: mq::Vec2,  // in tiles
     pub direction: f32, // in radians
-    pub weapon: weapon::Weapon,
+    pub hand: hand::Hand,
     pub health: f32,
     pub max_health: f32,
     pub xp: i32,
     pub level: i32,
     hp_bar_ratio: f32,
     pub xp_bar_ratio: f32,
+    pub movement: mq::Vec2,
 }
 
 impl Player {
-    pub fn new(weapon: weapon::Weapon) -> Self {
+    pub fn new(hand: hand::Hand) -> Self {
         Self {
             pos: mq::Vec2::ZERO,
             direction: 0.0,
-            weapon,
+            hand,
             health: consts::PLAYER_MAX_HEALTH,
             max_health: consts::PLAYER_MAX_HEALTH,
             xp: 0,
             level: 1,
             hp_bar_ratio: 1.0,
             xp_bar_ratio: 0.0,
+            movement: mq::Vec2::ZERO,
         }
     }
 
-    pub fn handle_input(
-        &mut self,
-        mouse_info: &mut mouse::MouseInfo,
-        movement_joystick_result: joystick::JoystickUpdateResult,
-        aim_joystick_result: joystick::JoystickUpdateResult,
-        powerups: &powerup::Powerups,
-        auto_shoot: bool,
-        delta: f32,
-    ) -> util::Shot {
+    pub fn handle_input(&mut self, player_info_info: PlayerInputInfo) -> util::Shot {
+        let PlayerInputInfo {
+            mouse_info,
+            movement_joystick_result,
+            aim_joystick_result,
+            auto_shoot,
+            scale,
+            delta,
+        } = player_info_info;
+
         let movement = (if movement_joystick_result.active {
             movement_joystick_result.pos
         } else if mq::is_mouse_button_down(mq::MouseButton::Right) {
-            let mouse_pos = mouse_info.get_last_pos();
-            let mouse_pos_relative_to_center =
-                mouse_pos - mq::Vec2::new(mq::screen_width() / 2.0, mq::screen_height() / 2.0);
-            let angle = mouse_pos_relative_to_center
-                .y
-                .atan2(mouse_pos_relative_to_center.x);
+            let angle = mouse_info.angle_from_center(scale);
             mq::Vec2::new(angle.cos(), angle.sin())
         } else {
             let mut movement = mq::Vec2::ZERO;
@@ -66,8 +73,9 @@ impl Player {
         })
         .normalize_or_zero();
 
-        let speed = consts::PLAYER_SPEED * delta * self.weapon.get_ms_penalty();
-        self.pos += movement * speed * powerups.speed_mod();
+        let speed = consts::PLAYER_SPEED * delta * self.hand.get_ms_penalty();
+        self.pos += movement * speed;
+        self.movement = movement;
 
         let aim = (if aim_joystick_result.active {
             aim_joystick_result.pos
@@ -92,20 +100,15 @@ impl Player {
         if aim != mq::Vec2::ZERO {
             self.direction = aim.y.atan2(aim.x);
             mouse_info.set_active(false);
-        } else if let Some(mouse_pos) = mouse_info.mouse_pos() {
-            let mouse_pos_relative_to_center =
-                mouse_pos - mq::Vec2::new(mq::screen_width() / 2.0, mq::screen_height() / 2.0);
-            self.direction = mouse_pos_relative_to_center
-                .y
-                .atan2(mouse_pos_relative_to_center.x);
+        } else if mouse_info.active {
+            self.direction = mouse_info.angle_from_center(scale);
         } else if movement != mq::Vec2::ZERO {
             self.direction = movement.y.atan2(movement.x);
         }
 
         self.update_bar_ratios(delta);
 
-        self.weapon.fire_rate = self.weapon.fire_rate_base * powerups.fire_rate_mod();
-        self.weapon.update(delta);
+        self.hand.update(delta);
         // uses short-circuiting to only `try_shoot` if the player is requesting to shoot
         // `.0` is used to get the `bool` from the `Shot` struct
         util::Shot(
@@ -113,7 +116,7 @@ impl Player {
                 || mq::is_mouse_button_down(mq::MouseButton::Left)
                 || aim_joystick_result.active
                 || auto_shoot)
-                && self.weapon.try_shoot().0,
+                && self.hand.try_shoot().0,
         )
     }
 
@@ -168,7 +171,7 @@ impl Player {
         mq::draw_triangle(top_point, side_point_1, side_point_2, colors::NORD4);
     }
 
-    pub fn draw_bars(&self, font: mq::Font, scale: f32) {
+    pub fn draw_bars(&self, font: &mq::Font, scale: f32) {
         let bar_width = scale * consts::PLAYER_HP_BAR_WIDTH;
         let bar_height = scale * consts::PLAYER_HP_BAR_HEIGHT;
         let bar_thickness = scale * consts::PLAYER_HP_BAR_THICKNESS;
@@ -203,7 +206,7 @@ impl Player {
             text_pos.x,
             text_pos.y,
             mq::TextParams {
-                font,
+                font: Some(font),
                 font_size,
                 font_scale: 1.0,
                 color: colors::NORD0,
@@ -240,7 +243,7 @@ impl Player {
             text_pos.x,
             text_pos.y,
             mq::TextParams {
-                font,
+                font: Some(font),
                 font_size,
                 font_scale: 1.0,
                 color: colors::NORD0,

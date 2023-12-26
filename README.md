@@ -1,43 +1,38 @@
 # House Of Cards
 
-Unleash Chaos in this card themed casual bullet hell roguelike twin stick shooter for mobile, desktop, and the web!
+Survive the chaos in this card themed casual bullet hell roguelike twin stick shooter for mobile, desktop, and the web!
 
 ## Controls
 
 - Movement: WASD or hold right mouse button
 - Aim: arrow keys or mouse
 - Shoot: left click or space
-- Reload: R
+- Switch between active cards: 1, 2, or 3
 - Reset after death: R
 - Pause: escape or p
-- Choose powerup: 1, 2, 3 or left click
+- Choose powerup/card: 8, 9, 0 or click on powerup/card
+- Swap: Enter (or click button)
+- Discard all: backspace/delete or click button
 - Toggle auto shoot: Q (off by default)
-- Toggle auto reload: T (on by default)
 
 ## Mobile Controls
 
 - Note: might need auto rotate on (game works best in landscape mode)
 - Movement: left screen joystick
 - Aim: right screen joystick
-- Reload: touch deck icons in top right (auto reload enabled)
+- Switch between active cards: touch card
 - Pause: touch top left corner of screen (touch anywhere to unpause)
-- Choose powerup: touch powerup
+- Choose powerup/card: touch powerup/card
+- Swap: touch swap button
+- Discard all: touch discard all button
 - Reset after death: touch screen anywhere
 
 ## TODO
 
-- Rework card system
-    - Jokers need a redesign (right now would never pick them)
-        - 50% chance to one shot
-    - You have a hand of 5 cards
-    - Instead of a stat buff card card, you get the option of replacing a card in your hand
-        - Random choice of 3 cards
-    - You have 1 active card which is what you are shooting
-        - Have their own independent cooldowns (fire rate = 1 / cooldown)
-            - Joker:    10 seconds  (0.1)
-            - Ace:      5 seconds   (0.2)
-            - Face:     0.5 second  (2.0)
-            - Else:     0.2 seconds (5.0)
+- Main
+    - BALANCING
+    - 3 card hand vs 2 card hand
+- Balance suit buffs (clubs/hearts op)
 - Tweak
     - XP and score system
     - Scaling system and numbers
@@ -58,32 +53,25 @@ Unleash Chaos in this card themed casual bullet hell roguelike twin stick shoote
 ## Extra mechanics
 
 - Damage
-	- Joker => -5 damage
-	- Face => 10 damage
-	- Ace => One shot
-	- Else => number value of card
+	- Joker => 50% chance to one shot (8 sec)
+	- Ace => one shot (20 sec)
+	- Face => 20 damage (0.5 sec)
+	- Else => number value of card (0.2 sec)
 - Score and XP
 	- 1 per enemy killed
-- There is a movement speed penalty while shooting and reloading
+- There is a movement speed penalty while shooting
 
 ### Powerups
 
 Powerups can stack and are calculated independently (even for 2 of the same time of powerup).
-You get a stat buff card every level up and a card buff every time you kill a super enemy.
-
-#### Stat Buffs
-
-- Red: Flat +1 damage to all cards
-- Green: +2 hp and increase max hp by 2
-- Orange: 5% faster fire rate
-- Purple: 5% movement speed buff
+You get a choice of a new card every level up and a card buff every time you kill a super enemy.
 
 #### Card Buffs
 
 - Blue 1: Diamonds pierce one additional enemy
-- Blue 2: Hearts have 5% chance to heal 1 hp (won't increase max hp)
-- Blue 3: Clubs stun for 0.25 seconds
-- Blue 4: Spades have 20% chance to double damage
+- Blue 2: Hearts have 2% chance to heal 1 hp (won't increase max hp)
+- Blue 3: Clubs stun for 0.1 seconds
+- Blue 4: Spades have 33% chance to double damage
 
 
 ## Credits
