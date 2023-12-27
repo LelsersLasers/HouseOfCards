@@ -1,7 +1,7 @@
 use macroquad::prelude as mq;
 
 pub struct TouchButton {
-    rect: mq::Rect,
+    pub rect: mq::Rect,
     touch_id: Option<u64>,
 }
 

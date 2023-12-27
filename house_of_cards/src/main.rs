@@ -343,6 +343,8 @@ async fn play(resources: &Resources) {
             } else if let Some(id) = slot_button.touched_down(&touches) {
                 player.hand.active = i;
                 used_touch_ids.push(id);
+            } else if game_state.current_state() == game_state::GameState::ChooseCard && util::clicked_on(slot_button.rect, need_click_after, &mouse_info, false) {
+                player.hand.active = i;
             }
         }
 
