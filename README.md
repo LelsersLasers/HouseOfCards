@@ -63,6 +63,7 @@ You get a choice of a new card every level up and a card buff every time you kil
     - BALANCING
         - Super enemies fire rate gets too high
         - Enemies start too slow then get too fast?
+    - On web/desktop can use mouse to select card/slot from hand in ChooseCard
     - 3 card hand vs 2 card hand
 - Balance suit buffs (clubs/hearts op)
 - Tweak
