@@ -14,6 +14,7 @@ Survive the chaos in this card themed casual bullet hell roguelike twin stick sh
 - Swap: Enter (or click button)
 - Discard all: backspace/delete or click button
 - Toggle auto shoot: Q (off by default)
+- Toggle music: M (on by default)
 
 ## Mobile Controls
 
