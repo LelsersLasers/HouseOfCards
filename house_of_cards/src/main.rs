@@ -230,7 +230,11 @@ fn draw_overlay(
     }
 }
 
-async fn play(resources: &Resources) {
+struct Continuity {
+    play_music: bool,
+}
+
+async fn play(resources: &Resources, continuity: &mut Continuity) {
     let mut is_mobile = false;
 
     let mut game_state = game_state::GameStateManager::new();
@@ -263,8 +267,6 @@ async fn play(resources: &Resources) {
 
     let mut player_bullets: Vec<bullet::Bullet> = Vec::new();
 
-    let mut play_music = true;
-
     mq_audio::stop_sound(&resources.music);
     mq_audio::play_sound(
         &resources.music,
@@ -273,6 +275,9 @@ async fn play(resources: &Resources) {
             volume: 1.0,
         },
     );
+    if !continuity.play_music {
+        mq_audio::set_sound_volume(&resources.music, 0.0);
+    }
 
     let mut old_width = mq::screen_width();
     let mut old_height = mq::screen_height();
@@ -546,7 +551,7 @@ async fn play(resources: &Resources) {
                 } else {
                     "Auto shoot: off"
                 };
-                let music_text = if play_music {
+                let music_text = if continuity.play_music {
                     "Music: on"
                 } else {
                     "Music: off"
@@ -639,8 +644,9 @@ async fn play(resources: &Resources) {
             auto_shoot = !auto_shoot;
         }
         if mq::is_key_pressed(mq::KeyCode::M) {
-            play_music = !play_music;
-            if play_music && game_state.current_state() != game_state::GameState::Paused {
+            continuity.play_music = !continuity.play_music;
+            if continuity.play_music && game_state.current_state() != game_state::GameState::Paused
+            {
                 mq_audio::set_sound_volume(&resources.music, 1.0);
             } else {
                 mq_audio::set_sound_volume(&resources.music, 0.0);
@@ -657,7 +663,7 @@ async fn play(resources: &Resources) {
             game_state.toggle_pause();
             if game_state.current_state() == game_state::GameState::Paused {
                 mq_audio::set_sound_volume(&resources.music, 0.0);
-            } else if play_music {
+            } else if continuity.play_music {
                 mq_audio::set_sound_volume(&resources.music, 1.0);
             }
         }
@@ -672,8 +678,9 @@ async fn main() {
     mq::rand::srand(instant::now() as u64);
 
     let resources = create_resources().await;
+    let mut continuity = Continuity { play_music: true };
 
     loop {
-        play(&resources).await;
+        play(&resources, &mut continuity).await;
     }
 }
