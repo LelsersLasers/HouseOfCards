@@ -263,6 +263,8 @@ async fn play(resources: &Resources) {
 
     let mut player_bullets: Vec<bullet::Bullet> = Vec::new();
 
+    let mut play_music = true;
+
     mq_audio::stop_sound(&resources.music);
     mq_audio::play_sound(
         &resources.music,
@@ -343,7 +345,9 @@ async fn play(resources: &Resources) {
             } else if let Some(id) = slot_button.touched_down(&touches) {
                 player.hand.active = i;
                 used_touch_ids.push(id);
-            } else if game_state.current_state() == game_state::GameState::ChooseCard && util::clicked_on(slot_button.rect, need_click_after, &mouse_info, false) {
+            } else if game_state.current_state() == game_state::GameState::ChooseCard
+                && util::clicked_on(slot_button.rect, need_click_after, &mouse_info, false)
+            {
                 player.hand.active = i;
             }
         }
@@ -542,7 +546,12 @@ async fn play(resources: &Resources) {
                 } else {
                     "Auto shoot: off"
                 };
-                vec!["Press Esc to unpause", auto_shoot_text]
+                let music_text = if play_music {
+                    "Music: on"
+                } else {
+                    "Music: off"
+                };
+                vec!["Press Esc to unpause", auto_shoot_text, music_text]
             };
             draw_overlay(
                 colors::NORD0_BIG_ALPHA,
@@ -629,6 +638,14 @@ async fn play(resources: &Resources) {
         if mq::is_key_pressed(mq::KeyCode::Q) {
             auto_shoot = !auto_shoot;
         }
+        if mq::is_key_pressed(mq::KeyCode::M) {
+            play_music = !play_music;
+            if play_music && game_state.current_state() != game_state::GameState::Paused {
+                mq_audio::set_sound_volume(&resources.music, 1.0);
+            } else {
+                mq_audio::set_sound_volume(&resources.music, 0.0);
+            }
+        }
 
         if mq::is_key_pressed(mq::KeyCode::Escape)
             || mq::is_key_pressed(mq::KeyCode::P)
@@ -640,7 +657,7 @@ async fn play(resources: &Resources) {
             game_state.toggle_pause();
             if game_state.current_state() == game_state::GameState::Paused {
                 mq_audio::set_sound_volume(&resources.music, 0.0);
-            } else {
+            } else if play_music {
                 mq_audio::set_sound_volume(&resources.music, 1.0);
             }
         }
