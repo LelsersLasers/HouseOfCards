@@ -1,6 +1,7 @@
 use futures::join;
 use macroquad::audio as mq_audio;
 use macroquad::prelude as mq;
+use touch_button::TouchButton;
 
 mod bullet;
 mod camera;
@@ -120,7 +121,7 @@ async fn create_resources() -> Resources {
     draw_overlay(
         colors::NORD0_BIG_ALPHA,
         "House of Cards",
-        vec!["Loading..."],
+        &[SmallText::Simple("Loading...")],
         &font,
         LargeFont::Static,
         scale,
@@ -131,7 +132,7 @@ async fn create_resources() -> Resources {
     draw_overlay(
         colors::NORD0_BIG_ALPHA,
         "House of Cards",
-        vec!["Loading..."],
+        &[SmallText::Simple("Loading...")],
         &font,
         LargeFont::Static,
         scale,
@@ -149,19 +150,38 @@ async fn create_resources() -> Resources {
     }
 }
 
+struct ExtraUIButtons {
+    music: Option<TouchButton>,
+}
+
 enum LargeFont {
     Bounce(f32), // time_counter
     Static,
 }
 
+enum SmallText<'a> {
+    Simple(&'a str),
+    Button(&'a str),
+}
+impl<'a> SmallText<'a> {
+    fn as_str(&self) -> &str {
+        match self {
+            SmallText::Simple(text) => text,
+            SmallText::Button(text) => text,
+        }
+    }
+}
+
 fn draw_overlay(
     overlay_color: mq::Color,
     large_text: &str,
-    small_texts: Vec<&str>,
+    small_texts: &[SmallText],
     font: &mq::Font,
     large_font: LargeFont,
     scale: f32,
-) {
+) -> ExtraUIButtons {
+    let mut extra_ui_buttons = ExtraUIButtons { music: None };
+
     mq::draw_rectangle(
         0.0,
         0.0,
@@ -203,15 +223,46 @@ fn draw_overlay(
     {
         let font_size = (scale * consts::SMALL_FONT_SIZE).round() as u16;
         let mut y = mq::screen_height() / 2.0 + scale * consts::LARGE_FONT_SIZE / 2.0;
-        let text_height = mq::measure_text(small_texts[0], Some(font), font_size, 1.0).height;
+        let first_text = small_texts[0].as_str();
+        let text_height = mq::measure_text(first_text, Some(font), font_size, 1.0).height;
         for (i, small_text) in small_texts.iter().enumerate() {
-            let text_dims = mq::measure_text(small_text, Some(font), font_size, 1.0);
+            let text = small_text.as_str();
+            let text_dims = mq::measure_text(text, Some(font), font_size, 1.0);
 
             let x = mq::screen_width() / 2.0 - text_dims.width / 2.0;
             y -= text_height / 2.0;
 
+            if let SmallText::Button(_) = small_text {
+                // Rect::new(X, Y - dimensions.offset_y, dimensions.width, dimensions.height)
+
+                let button_width =
+                    text_dims.width + text_dims.height * consts::SMALL_FONT_BUTTON_PADDING;
+                let button_height =
+                    text_height + text_dims.height * consts::SMALL_FONT_BUTTON_PADDING;
+
+                let button_x = x - text_dims.height * consts::SMALL_FONT_BUTTON_PADDING / 2.0;
+
+                let raw_y = y - text_dims.offset_y;
+                let button_y = raw_y - text_dims.height * consts::SMALL_FONT_BUTTON_PADDING / 2.0;
+
+                mq::draw_rectangle(
+                    button_x,
+                    button_y,
+                    button_width,
+                    button_height,
+                    colors::NORD14_BIG_ALPHA,
+                );
+
+                extra_ui_buttons.music = Some(TouchButton::new(mq::Rect::new(
+                    button_x,
+                    button_y,
+                    button_width,
+                    button_height,
+                )));
+            }
+
             mq::draw_text_ex(
-                small_text,
+                text,
                 x,
                 y,
                 mq::TextParams {
@@ -228,6 +279,8 @@ fn draw_overlay(
             }
         }
     }
+
+    extra_ui_buttons
 }
 
 struct Continuity {
@@ -524,13 +577,14 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
             y - text_dims.offset_y + text_dims.height
         };
 
+        let mut extra_ui_buttons = ExtraUIButtons { music: None };
         if game_state.current_state() == game_state::GameState::Dead {
             player.update_bar_ratios(delta);
 
             draw_overlay(
                 colors::NORD0_BIG_ALPHA,
                 "You died!",
-                vec!["Press R to restart"],
+                &[SmallText::Simple("Press R to restart")],
                 &resources.font,
                 LargeFont::Bounce(time_counter),
                 scale,
@@ -544,24 +598,36 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
             }
         } else if game_state.current_state() == game_state::GameState::Paused {
             let small_texts = if is_mobile {
-                vec!["Touch the screen to unpause"]
+                let music_button = if continuity.play_music {
+                    SmallText::Button("Music: on")
+                } else {
+                    SmallText::Button("Music: off")
+                };
+                vec![
+                    SmallText::Simple("Touch the screen to unpause"),
+                    music_button,
+                ]
             } else {
-                let auto_shoot_text = if auto_shoot {
+                let auto_shoot_text = SmallText::Simple(if auto_shoot {
                     "Auto shoot: on"
                 } else {
                     "Auto shoot: off"
-                };
-                let music_text = if continuity.play_music {
+                });
+                let music_text = SmallText::Simple(if continuity.play_music {
                     "Music: on"
                 } else {
                     "Music: off"
-                };
-                vec!["Press Esc to unpause", auto_shoot_text, music_text]
+                });
+                vec![
+                    SmallText::Simple("Press Esc to unpause"),
+                    auto_shoot_text,
+                    music_text,
+                ]
             };
-            draw_overlay(
+            extra_ui_buttons = draw_overlay(
                 colors::NORD0_BIG_ALPHA,
                 "Paused",
-                small_texts,
+                &small_texts,
                 &resources.font,
                 LargeFont::Static,
                 scale,
@@ -643,7 +709,12 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
         if mq::is_key_pressed(mq::KeyCode::Q) {
             auto_shoot = !auto_shoot;
         }
-        if mq::is_key_pressed(mq::KeyCode::M) {
+
+        if mq::is_key_pressed(mq::KeyCode::M)
+            || extra_ui_buttons
+                .music
+                .map_or(false, |mut button| button.touched_down(&touches).is_some())
+        {
             continuity.play_music = !continuity.play_music;
             if continuity.play_music && game_state.current_state() != game_state::GameState::Paused
             {
@@ -651,9 +722,7 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
             } else {
                 mq_audio::set_sound_volume(&resources.music, 0.0);
             }
-        }
-
-        if mq::is_key_pressed(mq::KeyCode::Escape)
+        } else if mq::is_key_pressed(mq::KeyCode::Escape)
             || mq::is_key_pressed(mq::KeyCode::P)
             || (game_state.current_state() == game_state::GameState::Paused
                 && touch_controls.fullscreen_button.touched_selected(&touches))

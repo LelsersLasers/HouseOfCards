@@ -27,6 +27,7 @@ Survive the chaos in this card themed casual bullet hell roguelike twin stick sh
 - Swap: touch swap button
 - Discard all: touch discard all button
 - Reset after death: touch screen anywhere
+- Toggle music: button in pause menu
 
 ## Extra mechanics
 
