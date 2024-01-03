@@ -709,20 +709,19 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
         if mq::is_key_pressed(mq::KeyCode::Q) {
             auto_shoot = !auto_shoot;
         }
-
         if mq::is_key_pressed(mq::KeyCode::M)
             || extra_ui_buttons
                 .music
                 .map_or(false, |mut button| button.touched_down(&touches).is_some())
         {
             continuity.play_music = !continuity.play_music;
-            if continuity.play_music && game_state.current_state() != game_state::GameState::Paused
-            {
+            if continuity.play_music {
                 mq_audio::set_sound_volume(&resources.music, 1.0);
             } else {
                 mq_audio::set_sound_volume(&resources.music, 0.0);
             }
-        } else if mq::is_key_pressed(mq::KeyCode::Escape)
+        }
+        if mq::is_key_pressed(mq::KeyCode::Escape)
             || mq::is_key_pressed(mq::KeyCode::P)
             || (game_state.current_state() == game_state::GameState::Paused
                 && touch_controls.fullscreen_button.touched_selected(&touches))
@@ -730,11 +729,6 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
                 && touch_controls.start_pause_button.touched_selected(&touches))
         {
             game_state.toggle_pause();
-            if game_state.current_state() == game_state::GameState::Paused {
-                mq_audio::set_sound_volume(&resources.music, 0.0);
-            } else if continuity.play_music {
-                mq_audio::set_sound_volume(&resources.music, 1.0);
-            }
         }
         //----------------------------------------------------------------------------//
 
