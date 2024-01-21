@@ -61,6 +61,9 @@ You get a choice of a new card every level up and a card buff every time you kil
 
 ## TODO
 
+- Textures
+   - Enemies are chess peices
+   - Player might be the king (opposite color, keep the direction arrow)
 - Main
     - `M` to toggle music volume?
         - How would put button for mobile?
