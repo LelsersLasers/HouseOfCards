@@ -69,6 +69,7 @@ You get a choice of a new card every level up and a card buff every time you kil
     - `M` to toggle music volume?
         - How would put button for mobile?
         - Not sure if nessissary: music is only sound -> can just turn off normal sound
+        - Music touch button doesn't un pause
     - BALANCING
         - Super enemies fire rate gets too high
         - Enemies start too slow then get too fast?
