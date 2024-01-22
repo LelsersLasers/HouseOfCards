@@ -55,6 +55,7 @@ You get a choice of a new card every level up and a card buff every time you kil
 ## Credits
 
 - Pixel Art Cards: https://www.reddit.com/r/PixelArt/comments/i1t1gn/pixel_art_playing_card_designs_created_in_aseprite/
+- Pixel Art Chess Pieces: https://spheya.artstation.com/projects/QnaVO3
 - Math for rotated rectangle hitbox: https://chat.openai.com/share/f0826594-c5e9-4ea6-a1cf-0a010295fbfa
 - Font: https://fonts.google.com/specimen/Assistant
 - Music: https://www.youtube.com/watch?v=ROcups0YaHE
