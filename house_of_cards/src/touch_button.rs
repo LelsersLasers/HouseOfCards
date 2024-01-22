@@ -13,6 +13,20 @@ impl TouchButton {
         }
     }
 
+    pub fn touched_selected_not_used(&mut self, touches: &[mq::Touch], used_id: Option<u64>) -> bool {
+        for touch in touches {
+            if let Some(id) = self.touch_id {
+                if id == touch.id && touch.phase == mq::TouchPhase::Ended {
+                    self.touch_id = None;
+                    return self.rect.contains(touch.position);
+                }
+            } else if touch.phase == mq::TouchPhase::Started && self.rect.contains(touch.position) && used_id != Some(touch.id) {
+                self.touch_id = Some(touch.id);
+            }
+        }
+        false
+    }
+
     pub fn touched_selected(&mut self, touches: &[mq::Touch]) -> bool {
         for touch in touches {
             if let Some(id) = self.touch_id {

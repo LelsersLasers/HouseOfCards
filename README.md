@@ -61,20 +61,16 @@ You get a choice of a new card every level up and a card buff every time you kil
 
 ## TODO
 
-- Textures
-   - Enemies are chess peices
-   - Player might be the king (opposite color, keep the direction arrow)
-- Damage numbers
 - Main
-    - `M` to toggle music volume?
-        - How would put button for mobile?
-        - Not sure if nessissary: music is only sound -> can just turn off normal sound
-        - Music touch button doesn't un pause
-    - BALANCING
-        - Super enemies fire rate gets too high
-        - Enemies start too slow then get too fast?
+    - Textures
+        - Enemies are chess peices
+        - Player might be the king (opposite color, keep the direction arrow)
+    - Damage numbers
     - 3 card hand vs 2 card hand
-- Balance suit buffs (clubs/hearts op)
+- Balancing 
+    - Suit buffs (clubs/hearts op)
+    - Super enemies fire rate gets too high
+    - Enemies start too slow then get too fast?
 - Tweak
     - XP and score system
     - Scaling system and numbers
@@ -88,3 +84,4 @@ You get a choice of a new card every level up and a card buff every time you kil
     - Trying to get somewhere?
     - Trying to protect something?
     - Should make you move around dynamically
+        - Instead of a straight line
