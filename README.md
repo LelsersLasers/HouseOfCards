@@ -63,8 +63,14 @@ You get a choice of a new card every level up and a card buff every time you kil
 
 - Main
     - Textures
+        - Sizing info????
+            - Might be different per piece :(
+            - 26 top of image to bottom px
+            - 10 top of image to top px (10 blank)
+            - 28 wide
         - Enemies are chess peices
         - Player might be the king (opposite color, keep the direction arrow)
+        - Mask like collsions?
     - Damage numbers
     - 3 card hand vs 2 card hand
 - Balancing 
