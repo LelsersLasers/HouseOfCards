@@ -106,7 +106,7 @@ enum EnemyMovementType {
 }
 
 pub struct Enemy {
-    pos: mq::Vec2, // tiles
+    pub pos: mq::Vec2, // tiles
     pub health: f32,
     max_health: f32,
     damage: f32,

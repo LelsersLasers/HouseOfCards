@@ -73,14 +73,18 @@ You get a choice of a new card every level up and a card buff every time you kil
         - Player might be the king (opposite color, keep the direction arrow)
         - Mask like collsions?
     - Damage numbers
-    - 3 card hand vs 2 card hand
+        - Fix inifnite damage numbers
+        - Numbers for player health changes
+    - Up + left arrow + D + space
+        - Doesn't work?
 - Feedback
     - Enemy variance (comes in swarms, moves slower/harder hits)
     - More generally fun mechanics
     - Alternate ways of healing?
     - Some mechanic to add together cards of the same suit?
     - Joker should be the strongest card
-- Balancing 
+- Balancing
+    - 3 card hand vs 2 card hand
     - Suit buffs (clubs/hearts op)
     - Super enemies fire rate gets too high
     - Enemies start too slow then get too fast?

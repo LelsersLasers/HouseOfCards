@@ -7,6 +7,7 @@ mod bullet;
 mod camera;
 mod colors;
 mod consts;
+mod damage_number;
 mod deck;
 mod enemy;
 mod game_state;
@@ -320,6 +321,8 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
 
     let mut player_bullets: Vec<bullet::Bullet> = Vec::new();
 
+    let mut damage_numbers: Vec<damage_number::DamageNumber> = Vec::new();
+
     mq_audio::stop_sound(&resources.music);
     mq_audio::play_sound(
         &resources.music,
@@ -454,7 +457,7 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
                 .iter_mut()
                 .for_each(|bullet| bullet.update(delta));
 
-            for bullet in player_bullets.iter_mut() {
+            'bullet: for bullet in player_bullets.iter_mut() {
                 for enemy in enemy_manager.enemies.iter_mut() {
                     if bullet.not_already_hit(enemy.id)
                         && hitbox::rectangle_circle_collide(enemy, bullet)
@@ -466,15 +469,24 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
                         } = bullet.hit_result(&powerups);
 
                         enemy.health -= damage;
+                        damage_numbers.push(damage_number::DamageNumber::new(
+                            damage.round() as i32,
+                            consts::DAMAGE_NUMBER_TIME,
+                            enemy.pos,
+                            damage_number::DamageNumberColor::EnemyDamage,
+                        ));
                         enemy.enemy_stunned.time_remaining += stun_time;
 
                         player.health += heal_amount;
                         player.health = player.health.min(player.max_health);
 
                         bullet.hit(enemy.id);
+                        continue 'bullet;
                     }
                 }
             }
+            damage_numbers.iter_mut().for_each(|dn| dn.update(delta));
+            damage_numbers.retain(damage_number::DamageNumber::should_keep);
 
             player_bullets.retain(bullet::Bullet::should_keep);
 
@@ -515,6 +527,9 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
         enemy_manager.draw(&camera, scale);
         for bullet in player_bullets.iter() {
             bullet.draw(&camera, scale);
+        }
+        for damage_number in damage_numbers.iter() {
+            damage_number.draw(&camera, &resources.font, scale);
         }
         enemy_manager.draw_hp_bars(&camera, scale);
         player.draw_bars(&resources.font, scale);
@@ -724,7 +739,7 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
             || (game_state.current_state() == game_state::GameState::Paused
                 && touch_controls.fullscreen_button.touched_selected_not_used(&touches, music_toggle_pressed_id))
             || (game_state.current_state() == game_state::GameState::Alive
-                && touch_controls.start_pause_button.touched_selected(&touches))
+                && touch_controls.start_pause_button.touched_down(&touches).is_some())
         {
             game_state.toggle_pause();
         }
