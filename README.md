@@ -74,6 +74,12 @@ You get a choice of a new card every level up and a card buff every time you kil
         - Mask like collsions?
     - Damage numbers
     - 3 card hand vs 2 card hand
+- Feedback
+    - Enemy variance (comes in swarms, moves slower/harder hits)
+    - More generally fun mechanics
+    - Alternate ways of healing?
+    - Some mechanic to add together cards of the same suit?
+    - Joker should be the strongest card
 - Balancing 
     - Suit buffs (clubs/hearts op)
     - Super enemies fire rate gets too high
