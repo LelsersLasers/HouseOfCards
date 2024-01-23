@@ -9,19 +9,20 @@ pub enum DamageNumberColor {
 }
 
 pub struct DamageNumber {
-	damage: i32,
+	// damage: i32,
+	text: String,
 	time: f32,
 	pos: mq::Vec2,
 	color: DamageNumberColor
 }
 impl DamageNumber {
-	pub fn new(damage: i32, time: f32, pos: mq::Vec2, color: DamageNumberColor) -> Self {
+	pub fn new(text: String, time: f32, pos: mq::Vec2, color: DamageNumberColor) -> Self {
 		let pos_offset = mq::Vec2::new(
 			mq::rand::gen_range(-consts::DAMAGE_NUMBER_RAND_POS, consts::DAMAGE_NUMBER_RAND_POS),
 			mq::rand::gen_range(-consts::DAMAGE_NUMBER_RAND_POS, consts::DAMAGE_NUMBER_RAND_POS),
 		);
 		Self {
-			damage,
+			text,
 			time,
 			pos: pos + pos_offset,
 			color
@@ -37,10 +38,9 @@ impl DamageNumber {
 		let draw_pos = (self.pos - camera.pos) * scale / consts::TILES_PER_SCALE as f32
             + mq::Vec2::new(mq::screen_width() / 2.0, mq::screen_height() / 2.0);
 
-		let text = format!("{}", self.damage);
 		let font_size = (consts::DAMAGE_FONT_SIZE * scale) as u16;
 
-		let text_dims = mq::measure_text(&text, Some(font), font_size, 1.0);
+		let text_dims = mq::measure_text(&self.text, Some(font), font_size, 1.0);
 		let x = draw_pos.x;
 		let y = draw_pos.y + text_dims.offset_y;
 
@@ -51,7 +51,7 @@ impl DamageNumber {
 		};
 
         mq::draw_text_ex(
-            &text,
+            &self.text,
             x,
             y,
             mq::TextParams {

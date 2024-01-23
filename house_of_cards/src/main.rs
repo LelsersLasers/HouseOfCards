@@ -469,8 +469,13 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
                         } = bullet.hit_result(&powerups);
 
                         enemy.health -= damage;
+                        let text = if damage.is_infinite() {
+                            "∞".to_owned()
+                        } else {
+                            format!("{}", damage).to_owned()
+                        };
                         damage_numbers.push(damage_number::DamageNumber::new(
-                            damage.round() as i32,
+                            text,
                             consts::DAMAGE_NUMBER_TIME,
                             enemy.pos,
                             damage_number::DamageNumberColor::EnemyDamage,
