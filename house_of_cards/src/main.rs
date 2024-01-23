@@ -469,13 +469,13 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
                         } = bullet.hit_result(&powerups);
 
                         enemy.health -= damage;
-                        let text = if damage.is_infinite() {
+                        let enemy_dn_text = if damage.is_infinite() {
                             "∞".to_owned()
                         } else {
                             format!("{}", damage).to_owned()
                         };
                         damage_numbers.push(damage_number::DamageNumber::new(
-                            text,
+                            enemy_dn_text,
                             consts::DAMAGE_NUMBER_TIME,
                             enemy.pos,
                             damage_number::DamageNumberColor::EnemyDamage,
@@ -485,18 +485,30 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
                         player.health += heal_amount;
                         player.health = player.health.min(player.max_health);
 
+                        if heal_amount > 0.0 {
+                            damage_numbers.push(damage_number::DamageNumber::new(
+                                format!("+{}", heal_amount).to_owned(),
+                                consts::DAMAGE_NUMBER_TIME,
+                                player.pos,
+                                damage_number::DamageNumberColor::PlayerHeal,
+                            ));
+                        }
+
                         bullet.hit(enemy.id);
                         continue 'bullet;
                     }
                 }
             }
-            damage_numbers.iter_mut().for_each(|dn| dn.update(delta));
-            damage_numbers.retain(damage_number::DamageNumber::should_keep);
+            
 
             player_bullets.retain(bullet::Bullet::should_keep);
 
-            let enemies_killed = enemy_manager.update(&mut player, delta);
+            let (enemies_killed, new_damage_numbers) = enemy_manager.update(&mut player, delta);
             score += enemies_killed.count;
+
+            damage_numbers.extend(new_damage_numbers);
+            damage_numbers.iter_mut().for_each(|dn| dn.update(delta));
+            damage_numbers.retain(damage_number::DamageNumber::should_keep);
 
             player.xp += enemies_killed.count;
             if player.xp >= consts::XP_PER_LEVEL(player.level) {

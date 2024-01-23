@@ -1,6 +1,6 @@
 use macroquad::prelude as mq;
 
-use crate::{bullet, camera, colors, consts, hitbox, player, timer, util};
+use crate::{bullet, camera, colors, consts, damage_number, hitbox, player, timer, util};
 
 pub struct EnemyStunned {
     pub time_remaining: f32,
@@ -155,10 +155,11 @@ impl Enemy {
         }
     }
 
-    fn update(&mut self, player: &mut player::Player, wave: i32, delta: f32) -> EnemyShotType {
+    fn update(&mut self, player: &mut player::Player, wave: i32, delta: f32) -> (EnemyShotType, Option<damage_number::DamageNumber>) {
         self.enemy_stunned.update(delta);
+        let mut damage_number = None;
         if self.enemy_stunned.is_stunned() {
-            return EnemyShotType::None;
+            return (EnemyShotType::None, damage_number);
         }
 
         let player_target_pos = match self.enemy_movement {
@@ -210,6 +211,12 @@ impl Enemy {
                             self.enemy_attack.time_in_range = 0.0;
 
                             player.health -= self.damage;
+                            damage_number = Some(damage_number::DamageNumber::new(
+                                format!("-{}", self.damage).to_owned(),
+                                consts::DAMAGE_NUMBER_TIME,
+                                player.pos,
+                                damage_number::DamageNumberColor::PlayerDamage
+                            ));
                         }
                     } else {
                         self.enemy_attack.time_in_range = 0.0;
@@ -245,7 +252,7 @@ impl Enemy {
 
         self.pos += movement;
 
-        enemy_shot_type
+        (enemy_shot_type, damage_number)
     }
 
     pub fn draw_hp_bar(&self, camera: &camera::Camera, scale: f32) {
@@ -370,7 +377,7 @@ impl EnemyManager {
         }
     }
 
-    pub fn update(&mut self, player: &mut player::Player, delta: f32) -> EnemiesKilled {
+    pub fn update(&mut self, player: &mut player::Player, delta: f32) -> (EnemiesKilled, Vec<damage_number::DamageNumber>) {
         let previous_enemy_count = self.enemies.len() as i32;
         let super_count = self
             .enemies
@@ -388,8 +395,14 @@ impl EnemyManager {
                 .filter(|enemy| enemy.enemy_type == EnemyType::Super)
                 .count();
 
+        let mut damage_numbers = Vec::new();
+
         for enemy in self.enemies.iter_mut() {
-            let enemy_shot_type = enemy.update(player, self.wave, delta);
+            let (enemy_shot_type, damage_number) = enemy.update(player, self.wave, delta);
+
+            if let Some(damage_number) = damage_number {
+                damage_numbers.push(damage_number);
+            }
 
             match enemy_shot_type {
                 EnemyShotType::None => {}
@@ -452,10 +465,11 @@ impl EnemyManager {
             self.spawn_enemy(player);
         }
 
-        EnemiesKilled {
+        (EnemiesKilled {
             count,
             super_killed,
-        }
+        },
+        damage_numbers)
     }
 
     fn spawn_enemy(&mut self, player: &player::Player) {

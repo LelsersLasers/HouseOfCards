@@ -72,8 +72,6 @@ You get a choice of a new card every level up and a card buff every time you kil
         - Enemies are chess peices
         - Player might be the king (opposite color, keep the direction arrow)
         - Mask like collsions?
-    - Damage numbers
-        - Numbers for player health changes
     - Up + left arrow + D + space
         - Doesn't work?
 - Feedback
