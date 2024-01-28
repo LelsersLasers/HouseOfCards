@@ -74,6 +74,7 @@ You get a choice of a new card every level up and a card buff every time you kil
         - Mask like collsions?
     - Up + left arrow + D + space
         - Doesn't work?
+    - 1/2/3 icons
 - Feedback
     - Short dash ability?
     - Make hand combos matter? (Like Black Jack, Poker, etc)
