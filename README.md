@@ -75,6 +75,7 @@ You get a choice of a new card every level up and a card buff every time you kil
     - Up + left arrow + D + space
         - Doesn't work?
 - Feedback
+    - Short dash ability?
     - Make hand combos matter? (Like Black Jack, Poker, etc)
     - Enemy variance (comes in swarms, moves slower/harder hits)
     - More generally fun mechanics
