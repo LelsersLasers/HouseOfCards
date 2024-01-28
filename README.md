@@ -75,6 +75,7 @@ You get a choice of a new card every level up and a card buff every time you kil
     - Up + left arrow + D + space
         - Doesn't work?
 - Feedback
+    - Make hand combos matter? (Like Black Jack, Poker, etc)
     - Enemy variance (comes in swarms, moves slower/harder hits)
     - More generally fun mechanics
     - Alternate ways of healing?
@@ -96,6 +97,7 @@ You get a choice of a new card every level up and a card buff every time you kil
     - Either calculate the loading time for the sound file or ?
 - Purpose?
     - Trying to get somewhere?
-    - Trying to protect something?
+    - Trying to protect/rescue something?
+    - Spawn extra score pickups around the area
     - Should make you move around dynamically
         - Instead of a straight line
