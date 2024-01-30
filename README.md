@@ -75,6 +75,7 @@ You get a choice of a new card every level up and a card buff every time you kil
     - Up + left arrow + D + space
         - Doesn't work?
     - 1/2/3 icons
+    - Scroll wheel to change active card
 - Feedback
     - Short dash ability?
     - Make hand combos matter? (Like Black Jack, Poker, etc)
