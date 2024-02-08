@@ -63,6 +63,7 @@ You get a choice of a new card every level up and a card buff every time you kil
 ## TODO
 
 - Main
+    - Wrap enemies when they go full offscreen
     - Textures
         - Sizing info????
             - Might be different per piece :(
