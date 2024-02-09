@@ -503,7 +503,10 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
 
             player_bullets.retain(bullet::Bullet::should_keep);
 
-            let (enemies_killed, new_damage_numbers) = enemy_manager.update(&mut player, delta);
+            let max_dist = mq::Vec2::new(mq::screen_width(), mq::screen_height()).length();
+            let tile_size = scale / consts::TILES_PER_SCALE as f32;
+            let max_tiles = max_dist / tile_size;
+            let (enemies_killed, new_damage_numbers) = enemy_manager.update(&mut player, max_tiles, delta);
             score += enemies_killed.count;
 
             damage_numbers.extend(new_damage_numbers);

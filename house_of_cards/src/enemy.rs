@@ -155,7 +155,7 @@ impl Enemy {
         }
     }
 
-    fn update(&mut self, player: &mut player::Player, wave: i32, delta: f32) -> (EnemyShotType, Option<damage_number::DamageNumber>) {
+    fn update(&mut self, player: &mut player::Player, wave: i32, max_dist: f32, delta: f32) -> (EnemyShotType, Option<damage_number::DamageNumber>) {
         self.enemy_stunned.update(delta);
         let mut damage_number = None;
         if self.enemy_stunned.is_stunned() {
@@ -173,6 +173,14 @@ impl Enemy {
         let vec_to_player = player.pos - self.pos;
         let distance_to_player = vec_to_player.length();
 
+
+        let max_wrap = consts::ENEMY_MAX_RANGE_MULT * max_dist;
+        if distance_to_player > max_wrap {
+            let wrap = vec_to_player.normalize_or_zero() * consts::ENEMY_WRAP_STRENGH * max_wrap;
+            self.pos += wrap;
+            return (EnemyShotType::None, damage_number);
+        }
+        
         self.direction = vec_to_target.y.atan2(vec_to_target.x);
         let mut movement =
             mq::Vec2::new(self.direction.cos(), self.direction.sin()) * self.speed * delta;
@@ -377,7 +385,7 @@ impl EnemyManager {
         }
     }
 
-    pub fn update(&mut self, player: &mut player::Player, delta: f32) -> (EnemiesKilled, Vec<damage_number::DamageNumber>) {
+    pub fn update(&mut self, player: &mut player::Player, max_dist: f32, delta: f32) -> (EnemiesKilled, Vec<damage_number::DamageNumber>) {
         let previous_enemy_count = self.enemies.len() as i32;
         let super_count = self
             .enemies
@@ -398,7 +406,7 @@ impl EnemyManager {
         let mut damage_numbers = Vec::new();
 
         for enemy in self.enemies.iter_mut() {
-            let (enemy_shot_type, damage_number) = enemy.update(player, self.wave, delta);
+            let (enemy_shot_type, damage_number) = enemy.update(player, self.wave, max_dist, delta);
 
             if let Some(damage_number) = damage_number {
                 damage_numbers.push(damage_number);

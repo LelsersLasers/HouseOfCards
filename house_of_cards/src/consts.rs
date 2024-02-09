@@ -131,6 +131,8 @@ pub const ENEMY_MELEE_CHARGE_THICKNESS: f32 = 0.005; // scale
 
 pub const ENEMY_SUPER_SIZE: f32 = 0.05;
 pub const ENEMY_SUPER_RANGE: f32 = 5.0;
+pub const ENEMY_WRAP_STRENGH: f32 = 1.975;
+pub const ENEMY_MAX_RANGE_MULT: f32 = 0.8;
 pub const ENEMY_SUPER_MIN_RANGE: f32 = 1.0;
 pub const ENEMY_SUPER_WAVE_START: i32 = 2;
 pub const ENEMY_SUPER_WAVE_FIRE_RATE: fn(i32) -> f32 =
@@ -138,7 +140,7 @@ pub const ENEMY_SUPER_WAVE_FIRE_RATE: fn(i32) -> f32 =
 pub const ENEMY_SUPER_SPREAD: f32 = 0.6; // radians
 pub const ENEMY_SUPER_HP_MOD: fn(i32) -> f32 = |wave| 5.0 + wave as f32;
 
-pub const ENEMY_SPAWN_RADIUS: f32 = TILES_PER_SCALE as f32 + 2.0; // tiles
+pub const ENEMY_SPAWN_RADIUS: f32 = TILES_PER_SCALE as f32; // tiles
 pub const ENEMY_RANGED_CHANCE: f32 = 0.33; // percent
 
 // Note: wave spawning starts at 1
