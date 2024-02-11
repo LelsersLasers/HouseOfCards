@@ -168,7 +168,7 @@ impl Hand {
             );
 
             let text = format!("{}", i + 1);
-            let font_size = (consts::HAND_NUMBER_ICON_FONT_SIZE * scale) as u16;
+            let font_size = (consts::HAND_NUMBER_ICON_FONT_SIZE * scale).round() as u16;
             let text_dims = mq::measure_text(&text, Some(font), font_size, 1.0);
             mq::draw_text_ex(
                 &text,
@@ -281,7 +281,7 @@ pub fn draw_card_choices(
     let swap_button_rect = mq::Rect::new(x, y, card_width, button_height);
 
     let text = "Swap";
-    let font_size = (consts::CARD_CHOICE_FONT_SIZE * scale) as u16;
+    let font_size = (consts::CARD_CHOICE_FONT_SIZE * scale).round() as u16;
     let text_dims = mq::measure_text(text, Some(font), font_size, 1.0);
     let text_pos = mq::Vec2::new(
         x + card_width / 2.0 - text_dims.width / 2.0,
@@ -313,7 +313,7 @@ pub fn draw_card_choices(
     let discard_button_rect = mq::Rect::new(x, y2, card_width, button_height);
 
     let text = "Discard All";
-    let font_size = (consts::CARD_CHOICE_FONT_SIZE * scale) as u16;
+    let font_size = (consts::CARD_CHOICE_FONT_SIZE * scale).round() as u16;
     let text_dims = mq::measure_text(text, Some(font), font_size, 1.0);
     let text_pos = mq::Vec2::new(
         x + card_width / 2.0 - text_dims.width / 2.0,

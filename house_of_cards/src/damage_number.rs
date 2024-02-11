@@ -38,7 +38,7 @@ impl DamageNumber {
 		let draw_pos = (self.pos - camera.pos) * scale / consts::TILES_PER_SCALE as f32
             + mq::Vec2::new(mq::screen_width() / 2.0, mq::screen_height() / 2.0);
 
-		let font_size = (consts::DAMAGE_FONT_SIZE * scale) as u16;
+		let font_size = (consts::DAMAGE_FONT_SIZE * scale).round() as u16;
 
 		let text_dims = mq::measure_text(&self.text, Some(font), font_size, 1.0);
 		let x = draw_pos.x;
