@@ -563,7 +563,7 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
         }
         enemy_manager.draw_hp_bars(&camera, scale);
         player.draw_bars(&resources.font, scale);
-        let hand_top_y = player.hand.draw(&resources.cards_texture, scale);
+        let hand_top_y = player.hand.draw(&resources.cards_texture, &resources.font, scale);
         powerups.draw(&resources.cards_texture, scale);
 
         if !mouse_shown {

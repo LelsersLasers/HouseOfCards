@@ -101,7 +101,7 @@ impl Hand {
         }
     }
 
-    pub fn draw(&self, cards_texture: &mq::Texture2D, scale: f32) -> f32 {
+    pub fn draw(&self, cards_texture: &mq::Texture2D, font: &mq::Font, scale: f32) -> f32 {
         let HandDrawDimensions {
             mut x,
             y,
@@ -168,6 +168,21 @@ impl Hand {
                     dest_size: Some(mq::Vec2::new(card_width, card_height)),
                     source: Some(texture_source),
                     ..Default::default()
+                },
+            );
+
+            let text = format!("{}", i + 1);
+            let text_dims = mq::measure_text(&text, Some(font), 20, 1.0);
+            mq::draw_text_ex(
+                &text,
+                outline_x + text_dims.offset_y * 0.25,
+                outline_y + text_dims.offset_y * 1.25,
+                mq::TextParams {
+                    font: Some(font),
+                    font_size: 20,
+                    font_scale: 1.0,
+                    color: colors::NORD5,
+                    ..mq::TextParams::default()
                 },
             );
 
