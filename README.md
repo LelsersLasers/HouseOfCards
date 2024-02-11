@@ -75,7 +75,6 @@ You get a choice of a new card every level up and a card buff every time you kil
     - Up + left arrow + D + space
         - Doesn't work?
     - 1/2/3 icons
-    - Scroll wheel to change active card
     - Have a control page screen that before game screen that shows the controls
 - Feedback
     - Short dash ability?
