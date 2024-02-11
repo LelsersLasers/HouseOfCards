@@ -392,16 +392,20 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
             mq::KeyCode::Key1,
             mq::KeyCode::Key2,
             mq::KeyCode::Key3,
-            // mq::KeyCode::Key4,
-            // mq::KeyCode::Key5,
         ];
+        let scroll_wheel_target = if mouse_info.mouse_wheel_y() != 0 {
+            Some(((player.hand.active as i32 + mouse_info.mouse_wheel_y()).rem_euclid(consts::HAND_CARD_COUNT as i32)) as usize)
+        } else {
+            None
+        };
+        
         let mut used_touch_ids = Vec::new();
         for (i, (key, slot_button)) in hand_keys
             .iter()
             .zip(touch_controls.select_slot_buttons.iter_mut())
             .enumerate()
         {
-            if mq::is_key_pressed(*key) {
+            if mq::is_key_pressed(*key) || scroll_wheel_target == Some(i) {
                 player.hand.active = i;
             } else if let Some(id) = slot_button.touched_down(&touches) {
                 player.hand.active = i;
@@ -412,6 +416,12 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
                 player.hand.active = i;
             }
         }
+
+        // match mouse_info.mouse_wheel_y() {
+        //     1.0 => player.hand.scroll_up(),
+        //     -1.0 => player.hand.scroll_down(),
+        //     _ => {}
+        // }
 
         let movement_joystick_result = touch_controls
             .movement_joystick

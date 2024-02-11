@@ -10,6 +10,7 @@ pub struct MouseInfo {
     last_click: mq::Vec2,
     mouse_released: bool,
     last_click_time: f32,
+    mouse_wheel_y: i32,
 }
 
 impl MouseInfo {
@@ -22,6 +23,7 @@ impl MouseInfo {
             last_click: mq::Vec2::ZERO,
             mouse_released: false,
             last_click_time: 0.0,
+            mouse_wheel_y: 0,
         }
     }
 
@@ -39,6 +41,15 @@ impl MouseInfo {
                 self.active = false;
             }
         }
+
+        let mouse_wheel = mq::mouse_wheel();
+        self.mouse_wheel_y = if mouse_wheel.1 > 0.0 {
+            1
+        } else if mouse_wheel.1 < 0.0 {
+            -1
+        } else {
+            0
+        };
 
         self.mouse_released = mq::is_mouse_button_released(mq::MouseButton::Left);
 
@@ -60,6 +71,10 @@ impl MouseInfo {
 
     pub fn last_click_time(&self) -> f32 {
         self.last_click_time
+    }
+
+    pub fn mouse_wheel_y(&self) -> i32 {
+        self.mouse_wheel_y
     }
 
     pub fn draw(&self, scale: f32) {
