@@ -53,10 +53,6 @@ impl Hand {
         self.slots[self.active].card
     }
 
-    pub fn can_shoot(&self) -> bool {
-        self.active_weapon().can_shoot()
-    }
-
     pub fn get_ms_penalty(&self) -> f32 {
         self.active_weapon().get_ms_penalty()
     }

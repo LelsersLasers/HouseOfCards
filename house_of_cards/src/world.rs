@@ -1,18 +1,16 @@
 use macroquad::prelude as mq;
 use std::collections::HashMap;
 
-use crate::{camera, colors, consts};
+use crate::{camera, consts};
 
 #[derive(Clone, Copy, Eq, PartialEq)]
 pub enum Tile {
     Background(usize),
-    Black,
 }
 impl Tile {
     pub fn get_color(&self) -> mq::Color {
         match self {
             Tile::Background(index) => consts::BACKGROUND_COLORS[*index],
-            Tile::Black => colors::NORD0,
         }
     }
 
@@ -21,7 +19,6 @@ impl Tile {
             (Tile::Background(self_index), Tile::Background(other_index)) => {
                 (*self_index as i32 - *other_index as i32).abs() <= 1
             }
-            _ => false,
         }
     }
 }
@@ -29,16 +26,16 @@ impl Tile {
 struct WorldBoundsInfo {
     pub start_x: f32,
     pub start_x_floor: i32,
-    pub end_x: f32,
+    // pub end_x: f32,
     pub end_x_ceil: i32,
 
     pub start_y: f32,
     pub start_y_floor: i32,
-    pub end_y: f32,
+    // pub end_y: f32,
     pub end_y_ceil: i32,
 
-    pub tiles_count_x: f32,
-    pub tiles_count_y: f32,
+    // pub tiles_count_x: f32,
+    // pub tiles_count_y: f32,
     pub tile_size: f32,
 }
 
@@ -54,8 +51,7 @@ pub struct World {
 impl World {
     pub fn new() -> Self {
         let mut tiles = HashMap::new();
-        // tiles.insert((0, 0), Tile::Red);
-        tiles.insert((1, 0), Tile::Background(0));
+        tiles.insert((0, -1), Tile::Background(0));
 
         let locations_to_build = vec![];
 
@@ -84,16 +80,12 @@ impl World {
         WorldBoundsInfo {
             start_x,
             start_x_floor,
-            end_x,
             end_x_ceil,
 
             start_y,
             start_y_floor,
-            end_y,
             end_y_ceil,
 
-            tiles_count_x,
-            tiles_count_y,
             tile_size,
         }
     }
@@ -102,16 +94,12 @@ impl World {
         let WorldBoundsInfo {
             start_x,
             start_x_floor,
-            end_x: _,
             end_x_ceil,
 
             start_y,
             start_y_floor,
-            end_y: _,
             end_y_ceil,
 
-            tiles_count_x: _,
-            tiles_count_y: _,
             tile_size,
         } = self.get_world_bounds_info(camera, scale);
 
@@ -125,7 +113,6 @@ impl World {
                     let y = (y as f32 - start_y) * tile_size;
 
                     mq::draw_rectangle(x, y, tile_size, tile_size, color);
-                    // mq::draw_rectangle_lines(x, y, tile_size, tile_size, 2.0, Tile::Black.get_color());
                 }
             }
         }
@@ -137,16 +124,12 @@ impl World {
         let WorldBoundsInfo {
             start_x: _,
             start_x_floor,
-            end_x: _,
             end_x_ceil,
 
             start_y: _,
             start_y_floor,
-            end_y: _,
             end_y_ceil,
 
-            tiles_count_x: _,
-            tiles_count_y: _,
             tile_size: _,
         } = self.get_world_bounds_info(camera, scale);
 
@@ -195,16 +178,6 @@ impl World {
         }
 
         neighbors
-
-        // use par_iter
-        // (-range..=range)
-        //     .into_par_iter()
-        //     .flat_map(|x| (-range..=range).into_par_iter().map(move |y| (x, y)))
-        //     .filter(|(x, y)| *x != 0 || *y != 0)
-        //     .map(|(x, y)| (location.0 + x, location.1 + y))
-        //     .filter_map(|new_location| self.tiles.get(&new_location))
-        //     .copied()
-        //     .collect()
     }
 
     pub fn build_locations(&mut self) {
@@ -224,17 +197,6 @@ impl World {
     fn place_tile(&mut self, location: (i32, i32)) {
         let neighbors = self.get_tile_neighbors(location, 1);
 
-        // let all_tiles = [
-        //     // Tile::Red,
-        //     // Tile::Orange,
-        //     // Tile::Yellow,
-        //     // Tile::Green,
-        //     // Tile::Blue,
-        //     // Tile::Purple,
-        //     Tile::Zero,
-        //     Tile::One,
-        //     Tile::Two,
-        // ]
         let all_tiles = consts::BACKGROUND_COLORS
             .iter()
             .enumerate()
