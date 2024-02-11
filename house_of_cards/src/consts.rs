@@ -91,6 +91,7 @@ pub const HAND_BOTTOM_PADDING: f32 = 0.1;
 pub const HAND_TOTAL_MAX_WIDTH: f32 = 0.6;
 pub const HAND_TOTAL_MAX_HEIGHT: f32 = 0.2;
 pub const HAND_SPACING: f32 = 0.2; // relative to card width
+pub const HAND_NUMBER_ICON_FONT_SIZE: f32 = 0.025; // scale
 pub const HAND_OUTLINE_THICKNESS: f32 = 0.0025;
 pub const SLOT_MAX_START_VALUE: u8 = 4;
 

@@ -172,14 +172,15 @@ impl Hand {
             );
 
             let text = format!("{}", i + 1);
-            let text_dims = mq::measure_text(&text, Some(font), 20, 1.0);
+            let font_size = (consts::HAND_NUMBER_ICON_FONT_SIZE * scale) as u16;
+            let text_dims = mq::measure_text(&text, Some(font), font_size, 1.0);
             mq::draw_text_ex(
                 &text,
                 outline_x + text_dims.offset_y * 0.25,
                 outline_y + text_dims.offset_y * 1.25,
                 mq::TextParams {
                     font: Some(font),
-                    font_size: 20,
+                    font_size,
                     font_scale: 1.0,
                     color: colors::NORD5,
                     ..mq::TextParams::default()
