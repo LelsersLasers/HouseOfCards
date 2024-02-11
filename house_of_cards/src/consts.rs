@@ -68,6 +68,9 @@ pub const LARGE_FONT_BOUNCE_MAX: f32 = 0.125; // font size
 pub const LARGE_FONT_BOUNCE_SPEED: f32 = 0.8;
 pub const SMALL_FONT_BUTTON_PADDING: f32 = 0.8; // text height
 
+pub const CONTROLS_LARGE_TEXT_SPACING: f32 = 0.2; // height
+pub const CONTROLS_SMALL_FONT_SPACING: f32 = 0.04; // scale
+
 pub const DAMAGE_FONT_SIZE: f32 = 0.02;
 pub const DAMAGE_NUMBER_TIME: f32 = 0.2; // seconds
 pub const DAMAGE_NUMBER_RAND_POS: f32 = 0.2;

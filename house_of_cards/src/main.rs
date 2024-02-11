@@ -173,6 +173,79 @@ impl<'a> SmallText<'a> {
     }
 }
 
+fn draw_controls_screen(
+    font: &mq::Font,
+    scale: f32,
+) {
+    let large_text = "Controls";
+
+    let large_y = {
+        let font_size = (scale * consts::LARGE_FONT_SIZE).round() as u16;
+        let text_dims = mq::measure_text(large_text, Some(font), font_size, 1.0);
+
+        let x = mq::screen_width() / 2.0 - text_dims.width / 2.0;
+        let y = mq::screen_height() * consts::CONTROLS_LARGE_TEXT_SPACING - text_dims.height / 2.0 + text_dims.offset_y / 2.0;
+
+        mq::draw_text_ex(
+            large_text,
+            x,
+            y,
+            mq::TextParams {
+                font: Some(font),
+                font_size,
+                color: colors::NORD6,
+                ..Default::default()
+            },
+        );
+
+        y
+    };
+
+    let small_texts = [
+        "MOVE: WASD, RMB, left joystick",
+        "AIM: arrow keys, mouse, right joystick",
+        "SHOOT: LMB, space, left joystick",
+        "CHANGE CARD: 1/2/3, scroll wheel, tap card",
+        "SELECT POWERUP/CARD: 8/9/0, tap powerup",
+        "SWAP/CARD: enter, tap swap button",
+        "DISCARD CARD: backspace, delete, tap discard button",
+        "PAUSE: escape, P, tap top left corner",
+        "UNPAUSE: escape, P, tap anywhere",
+        "TOGGLE MUSIC: M or tap in pause menu",
+        "TOGGLE AUTO-SHOOT: Q",
+        "RESTART: R, tap anywhere",
+        "",
+        "START GAME: space, enter, LMB, tap anywhere",
+    ];
+
+    {
+        let font_size = (scale * consts::SMALL_FONT_SIZE).round() as u16;
+        let mut y = large_y + scale * consts::LARGE_FONT_SIZE;
+        let first_text = small_texts[0];
+        let text_height = mq::measure_text(first_text, Some(font), font_size, 1.0).height;
+        for small_text in small_texts.iter() {
+            let text_dims = mq::measure_text(small_text, Some(font), font_size, 1.0);
+
+            let x = mq::screen_width() / 2.0 - text_dims.width / 2.0;
+            y -= text_height / 2.0;
+
+            mq::draw_text_ex(
+                small_text,
+                x,
+                y,
+                mq::TextParams {
+                    font: Some(font),
+                    font_size,
+                    color: colors::NORD4,
+                    ..Default::default()
+                },
+            );
+
+            y += text_height / 2.0 + scale * consts::CONTROLS_SMALL_FONT_SPACING;
+        }
+    }
+}
+
 fn draw_overlay(
     overlay_color: mq::Color,
     large_text: &str,
@@ -346,8 +419,27 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
 
     let mut touch_controls = create_touch_controls(scale);
 
+    let mut controls_screen = true;
+
     loop {
         mq::clear_background(consts::BACKGROUND_COLOR);
+
+        let scale = mq::screen_width().min(mq::screen_height());
+
+        mq::simulate_mouse_with_touch(game_state.current_state() != game_state::GameState::Alive);
+        let touches = mq::touches();
+
+        if controls_screen {
+            if mq::is_key_pressed(mq::KeyCode::Space)
+                || mq::is_key_pressed(mq::KeyCode::Enter)
+                || mq::is_mouse_button_pressed(mq::MouseButton::Left)
+                || touch_controls.fullscreen_button.touched_selected(&touches) {
+                controls_screen = false;
+            }
+            draw_controls_screen(&resources.font, scale);
+            mq::next_frame().await;
+            continue;
+        }
 
         let delta = mq::get_frame_time();
         if delta > consts::MAX_DELTA {
@@ -364,8 +456,6 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
         let mouse_shown = game_state.show_mouse() && !is_mobile;
         mq::show_mouse(mouse_shown);
 
-        let scale = mq::screen_width().min(mq::screen_height());
-
         let mut should_update_locations_to_build = false;
 
         let resized = old_height != mq::screen_height() || old_width != mq::screen_width();
@@ -379,9 +469,6 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
         }
 
         mouse_info.update(time_counter, delta);
-
-        mq::simulate_mouse_with_touch(game_state.current_state() != game_state::GameState::Alive);
-        let touches = mq::touches();
 
         is_mobile = is_mobile || !touches.is_empty();
         if is_mobile {
