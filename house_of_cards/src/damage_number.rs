@@ -46,7 +46,7 @@ impl DamageNumber {
 
 		let color = match self.color {
 			DamageNumberColor::PlayerHeal => colors::NORD14,
-			DamageNumberColor::PlayerDamage => colors::NORD11,
+			DamageNumberColor::PlayerDamage => colors::NORD15,
 			DamageNumberColor::EnemyDamage => colors::NORD4,
 		};
 
