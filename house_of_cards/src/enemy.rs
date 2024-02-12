@@ -274,7 +274,7 @@ impl Enemy {
         let hp_bar_height = square_radius_small / 4.0;
         mq::draw_rectangle(
             draw_pos.x - hp_bar_width / 2.0,
-            draw_pos.y - square_radius - hp_bar_height,
+            draw_pos.y - square_radius * 0.75 - hp_bar_height,
             hp_bar_width,
             hp_bar_height,
             colors::NORD14,
@@ -480,11 +480,18 @@ impl EnemyManager {
 
         for bullet in self.enemy_bullets.iter_mut() {
             if hitbox::circles_collide(bullet, player) {
-                player.health -= match bullet.bullet_damage {
+                let damage = match bullet.bullet_damage {
                     bullet::BulletDamage::Standard(damage) => damage,
                     bullet::BulletDamage::Card(card) => card.damage(None),
                 };
+                player.health -= damage;
 
+                damage_numbers.push(damage_number::DamageNumber::new(
+                    format!("-{}", damage).to_owned(),
+                    consts::DAMAGE_NUMBER_TIME,
+                    player.pos,
+                    damage_number::DamageNumberColor::PlayerDamage
+                ));
                 bullet.remove();
             }
         }

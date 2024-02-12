@@ -62,8 +62,6 @@ You get a choice of a new card every level up and a card buff every time you kil
 
 ## TODO
 
-- Main
-    - Damage numbers for ranged enemies?
 - Feedback
     - Short dash ability?
     - Make hand combos matter? (Like Black Jack, Poker, etc)
