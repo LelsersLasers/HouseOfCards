@@ -144,7 +144,6 @@ impl Player {
         let draw_pos = (self.pos - camera.pos) * scale / consts::TILES_PER_SCALE as f32
             + mq::Vec2::new(mq::screen_width() / 2.0, mq::screen_height() / 2.0);
 
-        // mq::draw_circle(draw_pos.x, draw_pos.y, player_size, colors::NORD4);
         let texture_info = consts::CHESS_TEXTURE_INFO[consts::CHESS_KING_INDEX];
         let texture_source = mq::Rect::new(
             texture_info.0 as f32,
@@ -165,10 +164,10 @@ impl Player {
             },
         );
 
-        let triangle_side_length = player_size * 2.0;
+        let triangle_side_length = player_size * 0.5;
         let triangle_height = triangle_side_length * 3.0_f32.sqrt() / 2.0;
 
-        let spacer_len = player_size * 2.0;
+        let spacer_len = player_size * 0.75;
         let spacer = mq::Vec2::new(
             spacer_len * self.direction.cos(),
             spacer_len * self.direction.sin(),

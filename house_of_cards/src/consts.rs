@@ -33,7 +33,7 @@ pub const PAUSE_BUTTON_WIDTH: f32 = 0.2;
 pub const PAUSE_BUTTON_HEIGHT: f32 = 0.3;
 
 pub const PLAYER_SPEED: f32 = 1.2; // tiles per second
-pub const PLAYER_SIZE: f32 = 0.012; // scale
+pub const PLAYER_SIZE: f32 = 0.04; // scale
 pub const PLAYER_MAX_HEALTH: f32 = 10.0;
 
 pub const PLAYER_HP_BAR_WIDTH: f32 = 0.5; // scale
