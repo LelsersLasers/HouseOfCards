@@ -7,12 +7,12 @@ pub trait Circle {
     fn radius(&self) -> f32;
 }
 
-pub trait Rectangle {
-    fn position(&self) -> mq::Vec2;
-    fn width(&self) -> f32;
-    fn height(&self) -> f32;
-    fn rotation(&self) -> f32;
-}
+// pub trait Rectangle {
+//     fn position(&self) -> mq::Vec2;
+//     fn width(&self) -> f32;
+//     fn height(&self) -> f32;
+//     fn rotation(&self) -> f32;
+// }
 
 pub fn circles_collide(circle1: &dyn Circle, circle2: &dyn Circle) -> bool {
     let delta = circle2.center() - circle1.center();
@@ -85,22 +85,22 @@ pub fn circles_collide(circle1: &dyn Circle, circle2: &dyn Circle) -> bool {
 //     overlapping_x && overlapping_y
 // }
 
-pub fn rectangle_circle_collide(rect: &dyn Rectangle, circle: &dyn Circle) -> bool {
-    // Convert rotation angle to sine and cosine values
-    let cos = rect.rotation().cos();
-    let sin = rect.rotation().sin();
+// pub fn rectangle_circle_collide(rect: &dyn Rectangle, circle: &dyn Circle) -> bool {
+//     // Convert rotation angle to sine and cosine values
+//     let cos = rect.rotation().cos();
+//     let sin = rect.rotation().sin();
 
-    // Transform circle position into the rotated rectangle's coordinate system
-    let delta = circle.center() - rect.position();
-    let transformed_x = delta.x * cos + delta.y * sin;
-    let transformed_y = -delta.x * sin + delta.y * cos;
+//     // Transform circle position into the rotated rectangle's coordinate system
+//     let delta = circle.center() - rect.position();
+//     let transformed_x = delta.x * cos + delta.y * sin;
+//     let transformed_y = -delta.x * sin + delta.y * cos;
 
-    // Check if the transformed circle position is within the rectangle
-    let half_width = rect.width() / 2.0;
-    let half_height = rect.height() / 2.0;
-    let within_x = -half_width <= transformed_x && transformed_x <= half_width;
-    let within_y = -half_height <= transformed_y && transformed_y <= half_height;
+//     // Check if the transformed circle position is within the rectangle
+//     let half_width = rect.width() / 2.0;
+//     let half_height = rect.height() / 2.0;
+//     let within_x = -half_width <= transformed_x && transformed_x <= half_width;
+//     let within_y = -half_height <= transformed_y && transformed_y <= half_height;
 
-    // If the transformed position is within both dimensions, there's a collision
-    within_x && within_y
-}
+//     // If the transformed position is within both dimensions, there's a collision
+//     within_x && within_y
+// }

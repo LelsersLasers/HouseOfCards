@@ -366,28 +366,18 @@ impl Enemy {
     }
 }
 
-impl hitbox::Rectangle for Enemy {
-    fn position(&self) -> mq::Vec2 {
+impl hitbox::Circle for Enemy {
+    fn center(&self) -> mq::Vec2 {
         self.pos
     }
 
-    fn width(&self) -> f32 {
+    fn radius(&self) -> f32 {
         match self.enemy_type {
-            EnemyType::Super => consts::ENEMY_SUPER_SIZE * 2.0 * consts::TILES_PER_SCALE as f32,
-            _ => consts::ENEMY_SIZE * 2.0 * consts::TILES_PER_SCALE as f32,
+            EnemyType::Super => consts::ENEMY_SUPER_SIZE * consts::TILES_PER_SCALE as f32,
+            _ => consts::ENEMY_SIZE * consts::TILES_PER_SCALE as f32,
         }
     }
 
-    fn height(&self) -> f32 {
-        match self.enemy_type {
-            EnemyType::Super => consts::ENEMY_SUPER_SIZE * 2.0 * consts::TILES_PER_SCALE as f32,
-            _ => consts::ENEMY_SIZE * 2.0 * consts::TILES_PER_SCALE as f32,
-        }
-    }
-
-    fn rotation(&self) -> f32 {
-        self.direction
-    }
 }
 
 pub struct EnemiesKilled {

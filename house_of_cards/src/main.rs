@@ -560,7 +560,7 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
             'bullet: for bullet in player_bullets.iter_mut() {
                 for enemy in enemy_manager.enemies.iter_mut() {
                     if bullet.not_already_hit(enemy.id)
-                        && hitbox::rectangle_circle_collide(enemy, bullet)
+                        && hitbox::circles_collide(enemy, bullet)
                     {
                         let bullet::BulletHitResult {
                             damage,
