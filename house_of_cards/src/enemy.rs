@@ -281,7 +281,7 @@ impl Enemy {
         );
     }
 
-    pub fn draw(&self, camera: &camera::Camera, scale: f32) {
+    pub fn draw(&self, camera: &camera::Camera, chess_texture: &mq::Texture2D, scale: f32) {
         let draw_pos = (self.pos - camera.pos) * scale / consts::TILES_PER_SCALE as f32
             + mq::Vec2::new(mq::screen_width() / 2.0, mq::screen_height() / 2.0);
 
@@ -304,28 +304,61 @@ impl Enemy {
             }
         }
 
-        // draw square rotated to point in direction of movement
+        let texture_info = consts::CHESS_TEXTURE_INFO[match self.enemy_type {
+            EnemyType::Melee => consts::CHESS_PAWN_INDEX,
+            EnemyType::Ranged => consts::CHESS_BISHOP_INDEX,
+            EnemyType::Super => consts::CHESS_QUEEN_INDEX,
+        }];
+        let texture_source = mq::Rect::new(
+            texture_info.0 as f32,
+            texture_info.1 as f32,
+            texture_info.2 as f32,
+            texture_info.3 as f32,
+        );
+
         let square_radius = scale * self.enemy_type.size();
-        mq::draw_poly(
-            draw_pos.x,
-            draw_pos.y,
-            4,
-            square_radius,
-            util::rad_to_deg(self.direction + std::f32::consts::PI / 4.0), // rotate 45 degrees
-            match self.enemy_type {
-                EnemyType::Melee => colors::NORD11,
-                EnemyType::Ranged => colors::NORD12,
-                EnemyType::Super => colors::NORD15,
+
+        mq::draw_texture_ex(
+            chess_texture,
+            draw_pos.x - square_radius / 2.0,
+            draw_pos.y - square_radius / 2.0,
+            mq::WHITE,
+            mq::DrawTextureParams {
+                dest_size: Some(mq::Vec2::splat(square_radius)),
+                source: Some(texture_source),
+                ..Default::default()
             },
         );
 
+        // draw square rotated to point in direction of movement
+        // mq::draw_poly(
+        //     draw_pos.x,
+        //     draw_pos.y,
+        //     4,
+        //     square_radius,
+        //     util::rad_to_deg(self.direction + std::f32::consts::PI / 4.0), // rotate 45 degrees
+        //     match self.enemy_type {
+        //         EnemyType::Melee => colors::NORD11,
+        //         EnemyType::Ranged => colors::NORD12,
+        //         EnemyType::Super => colors::NORD15,
+        //     },
+        // );
+
         if self.enemy_stunned.is_stunned() {
-            mq::draw_poly_lines(
-                draw_pos.x,
-                draw_pos.y,
-                4,
+            // mq::draw_poly_lines(
+            //     draw_pos.x,
+            //     draw_pos.y,
+            //     4,
+            //     square_radius,
+            //     util::rad_to_deg(self.direction + std::f32::consts::PI / 4.0), // rotate 45 degrees
+            //     consts::ENEMY_STUNNED_THICKNESS * scale,
+            //     colors::NORD10,
+            // );
+            mq::draw_rectangle_lines(
+                draw_pos.x - square_radius / 2.0,
+                draw_pos.y - square_radius / 2.0,
                 square_radius,
-                util::rad_to_deg(self.direction + std::f32::consts::PI / 4.0), // rotate 45 degrees
+                square_radius,
                 consts::ENEMY_STUNNED_THICKNESS * scale,
                 colors::NORD10,
             );
@@ -514,9 +547,9 @@ impl EnemyManager {
         self.enemies.push(enemy);
     }
 
-    pub fn draw(&self, camera: &camera::Camera, scale: f32) {
+    pub fn draw(&self, camera: &camera::Camera, chess_texture: &mq::Texture2D, scale: f32) {
         for enemy in self.enemies.iter() {
-            enemy.draw(camera, scale);
+            enemy.draw(camera, chess_texture, scale);
         }
 
         for bullet in self.enemy_bullets.iter() {

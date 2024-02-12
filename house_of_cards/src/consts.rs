@@ -112,6 +112,20 @@ pub const ELSE_WEAPON: weapon::Weapon = weapon::Weapon::new(1.0 / 0.2, 15.0, 1.0
 pub const BULLET_SIZE: f32 = 0.005; // scale
 pub const BULLET_OUTLINE: f32 = 0.0005; // scale
 
+
+pub const CHESS_TEXTURE_PATH: &str = "resources/nord-chess-transparent.png";
+pub const CHESS_PAWN_INDEX: usize = 0;
+pub const CHESS_BISHOP_INDEX: usize = 1;
+pub const CHESS_QUEEN_INDEX: usize = 2;
+pub const CHESS_KING_INDEX: usize = 3;
+// TODO: !!!!
+pub const CHESS_TEXTURE_INFO: [(u32, u32, u32, u32); 4] = [
+    (0, 0, 64, 64),
+    (64, 0, 64, 64),
+    (0, 64, 64, 64),
+    (64, 64, 64, 64),
+];
+
 pub const ENEMY_SIZE: f32 = 0.02; // scale
 pub const ENEMY_SPEED: f32 = PLAYER_SPEED * 0.6; // tiles per second
 pub const ENEMY_STUNNED_THICKNESS: f32 = 0.005; // scale

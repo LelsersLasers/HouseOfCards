@@ -43,6 +43,7 @@ struct TouchControls {
 
 struct Resources {
     cards_texture: mq::Texture2D,
+    chess_texture: mq::Texture2D,
     font: mq::Font,
     music: mq_audio::Sound,
 }
@@ -141,11 +142,13 @@ async fn create_resources() -> Resources {
 
     let music_fut = mq_audio::load_sound(consts::MUSIC_PATH);
     let cards_texture_fut = mq::load_texture(consts::CARDS_TEXTURE_PATH);
+    let chess_texture_fut = mq::load_texture(consts::CHESS_TEXTURE_PATH);
 
-    let (music, cards_texture, _) = join!(music_fut, cards_texture_fut, mq::next_frame());
+    let (music, cards_texture, chess_texture, _) = join!(music_fut, cards_texture_fut, chess_texture_fut, mq::next_frame());
 
     Resources {
         cards_texture: cards_texture.unwrap(),
+        chess_texture: chess_texture.unwrap(),
         font,
         music: music.unwrap(),
     }
@@ -641,7 +644,7 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
         //----------------------------------------------------------------------------//
         world.draw(&camera, scale);
         player.draw(&camera, scale);
-        enemy_manager.draw(&camera, scale);
+        enemy_manager.draw(&camera, &resources.chess_texture, scale);
         for bullet in player_bullets.iter() {
             bullet.draw(&camera, scale);
         }
