@@ -71,7 +71,7 @@ pub const SMALL_FONT_BUTTON_PADDING: f32 = 0.8; // text height
 pub const CONTROLS_LARGE_TEXT_SPACING: f32 = 0.2; // height
 pub const CONTROLS_SMALL_FONT_SPACING: f32 = 0.04; // scale
 
-pub const DAMAGE_FONT_SIZE: f32 = 0.02;
+pub const DAMAGE_FONT_SIZE: f32 = 0.025;
 pub const DAMAGE_NUMBER_TIME: f32 = 0.2; // seconds
 pub const DAMAGE_NUMBER_RAND_POS: f32 = 0.2;
 
@@ -122,11 +122,11 @@ pub const CHESS_KING_INDEX: usize = 3;
 pub const CHESS_TEXTURE_INFO: [(u32, u32, u32, u32); 4] = [
     (25,  112, 55, 80),
     (235, 107, 55, 85),
-    (535, 107, 70, 85),
+    (535, 107, 85, 85),
     (440, 10,  65, 85),
 ];
 
-pub const ENEMY_SIZE: f32 = 0.02; // scale
+pub const ENEMY_SIZE: f32 = 0.03; // scale
 pub const ENEMY_SPEED: f32 = PLAYER_SPEED * 0.6; // tiles per second
 pub const ENEMY_STUNNED_THICKNESS: f32 = 0.005; // scale
 
@@ -147,7 +147,7 @@ pub const ENEMY_RANGED_BULLET_RANGE: f32 = 12.0; // tiles
 
 pub const ENEMY_MELEE_CHARGE_THICKNESS: f32 = 0.005; // scale
 
-pub const ENEMY_SUPER_SIZE: f32 = 0.05;
+pub const ENEMY_SUPER_SIZE: f32 = 0.06;
 pub const ENEMY_SUPER_RANGE: f32 = 5.0;
 pub const ENEMY_WRAP_STRENGH: f32 = 1.975;
 pub const ENEMY_MAX_RANGE_MULT: f32 = 0.8;

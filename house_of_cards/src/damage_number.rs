@@ -45,9 +45,9 @@ impl DamageNumber {
 		let y = draw_pos.y + text_dims.offset_y;
 
 		let color = match self.color {
-			DamageNumberColor::PlayerHeal => colors::NORD14,
-			DamageNumberColor::PlayerDamage => colors::NORD15,
-			DamageNumberColor::EnemyDamage => colors::NORD4,
+			DamageNumberColor::PlayerHeal   => colors::NORD14,
+			DamageNumberColor::PlayerDamage => colors::NORD11,
+			DamageNumberColor::EnemyDamage  => colors::NORD15,
 		};
 
         mq::draw_text_ex(
