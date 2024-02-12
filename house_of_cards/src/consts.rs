@@ -33,7 +33,7 @@ pub const PAUSE_BUTTON_WIDTH: f32 = 0.2;
 pub const PAUSE_BUTTON_HEIGHT: f32 = 0.3;
 
 pub const PLAYER_SPEED: f32 = 1.2; // tiles per second
-pub const PLAYER_SIZE: f32 = 0.04; // scale
+pub const PLAYER_SIZE: f32 = 0.03; // scale
 pub const PLAYER_MAX_HEALTH: f32 = 10.0;
 
 pub const PLAYER_HP_BAR_WIDTH: f32 = 0.5; // scale
@@ -126,7 +126,7 @@ pub const CHESS_TEXTURE_INFO: [(u32, u32, u32, u32); 4] = [
     (440, 10,  65, 85),
 ];
 
-pub const ENEMY_SIZE: f32 = 0.03; // scale
+pub const ENEMY_SIZE: f32 = 0.025; // scale
 pub const ENEMY_SPEED: f32 = PLAYER_SPEED * 0.6; // tiles per second
 pub const ENEMY_STUNNED_THICKNESS: f32 = 0.005; // scale
 
@@ -147,7 +147,7 @@ pub const ENEMY_RANGED_BULLET_RANGE: f32 = 12.0; // tiles
 
 pub const ENEMY_MELEE_CHARGE_THICKNESS: f32 = 0.005; // scale
 
-pub const ENEMY_SUPER_SIZE: f32 = 0.06;
+pub const ENEMY_SUPER_SIZE: f32 = 0.05;
 pub const ENEMY_SUPER_RANGE: f32 = 5.0;
 pub const ENEMY_WRAP_STRENGH: f32 = 1.975;
 pub const ENEMY_MAX_RANGE_MULT: f32 = 0.8;
