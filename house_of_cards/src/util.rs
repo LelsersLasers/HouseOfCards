@@ -2,9 +2,9 @@ use macroquad::prelude as mq;
 
 use crate::mouse;
 
-pub fn rad_to_deg(rad: f32) -> f32 {
-    rad * 180.0 / std::f32::consts::PI
-}
+// pub fn rad_to_deg(rad: f32) -> f32 {
+//     rad * 180.0 / std::f32::consts::PI
+// }
 
 pub fn clicked_on(
     rect: mq::Rect,
