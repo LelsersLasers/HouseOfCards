@@ -118,12 +118,12 @@ pub const CHESS_PAWN_INDEX: usize = 0;
 pub const CHESS_BISHOP_INDEX: usize = 1;
 pub const CHESS_QUEEN_INDEX: usize = 2;
 pub const CHESS_KING_INDEX: usize = 3;
-// TODO: !!!!
+// (x_offset, y_offset, width, height)
 pub const CHESS_TEXTURE_INFO: [(u32, u32, u32, u32); 4] = [
-    (0, 0, 64, 64),
-    (64, 0, 64, 64),
-    (0, 64, 64, 64),
-    (64, 64, 64, 64),
+    (25,  112, 55, 80),
+    (235, 107, 55, 85),
+    (535, 107, 70, 85),
+    (440, 10,  65, 85),
 ];
 
 pub const ENEMY_SIZE: f32 = 0.02; // scale
