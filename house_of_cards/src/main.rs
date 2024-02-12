@@ -643,7 +643,7 @@ async fn play(resources: &Resources, continuity: &mut Continuity) {
 
         //----------------------------------------------------------------------------//
         world.draw(&camera, scale);
-        player.draw(&camera, scale);
+        player.draw(&camera, &resources.chess_texture, scale);
         enemy_manager.draw(&camera, &resources.chess_texture, scale);
         for bullet in player_bullets.iter() {
             bullet.draw(&camera, scale);

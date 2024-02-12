@@ -135,8 +135,8 @@ impl Player {
         }
     }
 
-    pub fn draw(&self, camera: &camera::Camera, scale: f32) {
-        // player: circle
+    pub fn draw(&self, camera: &camera::Camera, chess_texture: &mq::Texture2D, scale: f32) {
+        // player: king texture
         // player direction: triangle
 
         let player_size = consts::PLAYER_SIZE * scale;
@@ -144,29 +144,53 @@ impl Player {
         let draw_pos = (self.pos - camera.pos) * scale / consts::TILES_PER_SCALE as f32
             + mq::Vec2::new(mq::screen_width() / 2.0, mq::screen_height() / 2.0);
 
-        mq::draw_circle(draw_pos.x, draw_pos.y, player_size, colors::NORD4);
+        // mq::draw_circle(draw_pos.x, draw_pos.y, player_size, colors::NORD4);
+        let texture_info = consts::CHESS_TEXTURE_INFO[consts::CHESS_KING_INDEX];
+        let texture_source = mq::Rect::new(
+            texture_info.0 as f32,
+            texture_info.1 as f32,
+            texture_info.2 as f32,
+            texture_info.3 as f32,
+        );
 
-        // equilateral triangle with side lengths = diameter of circle
+        mq::draw_texture_ex(
+            chess_texture,
+            draw_pos.x - player_size / 2.0,
+            draw_pos.y - player_size / 2.0,
+            mq::WHITE,
+            mq::DrawTextureParams {
+                dest_size: Some(mq::Vec2::splat(player_size)),
+                source: Some(texture_source),
+                ..mq::DrawTextureParams::default()
+            },
+        );
+
         let triangle_side_length = player_size * 2.0;
         let triangle_height = triangle_side_length * 3.0_f32.sqrt() / 2.0;
+
+        let spacer_len = player_size * 2.0;
+        let spacer = mq::Vec2::new(
+            spacer_len * self.direction.cos(),
+            spacer_len * self.direction.sin(),
+        );
 
         let top_point = mq::Vec2::new(
             draw_pos.x + triangle_height * self.direction.cos(),
             draw_pos.y + triangle_height * self.direction.sin(),
-        );
+        ) + spacer;
 
         let side_point_1 = mq::Vec2::new(
             draw_pos.x
                 + triangle_side_length * (self.direction + std::f32::consts::PI / 2.0).cos() / 2.0,
             draw_pos.y
                 + triangle_side_length * (self.direction + std::f32::consts::PI / 2.0).sin() / 2.0,
-        );
+        ) + spacer;
         let side_point_2 = mq::Vec2::new(
             draw_pos.x
                 + triangle_side_length * (self.direction - std::f32::consts::PI / 2.0).cos() / 2.0,
             draw_pos.y
                 + triangle_side_length * (self.direction - std::f32::consts::PI / 2.0).sin() / 2.0,
-        );
+        ) + spacer;
 
         mq::draw_triangle(top_point, side_point_1, side_point_2, colors::NORD4);
     }
