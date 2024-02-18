@@ -63,6 +63,7 @@ You get a choice of a new card every level up and a card buff every time you kil
 ## TODO
 
 - Feedback
+    - Automaticly cycle through the cards in hand instead of giving the player control over it.
     - Swap piece colors (less racist...)
     - Short dash ability?
     - Make hand combos matter? (Like Black Jack, Poker, etc)
